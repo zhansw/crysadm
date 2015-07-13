@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, render_template
 import config, socket, redis, hashlib, json, uuid
 from functools import wraps
 
@@ -73,7 +73,7 @@ def del_user():
     return '删除成功'
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/sign_in', methods=['POST'])
 def login():
     username = request.values.get('username')
     password = request.values.get('password')
@@ -84,15 +84,20 @@ def login():
     if user_info is None:
         return '用户不存在'
 
-    user = json.loads(user_info)
-    if user.password != hash_password:
+    user = json.loads(user_info.decode('utf-8'))
+    if user.get('password') != hash_password:
         return '密码错误'
 
     return '登陆成功'
 
 @app.route('/')
 def index():
-    pass
+    return render_template('index.html')
+
+
+@app.route('/tools/redis')
+def tools_redis():
+    return str(r_session.keys('*'))
 
 @app.route('/12')
 def hello_world():
