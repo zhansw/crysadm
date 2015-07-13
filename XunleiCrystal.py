@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, render_template
+from flask import Flask, request, Response, render_template, session, url_for, redirect
 import config, socket, redis, hashlib, json, uuid
 from functools import wraps
 
@@ -48,6 +48,15 @@ def requires_admin(f):
     return decorated
 
 
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if session.get('user_info') is None:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated
+
+
 @app.route('/create_user', methods=['POST'])
 @requires_admin
 def create_user():
@@ -73,8 +82,8 @@ def del_user():
     return '删除成功'
 
 
-@app.route('/sign_in', methods=['POST'])
-def login():
+@app.route('/user/login', methods=['POST'])
+def user_login():
     username = request.values.get('username')
     password = request.values.get('password')
 
@@ -88,11 +97,20 @@ def login():
     if user.get('password') != hash_password:
         return '密码错误'
 
-    return '登陆成功'
+    session['user_info'] = user
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard')
+@requires_auth
+def dashboard():
+    return render_template('dashboard.html')
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 
 @app.route('/tools/redis')
