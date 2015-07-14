@@ -2,6 +2,8 @@ __author__ = 'powergx'
 import requests
 import time, re
 import random
+import json
+
 
 def current_timestamp():
     return int(time.time() * 1000)
@@ -41,6 +43,7 @@ def pow_mod(x, y, z):
 
 
 def login(username, password):
+    session = requests.session()
     exponent = int("010001", 16)
     modulus = int("D6F1CFBF4D9F70710527E1B1911635460B1FF9AB7C202294D04A6F135A906E90E2398123C234340A3CEA0E5EFDC"
                   "B4BCF7C613A5A52B96F59871D8AB9D240ABD4481CCFD758EC3F2FDD54A1D4D56BFFD5C4A95810A8CA25E87FDC75"
@@ -60,8 +63,9 @@ def login(username, password):
     peer_id = ''.join(random.sample(_chars, 16))
 
     param = param % (hash_password, username, peer_id)
-
-    string text2 = Utils.PostJsonMoths("https://login.mobile.reg2t.sandai.net/", text, "android-async-http/1.4.3 (http://loopj.com/android-async-http)");
+    params = json.loads(param)
+    headers = {'user-agent': "android-async-http/1.4.3 (http://loopj.com/android-async-http)"}
+    text2 = session.get("https://login.mobile.reg2t.sandai.net/", params=params, headers=headers);
 
 
     print(param)
