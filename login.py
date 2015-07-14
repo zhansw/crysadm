@@ -4,11 +4,6 @@ import random
 import json
 
 
-def md5(s):
-    import hashlib
-
-    return hashlib.md5(s.encode('utf-8')).hexdigest().lower()
-
 def StrToInt(str):
     bigInteger = 0
 
@@ -30,7 +25,7 @@ def pow_mod(x, y, z):
     return number
 
 
-def login(username, password):
+def login(username, md5_password):
     exponent = int("010001", 16)
     modulus = int("D6F1CFBF4D9F70710527E1B1911635460B1FF9AB7C202294D04A6F135A906E90E2398123C234340A3CEA0E5EFDC"
                   "B4BCF7C613A5A52B96F59871D8AB9D240ABD4481CCFD758EC3F2FDD54A1D4D56BFFD5C4A95810A8CA25E87FDC75"
@@ -43,7 +38,7 @@ def login(username, password):
             '"verifyKey":"","sessionID":"","protocolVersion":100,"userName":"%s","extensionList":"",' \
             '"sequenceNo":10000001,"peerID":"%s","clientVersion":"1.0.0"}'
 
-    hash_password = hex(pow_mod(StrToInt(md5(password)), exponent, modulus))[2:].upper()
+    hash_password = hex(pow_mod(StrToInt(md5_password), exponent, modulus))[2:].upper()
 
     _chars = "0123456789ABCDEF"
 
