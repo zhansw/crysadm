@@ -41,9 +41,6 @@ def account_add():
 
     accounts_key = 'accounts:%s' % user.get('username')
     account_set = r_session.smembers(accounts_key)
-    if account_set is not None and account_name in account_set:
-        session['error_message'] = '该账号已经存在。'
-        return redirect(url_for('accounts'))
 
     login_result = login(account_name, md5_password)
     if login_result.get('errorCode') != 0:
@@ -59,16 +56,17 @@ def account_add():
     xl_account_name = account_name
     xl_password = md5_password
 
-    r_session.sadd(accounts_key, xl_account_name)
+    r_session.sadd(accounts_key, xl_user_id)
 
-    account_key = 'account:%s:%s' % (user.get('username'), xl_account_name)
+    account_key = 'account:%s:%s' % (user.get('username'), xl_user_id)
     xl_account_data = dict(session_id=xl_session_id, nick_name=xl_nick_name, username=xl_user_name,
                            user_id=xl_user_id, user_new_no=xl_user_new_no, account_name=xl_account_name,
-                           password=xl_password, active=True, status='' ,
+                           password=xl_password, active=True, status='OK',
                            createdtime=datetime.now().strftime('%Y-%m-%d %H:%M'))
     r_session.set(account_key, json.dumps(xl_account_data))
 
     return redirect(url_for('accounts'))
+
 
 @app.route('/account/del/<xl_id>', methods=['POST'])
 @requires_auth
@@ -76,3 +74,33 @@ def account_del(xl_id):
     user = session.get('user_info')
     accounts_key = 'accounts:%s' % user.get('username')
     account_key = 'account:%s:%s' % (user.get('username'), xl_id)
+
+    r_session.srem(accounts_key, xl_id)
+    r_session.delete(account_key)
+    return redirect(url_for('accounts'))
+
+
+@app.route('/account/inactive/<xl_id>', methods=['POST'])
+@requires_auth
+def account_inactive(xl_id):
+    user = session.get('user_info')
+
+    account_key = 'account:%s:%s' % (user.get('username'), xl_id)
+    account_info = json.loads(r_session.get(account_key).decode("utf-8"))
+    account_info['active'] = False
+    r_session.set(account_key, json.dumps(account_info))
+
+    return redirect(url_for('accounts'))
+
+
+@app.route('/account/active/<xl_id>', methods=['POST'])
+@requires_auth
+def account_activel(xl_id):
+    user = session.get('user_info')
+
+    account_key = 'account:%s:%s' % (user.get('username'), xl_id)
+    account_info = json.loads(r_session.get(account_key).decode("utf-8"))
+    account_info['active'] = True
+    r_session.set(account_key, json.dumps(account_info))
+
+    return redirect(url_for('accounts'))

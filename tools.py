@@ -17,6 +17,7 @@ def create_user():
         return '账号已存在'
     user = dict(username=username,password=hash_password(password),id=str(uuid.uuid1()))
     r_session.set('%s:%s' % ('user', username),json.dumps(user))
+    r_session.sadd('users', username)
     return '创建成功'
 
 
@@ -29,6 +30,7 @@ def del_user():
         return '账号不存在'
 
     r_session.delete('%s:%s' % ('user', username))
+    r_session.srem('users', username)
     return '删除成功'
 
 

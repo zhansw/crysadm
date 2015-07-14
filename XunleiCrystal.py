@@ -18,7 +18,8 @@ r_session = redis.Redis(connection_pool=pool)
 from tools import *
 from user import *
 from web_common import *
-from accounts import *
+from account import *
+from excavator import *
 
 if __name__ == '__main__':
     app.run()
