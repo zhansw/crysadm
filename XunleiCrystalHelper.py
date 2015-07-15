@@ -26,20 +26,29 @@ def get_data(username):
         account_info = json.loads(r_session.get(account_key).decode('utf-8'))
         if not account_info.get('active'):
             continue
-        mine_info = get_mine_info(account_info.get('session_id'), account_info.get('user_id'))
-        if mine_info.get('r') != 0:
+        session_id = account_info.get('session_id')
+        user_id = account_info.get('user_id')
+
+        privilege_info = get_privilege(session_id, user_id)
+        if privilege_info.get('r') != 0:
             success, account_info = relogin(account_info.get('account_name'), account_info.get('password'),
                                             account_info, account_key)
             if not success:
                 continue
-            mine_info = get_mine_info(account_info.get('session_id'), account_info.get('user_id'))
+            session_id = account_info.get('session_id')
+            user_id = account_info.get('user_id')
+            privilege_info = get_privilege(session_id, user_id)
 
-        mine_info['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        account_info['last_info'] = json.dumps(mine_info)
+        mine_info = get_mine_info(session_id, user_id)
+
+        account_info['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        account_info['mine_info'] = mine_info
+        account_info['privilege'] = privilege_info
+
         r_session.set(account_key, json.dumps(account_info))
 
-        #get_device_stat(1, account_info.get('session_id'), account_info.get('user_id'))
-        #get_device_stat(0, account_info.get('session_id'), account_info.get('user_id'))
+        zqb = get_device_stat(1, account_info.get('session_id'), account_info.get('user_id'))
+        old = get_device_stat(0, account_info.get('session_id'), account_info.get('user_id'))
 
 
 def relogin(username, password, account_info, account_key):
@@ -63,27 +72,19 @@ def get_mine_info(session_id, user_id):
     return json.loads(r.text)
 
 
-def get_device_stat(type, session_id, user_id):
-    """
-    POST https://red.xunlei.com/?r=mine/devices_stat HTTP/1.1
-    Host: red.xunlei.com
-    Proxy-Connection: keep-alive
-    Accept: */*
-    Accept-Encoding: gzip, deflate
-    Content-Length: 23
-    Content-Type: application/x-www-form-urlencoded
-    Accept-Language: zh-Hans;q=1, en;q=0.9
-    Cookie: lgname=powergx@gmail.com; origin=2; sessionid=32079C8670AAD004FF40AFAED2ABFD76; userid=266244981; username=powergx
-    Connection: keep-alive
-    User-Agent: RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)
+def get_privilege(session_id, user_id):
+    body = 'hand=0&v=1&ver=1'
+    cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
+    r = requests.post('https://red.xunlei.com/?r=usr/privilege', data=body, verify=False, cookies=cookies)
+    return json.loads(r.text)
 
-    hand=0&type=0&v=2&ver=1
-    """
+
+def get_device_stat(type, session_id, user_id):
     body = 'hand=0&type=%s&v=2&ver=1' % type
     cookies = dict(sessionid=session_id, userid=user_id, origin="1")
     r = requests.post('https://red.xunlei.com/?r=mine/devices_stat', data=body, verify=False, cookies=cookies)
 
-    return r.text
+    return json.loads(r.text)
 
 
 if __name__ == '__main__':
@@ -92,6 +93,8 @@ if __name__ == '__main__':
         for username in users:
             threading.Thread(target=get_data, args=(username.decode('utf-8'),),
                              name='get device' + username.decode('utf-8')).start()
-            time.sleep(10000)
+
+
+        time.sleep(30000)
 
 

@@ -52,7 +52,7 @@ def account_add():
     xl_nick_name = login_result.get('nickName')
     xl_user_name = login_result.get('userName')
     xl_user_id = str(login_result.get('userID'))
-    xl_user_new_no = login_result.get('userNewNo')
+    xl_user_new_no = str(login_result.get('userNewNo'))
     xl_account_name = account_name
     xl_password = md5_password
 

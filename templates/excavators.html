@@ -8,75 +8,60 @@
                 <!-- /.col-lg-12 -->
             </div>
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            已添加账号
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>账号</th>
-                                            <th>用户名</th>
-                                            <th>ID</th>
-                                            <th>启用</th>
-                                            <th>状态</th>
-                                            <th>添加时间</th>
-                                            <th>操作</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for row in accounts %}
+            {% for row in accounts %}
+                {% if row.privilege is defined  %}
+                     <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" style="height:42px;">
+                                    <div class="col-md-10">矿主ID : {{ row.privilege.mid |e }}</div>
+                                    <div class="col-md-2" style="text-align: right">{{ row.nick_name |e }}</div>
 
-                                            <tr>
-                                                <td>{{ loop.index }}</td>
-                                                <td>{{ row.account_name|e }}</td>
-                                                <td>{{ row.username|e }}</td>
-                                                <td>{{ row.user_id|e }}</td>
-                                                <td>
-                                                    {% if row.active  %}
-                                                        O
-                                                    {% else %}
-                                                        X
-                                                    {% endif %}
-                                                </td>
-                                                <td>{{ row.status|e }}</td>
-                                                <td>{{ row.createdtime|e }}</td>
-                                                <td>
-                                                    <form style="float:left;margin-right: 10px;" role="form" action="/account/del/{{ row.user_id|e }}" method="post">
-                                                        <button type="submit" class="btn btn-outline btn-danger btn-xs">删除</button>
-                                                    </form>
+                                </div>
+                                <!-- /.panel-heading -->
+                                <div class="panel-body">
+                                    <div class="row show-grid">
+                                        <div class="col-md-3" style="text-align: center">今日报告<br />{{ row.updated_time |e }}</div>
+                                        <div class="col-md-2" style="text-align: center">{{ row.mine_info.td_dev_pdc |e }}<br />赚钱宝产量  </div>
+                                        <div class="col-md-2" style="text-align: center">{{ row.mine_info.td_cm_pdc |e }}<br />老式矿机产量</div>
+                                        <div class="col-md-2" style="text-align: center">{{ row.mine_info.cm_num |e }}<br />雇佣矿机产量</div>
+                                        <div class="col-md-2" style="text-align: center">{{ row.mine_info.td_box_pdc |e }}/{{ row.mine_info.b_open |e }}<br />宝箱收益{{ row.mine_info.b_unget |e }}/{{ row.mine_info.b_miss |e }}</div>
+                                        <div class="col-md-1" style="text-align: center">{{ row.mine_info.td_not_in_a |e }}<br />未收取</div>
 
-                                                    {% if row.active  %}
-                                                        <form style="float:left;" role="form" action="/account/inactive/{{ row.user_id|e }}" method="post">
-                                                            <button type="submit" class="btn btn-outline btn-default btn-xs">停止</button>
-                                                        </form>
-                                                    {% else %}
-                                                        <form style="float:left;" role="form" action="/account/active/{{ row.user_id|e }}" method="post">
-                                                            <button type="submit" class="btn btn-outline btn-success btn-xs">启用</button>
-                                                        </form>
-                                                    {% endif %}
-                                                </td>
-                                            </tr>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>矿机名</th>
+                                                    <th>类型</th>
+                                                    <th>上传 KB/s</th>
+                                                    <th>下载 KB/s</th>
+                                                    <th>缓存</th>
+                                                    <th>状态</th>
+                                                    <th>IP</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
 
-                                        {% endfor %}
 
-                                    </tbody>
-                                </table>
+
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.table-responsive -->
+                                </div>
+                                <!-- /.panel-body -->
                             </div>
-                            <!-- /.table-responsive -->
+                            <!-- /.panel -->
                         </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-                </div>
 
-            </div>
+                    </div>
+                {% endif %}
             <!-- /.row -->
+            {% endfor %}
         </div>
 {% endblock %}
