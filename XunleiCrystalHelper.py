@@ -5,6 +5,7 @@ import time
 import requests
 import json
 from login import login
+from datetime import datetime
 
 conf = None
 if socket.gethostname() == 'GXMBP.local':
@@ -33,9 +34,12 @@ def get_data(username):
                 continue
             mine_info = get_mine_info(account_info.get('session_id'), account_info.get('user_id'))
 
+        mine_info['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        account_info['last_info'] = json.dumps(mine_info)
+        r_session.set(account_key, json.dumps(account_info))
 
-        get_device_stat(1, account_info.get('session_id'), account_info.get('user_id'))
-        get_device_stat(0, account_info.get('session_id'), account_info.get('user_id'))
+        #get_device_stat(1, account_info.get('session_id'), account_info.get('user_id'))
+        #get_device_stat(0, account_info.get('session_id'), account_info.get('user_id'))
 
 
 def relogin(username, password, account_info, account_key):
