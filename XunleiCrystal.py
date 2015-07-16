@@ -1,9 +1,6 @@
-import socket
-
 from flask import Flask
-import redis
+import config, socket, redis
 
-import config
 
 app = Flask(__name__)
 
@@ -19,6 +16,9 @@ pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis
 r_session = redis.Redis(connection_pool=pool)
 
 from tools import *
+from user import *
+from web_common import *
+from account import *
 from excavator import *
 
 if __name__ == '__main__':
