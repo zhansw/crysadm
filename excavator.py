@@ -38,7 +38,7 @@ def collect_all(user_id):
     user_id = account_info.get('user_id')
 
     cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
-    r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies)
+    #r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies)
 
     account_info.get('mine_info')['td_not_in_a'] = 0
     r_session.set(account_key, json.dumps(account_info))
