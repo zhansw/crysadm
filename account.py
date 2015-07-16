@@ -74,9 +74,10 @@ def account_del(xl_id):
     user = session.get('user_info')
     accounts_key = 'accounts:%s' % user.get('username')
     account_key = 'account:%s:%s' % (user.get('username'), xl_id)
-
+    account_data_key = account_key+':data'
     r_session.srem(accounts_key, xl_id)
     r_session.delete(account_key)
+    r_session.delete(account_data_key)
     return redirect(url_for('accounts'))
 
 

@@ -32,4 +32,4 @@ def user_login():
 @app.route('/user/logout')
 def logout():
     session.clear()
-    return render_template('login')
+    return redirect(url_for('login'))

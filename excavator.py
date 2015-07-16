@@ -21,10 +21,14 @@ def excavators():
 
     for acct in account_set:
         account_key = 'account:%s:%s' % (user.get('username'), acct.decode("utf-8"))
+        account_data_key = account_key+':data'
+        account_data_value = r_session.get(account_data_key)
         account_info = json.loads(r_session.get(account_key).decode("utf-8"))
+        if account_data_value is not None:
+            account_info['data'] = json.loads(account_data_value.decode("utf-8"))
         accounts.append(account_info)
-        print(account_info)
 
+    print(accounts)
     return render_template('excavators.html', err_msg=err_msg, accounts=accounts)
 
 @app.route('/collect/<user_id>', methods=['POST'])
@@ -38,10 +42,12 @@ def collect_all(user_id):
     user_id = account_info.get('user_id')
 
     cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
-    #r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies)
+    r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies)
 
-    account_info.get('mine_info')['td_not_in_a'] = 0
-    r_session.set(account_key, json.dumps(account_info))
+    account_data_key = account_key+':data'
+    account_data_value = json.loads(r_session.get(account_data_key).decode("utf-8"))
+    account_data_value.get('mine_info')['td_not_in_a'] = 0
+    r_session.set(account_data_key, json.dumps(account_data_value))
     """
     GET https://red.xunlei.com/index.php?r=mine/collect HTTP/1.1
     Content-Type: application/x-www-form-urlencoded

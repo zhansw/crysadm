@@ -8,6 +8,8 @@ from auth import requires_admin, requires_auth
 
 @app.route('/login')
 def login():
+    if session.get('user_info') is not None:
+        return redirect(url_for('dashboard'))
     return render_template('login.html')
 
 

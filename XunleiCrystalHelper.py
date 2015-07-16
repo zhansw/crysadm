@@ -40,19 +40,20 @@ def get_data(username):
             privilege_info = get_privilege(session_id, user_id)
 
         mine_info = get_mine_info(session_id, user_id)
-
-        account_info['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        account_info['mine_info'] = mine_info
-        account_info['privilege'] = privilege_info
-
         zqb = get_device_stat('1', session_id, user_id)
         old = get_device_stat('0', session_id, user_id)
         ext_device_info = get_device_info(user_id)
 
-        account_info['dev_info'] = fill_info(zqb,ext_device_info)
-        account_info['cm_info'] =  fill_info(old,ext_device_info)
+        account_data_key = account_key+':data'
+        account_data = dict()
+        account_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        account_data['mine_info'] = mine_info
+        account_data['privilege'] = privilege_info
+        account_data['dev_info'] = fill_info(zqb, ext_device_info)
+        account_data['cm_info'] = fill_info(old, ext_device_info)
 
-        r_session.set(account_key, json.dumps(account_info))
+        r_session.set(account_data_key, json.dumps(account_data))
+
 
 def fill_info(device, ext_device_info):
     for device_info in device.get('info'):
@@ -63,8 +64,9 @@ def fill_info(device, ext_device_info):
 
     return device
 
+
 def get_device_info(user_id):
-    url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s'% user_id
+    url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s' % user_id
     r = requests.get(url, verify=False)
 
     return json.loads(r.text)
