@@ -29,29 +29,58 @@
                                         <div class="col-md-1" style="text-align: center">{{ row.mine_info.td_not_in_a |e }}<br />未收取</div>
 
                                     </div>
+
                                     <div class="table-responsive">
                                         <table class="table table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th>#</th>
+
                                                     <th>矿机名</th>
                                                     <th>类型</th>
-                                                    <th>上传 KB/s</th>
+                                                    <th>上传/最快 KB/s</th>
                                                     <th>下载 KB/s</th>
-                                                    <th>缓存</th>
+                                                    <th>缓存 GByte</th>
                                                     <th>状态</th>
                                                     <th>IP</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                {% if row.cm_info is defined  %}
+                                                    {% for cm in row.cm_info.info %}
+                                                        <tr>
+                                                            <td>{{ cm.hn|e }}</td>
+                                                            <td>PC</td>
+                                                            <td>{{ (cm.ext_info.CUR_UPLOAD_SPEED/1024)|int }}/{{ (cm.ext_info.MAX_UPLOAD_SPEED/1024)|int }}</td>
+                                                            <td>{{ (cm.ext_info.CUR_DEPLOY_SPEED/1024)|int }}</td>
+                                                            <td>{{ (cm.ext_info.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (cm.ext_info.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
+                                                            <td>{{ cm.ext_info.ON_OFF_STATE|e }}</td>
+                                                            <td>{{ cm.ip|e }}</td>
+                                                        </tr>
 
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% if row.dev_info is defined  %}
+                                                    {% for dev in row.dev_info.info %}
+                                                        <tr>
+                                                            <td>{{ dev.hn|e }}</td>
+                                                            <td>赚钱宝</td>
+                                                            <td>{{ (dev.ext_info.CUR_UPLOAD_SPEED/1024)|int }}/{{ (dev.ext_info.MAX_UPLOAD_SPEED/1024)|int }}</td>
+                                                            <td>{{ (dev.ext_info.CUR_DEPLOY_SPEED/1024)|int }}</td>
+                                                            <td>{{ (dev.ext_info.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.ext_info.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
+                                                            <td>{{ dev.ext_info.ON_OFF_STATE|e }}</td>
+                                                            <td>{{ dev.ip|e }}</td>
+                                                        </tr>
 
-
-
-
+                                                    {% endfor %}
+                                                {% endif %}
                                             </tbody>
                                         </table>
                                     </div>
+
+
+
+
+
                                     <!-- /.table-responsive -->
                                 </div>
                                 <!-- /.panel-body -->

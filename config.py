@@ -7,6 +7,7 @@ class RedisConfig():
         self.port = port
         self.db = db
 
+
 class Config(object):
     DEBUG = False
     TESTING = False
@@ -30,6 +31,3 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
-
-
-

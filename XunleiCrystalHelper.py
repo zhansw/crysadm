@@ -45,10 +45,29 @@ def get_data(username):
         account_info['mine_info'] = mine_info
         account_info['privilege'] = privilege_info
 
+        zqb = get_device_stat('1', session_id, user_id)
+        old = get_device_stat('0', session_id, user_id)
+        ext_device_info = get_device_info(user_id)
+
+        account_info['dev_info'] = fill_info(zqb,ext_device_info)
+        account_info['cm_info'] =  fill_info(old,ext_device_info)
+
         r_session.set(account_key, json.dumps(account_info))
 
-        zqb = get_device_stat(1, account_info.get('session_id'), account_info.get('user_id'))
-        old = get_device_stat(0, account_info.get('session_id'), account_info.get('user_id'))
+def fill_info(device, ext_device_info):
+    for device_info in device.get('info'):
+        for ext_device in ext_device_info.get('DEVICE_INFO'):
+            if device_info.get('dv_id') == ext_device.get('DCDNID'):
+                device_info['ext_info'] = ext_device
+                break
+
+    return device
+
+def get_device_info(user_id):
+    url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s'% user_id
+    r = requests.get(url, verify=False)
+
+    return json.loads(r.text)
 
 
 def relogin(username, password, account_info, account_key):
@@ -80,9 +99,9 @@ def get_privilege(session_id, user_id):
 
 
 def get_device_stat(type, session_id, user_id):
-    body = 'hand=0&type=%s&v=2&ver=1' % type
-    cookies = dict(sessionid=session_id, userid=user_id, origin="1")
-    r = requests.post('https://red.xunlei.com/?r=mine/devices_stat', data=body, verify=False, cookies=cookies)
+    url = 'https://red.xunlei.com/?r=mine/devices_stat&hand=0&type=%s&v=2&ver=1' % type
+    cookies = dict(sessionid=session_id, userid=user_id, origin="2")
+    r = requests.post(url=url, verify=False, cookies=cookies)
 
     return json.loads(r.text)
 
@@ -94,7 +113,6 @@ if __name__ == '__main__':
             threading.Thread(target=get_data, args=(username.decode('utf-8'),),
                              name='get device' + username.decode('utf-8')).start()
 
-
-        time.sleep(30000)
+        time.sleep(10)
 
 

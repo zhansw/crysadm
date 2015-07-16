@@ -1,6 +1,6 @@
 __author__ = 'powergx'
 from flask import request, Response, render_template, session, url_for, redirect
-from XunleiCrystal import app,r_session
+from XunleiCrystal import app, r_session
 from auth import requires_admin, requires_auth
 import json
 from util import hash_password
@@ -15,8 +15,8 @@ def create_user():
 
     if r_session.get('%s:%s' % ('user', username)) is not None:
         return '账号已存在'
-    user = dict(username=username,password=hash_password(password),id=str(uuid.uuid1()))
-    r_session.set('%s:%s' % ('user', username),json.dumps(user))
+    user = dict(username=username, password=hash_password(password), id=str(uuid.uuid1()))
+    r_session.set('%s:%s' % ('user', username), json.dumps(user))
     r_session.sadd('users', username)
     return '创建成功'
 
