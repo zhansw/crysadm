@@ -116,6 +116,6 @@ if __name__ == '__main__':
             threading.Thread(target=get_data, args=(username.decode('utf-8'),),
                              name='get device' + username.decode('utf-8')).start()
 
-        time.sleep(100000)
+        time.sleep(10)
 
 
