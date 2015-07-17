@@ -5,14 +5,6 @@ from XunleiCrystal import app,r_session
 from auth import requires_admin, requires_auth
 import json
 
-
-@app.route('/login')
-def login():
-    if session.get('user_info') is not None:
-        return redirect(url_for('dashboard'))
-    return render_template('login.html')
-
-
 @app.route('/dashboard')
 @requires_auth
 def dashboard():
