@@ -7,6 +7,7 @@ import json
 from login import login
 from datetime import datetime
 
+
 conf = None
 if socket.gethostname() == 'GXMBP.local':
     conf = config.DevelopmentConfig
@@ -44,7 +45,7 @@ def get_data(username):
         old = get_device_stat('0', session_id, user_id)
         ext_device_info = get_device_info(user_id)
 
-        account_data_key = account_key+':data'
+        account_data_key = account_key + ':data'
         account_data = dict()
         account_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         account_data['mine_info'] = mine_info
@@ -87,8 +88,8 @@ def relogin(username, password, account_info, account_key):
 
 
 def get_mine_info(session_id, user_id):
-    body = 'hand=0&v=2&ver=1'
     cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
+    body = dict(hand='0', v='2', ver='1')
     r = requests.post('https://red.xunlei.com/?r=mine/info', data=body, verify=False, cookies=cookies)
     return json.loads(r.text)
 
@@ -109,12 +110,12 @@ def get_device_stat(type, session_id, user_id):
 
 
 if __name__ == '__main__':
-    while (True):
+    while True:
         users = r_session.smembers('users')
         for username in users:
             threading.Thread(target=get_data, args=(username.decode('utf-8'),),
                              name='get device' + username.decode('utf-8')).start()
 
-        time.sleep(10)
+        time.sleep(100000)
 
 

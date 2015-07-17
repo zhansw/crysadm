@@ -3,7 +3,7 @@ __author__ = 'powergx'
 from flask import request, Response, render_template, session, url_for, redirect
 from XunleiCrystal import app,r_session
 from auth import requires_admin, requires_auth
-
+import json
 
 
 @app.route('/login')
@@ -16,6 +16,21 @@ def login():
 @app.route('/dashboard')
 @requires_auth
 def dashboard():
+    user = session.get('user_info')
+
+    accounts_key = 'accounts:%s' % user.get('username')
+    account_set = r_session.smembers(accounts_key)
+    accounts = list()
+
+    for acct in account_set:
+        account_key = 'account:%s:%s' % (user.get('username'), acct.decode("utf-8"))
+        account_data_key = account_key+':data'
+        account_data_value = r_session.get(account_data_key)
+        account_info = json.loads(r_session.get(account_key).decode("utf-8"))
+        if account_data_value is not None:
+            account_info['data'] = json.loads(account_data_value.decode("utf-8"))
+        accounts.append(account_info)
+
     return render_template('dashboard.html')
 
 
