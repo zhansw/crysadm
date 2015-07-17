@@ -10,6 +10,7 @@
 
             {% for row in accounts %}
                 {% if row.data is defined  %}
+
                      <div class="row">
                         <div class="col-lg-12">
                             <div class="panel panel-default">
@@ -31,7 +32,7 @@
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.dev_m.pdc |e }}<br />赚钱宝产量  </div>
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.dev_pc.pdc |e }}<br />老式矿机产量</div>
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.td_cm_pdc |e }}<br />雇佣矿机产量</div>
-                                        <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.td_box_pdc |e }}<br />宝箱({{ row.data.mine_info.b_unget |e }})</div>
+                                        <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.td_box_pdc |e }}<br />宝箱 {{ row.data.mine_info.td_box_pdc |e }}</div>
                                         <div class="col-md-1" style="text-align: center">{{ row.data.mine_info.td_not_in_a |e }}<br />未收取</div>
 
                                     </div>
@@ -65,17 +66,19 @@
 
                                                     {% endfor %}
                                                 {% endif %}
-                                                {% if row.data.dev_info is defined  %}
+                                                {% if row.data.dev_info is defined %}
                                                     {% for dev in row.data.dev_info.info %}
+                                                        {% if dev.ext_info is defined and dev.ext_info is not none %}
                                                         <tr>
                                                             <td>{{ dev.hn|e }}</td>
                                                             <td>赚钱宝</td>
-                                                            <td>{{ (dev.ext_info.CUR_UPLOAD_SPEED/1024)|int }}/{{ (dev.ext_info.MAX_UPLOAD_SPEED/1024)|int }}</td>
+                                                            <td>{{ (dev.ext_info.CUR_UPLOAD_SPEED/1024)|int |default('') }}/{{ (dev.ext_info.MAX_UPLOAD_SPEED/1024)|int }}</td>
                                                             <td>{{ (dev.ext_info.CUR_DEPLOY_SPEED/1024)|int }}</td>
                                                             <td>{{ (dev.ext_info.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.ext_info.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
                                                             <td>{{ dev.ext_info.ON_OFF_STATE|e }}</td>
                                                             <td>{{ dev.ip|e }}</td>
                                                         </tr>
+                                                        {% endif %}
 
                                                     {% endfor %}
                                                 {% endif %}
