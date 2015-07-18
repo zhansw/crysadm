@@ -58,6 +58,13 @@
                                             <span class="input-group-addon">管理员
                                             </span>
                                         </div>
+                                    <div class="form-group input-group">
+                                            <span class="input-group-addon"><i class="fa fa-rotate-right"></i>
+                                            </span>
+                                            <input type="text" class="form-control" value="{{ user_info.refresh_interval|default('10') }}" disabled>
+                                            <span class="input-group-addon">刷新时间
+                                            </span>
+                                        </div>
                                         <div class="form-group input-group">
                                             <span class="input-group-addon"><i class="fa fa-group"></i>
                                             </span>

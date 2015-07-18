@@ -5,7 +5,7 @@ import time
 import requests
 import json
 from login import login
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 conf = None
@@ -22,6 +22,7 @@ r_session = redis.Redis(connection_pool=pool)
 
 
 def get_data(username):
+    user_data = dict()
     for user_id in r_session.smembers('accounts:%s' % username):
         account_key = 'account:%s:%s' % (username, user_id.decode('utf-8'))
         account_info = json.loads(r_session.get(account_key).decode('utf-8'))
@@ -53,7 +54,33 @@ def get_data(username):
         account_data['dev_info'] = fill_info(zqb, ext_device_info)
         account_data['cm_info'] = fill_info(old, ext_device_info)
 
+        user_data[user_id] = account_data
         r_session.set(account_data_key, json.dumps(account_data))
+
+    save_history(username, user_data)
+
+
+def save_history(username, user_data):
+    if datetime.now().strftime('%H:%M:') == '23:59' or datetime.now().strftime('%H:%M:') == '00:00':
+        return
+    str_today = datetime.now().strftime('%Y-%m-%d')
+    key = 'user_data:%s:%s' % (username, str_today)
+    today_data = dict(pdc=0, last_speed=0)
+
+    for data in user_data.values():
+        today_data['pdc'] += data.get('mine_info').get('dev_m').get('pdc') + data.get('mine_info').get('dev_pc').get('pdc')
+        for device in data.get('cm_info').get('info'):
+            if device.get('ext_info') is None:
+                today_data['last_speed'] += int(device.get('s')/8)
+            else:
+                today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED')/1024)
+        for device in data.get('dev_info').get('info'):
+            if device.get('ext_info') is None:
+                today_data['last_speed'] += int(device.get('s')/8)
+            else:
+                today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED')/1024)
+
+    r_session.set(key, json.dumps(today_data))
 
 
 def fill_info(device, ext_device_info):
@@ -109,13 +136,45 @@ def get_device_stat(type, session_id, user_id):
     return json.loads(r.text)
 
 
-if __name__ == '__main__':
+def get_crystal_data(username):
+    while True:
+        user_key = '%s:%s' % ('user', username)
+        user_info = json.loads(r_session.get(user_key).decode('utf-8'))
+        refresh_interval = 30 if user_info.get('refresh_interval') is None else user_info.get('refresh_interval')
+        if not user_info.get('active'):
+            break
+
+        threading.Thread(target=get_data, args=(username,), name=username).start()
+        time.sleep(refresh_interval)
+
+
+def start_rotate():
+    thread_list = list()
     while True:
         users = r_session.smembers('users')
-        for username in users:
-            threading.Thread(target=get_data, args=(username.decode('utf-8'),),
-                             name='get device' + username.decode('utf-8')).start()
+        for i, thread in enumerate(thread_list):
+            if not thread.is_alive():
+                thread_list.pop(i)
+                continue
+            b_name = bytes(thread.name, 'utf-8')
+            if b_name in users:
+                users.remove(b_name)
 
-        time.sleep(10)
+        for user in users:
+            name = user.decode('utf-8')
+            user_key = '%s:%s' % ('user', name)
+            user_info = json.loads(r_session.get(user_key).decode('utf-8'))
+            if not user_info.get('active'):
+                continue
+
+            t = threading.Thread(target=get_crystal_data, args=(name,), name=name)
+            thread_list.append(t)
+            t.start()
+
+        time.sleep(30)
+
+
+if __name__ == '__main__':
+    start_rotate()
 
 

@@ -28,7 +28,7 @@ def excavators():
             account_info['data'] = json.loads(account_data_value.decode("utf-8"))
         accounts.append(account_info)
 
-    print(accounts)
+
     return render_template('excavators.html', err_msg=err_msg, accounts=accounts)
 
 @app.route('/collect/<user_id>', methods=['POST'])

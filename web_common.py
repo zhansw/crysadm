@@ -1,29 +1,28 @@
 __author__ = 'powergx'
 __author__ = 'powergx'
 from flask import request, Response, render_template, session, url_for, redirect
-from XunleiCrystal import app,r_session
+from XunleiCrystal import app, r_session
 from auth import requires_admin, requires_auth
+from datetime import datetime
 import json
 
 @app.route('/dashboard')
 @requires_auth
 def dashboard():
+    #return redirect(url_for('excavators'))
     user = session.get('user_info')
+    username = user.get('username')
+    str_today = datetime.now().strftime('%Y-%m-%d')
+    key = 'user_data:%s:%s' % (username, str_today)
 
-    accounts_key = 'accounts:%s' % user.get('username')
-    account_set = r_session.smembers(accounts_key)
-    accounts = list()
+    b_data = r_session.get(key)
+    if b_data is None:
+        pass
 
-    for acct in account_set:
-        account_key = 'account:%s:%s' % (user.get('username'), acct.decode("utf-8"))
-        account_data_key = account_key+':data'
-        account_data_value = r_session.get(account_data_key)
-        account_info = json.loads(r_session.get(account_key).decode("utf-8"))
-        if account_data_value is not None:
-            account_info['data'] = json.loads(account_data_value.decode("utf-8"))
-        accounts.append(account_info)
+    today_data = json.loads(b_data.decode('utf-8'))
 
-    return render_template('dashboard.html')
+
+    return render_template('dashboard.html', today_data=today_data)
 
 
 @app.route('/')
