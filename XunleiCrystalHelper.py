@@ -53,6 +53,8 @@ def get_data(username):
         account_data['privilege'] = privilege_info
         account_data['dev_info'] = fill_info(zqb, ext_device_info)
         account_data['cm_info'] = fill_info(old, ext_device_info)
+        account_data['dev_info']['speed_stat'] = get_speed_stat('1', session_id, user_id)
+        account_data['cm_info']['speed_stat'] = get_speed_stat('0', session_id, user_id)
 
         user_data[user_id] = account_data
         r_session.set(account_data_key, json.dumps(account_data))
@@ -65,20 +67,32 @@ def save_history(username, user_data):
         return
     str_today = datetime.now().strftime('%Y-%m-%d')
     key = 'user_data:%s:%s' % (username, str_today)
-    today_data = dict(pdc=0, last_speed=0)
+    b_today_data = r_session.get(key)
+    today_data = dict()
 
+    if b_today_data is not None:
+        today_data = json.loads(b_today_data.decode('utf-8'))
+
+    today_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    today_data['pdc'] = 0
+    today_data['last_speed'] = 0
+    today_data['speed_stat'] = list()
     for data in user_data.values():
-        today_data['pdc'] += data.get('mine_info').get('dev_m').get('pdc') + data.get('mine_info').get('dev_pc').get('pdc')
+        today_data.get('speed_stat').append(dict(mid=data.get('privilege').get('mid'),
+                                                 dev_speed=data.get('dev_info').get('speed_stat'),
+                                                 pc_speed=data.get('cm_info').get('speed_stat')))
+        today_data['pdc'] += data.get('mine_info').get('dev_m').get('pdc') + data.get('mine_info').get('dev_pc').get(
+            'pdc')
         for device in data.get('cm_info').get('info'):
             if device.get('ext_info') is None:
-                today_data['last_speed'] += int(device.get('s')/8)
+                today_data['last_speed'] += int(device.get('s') / 8)
             else:
-                today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED')/1024)
+                today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED') / 1024)
         for device in data.get('dev_info').get('info'):
             if device.get('ext_info') is None:
-                today_data['last_speed'] += int(device.get('s')/8)
+                today_data['last_speed'] += int(device.get('s') / 8)
             else:
-                today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED')/1024)
+                today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED') / 1024)
 
     r_session.set(key, json.dumps(today_data))
 
@@ -121,6 +135,14 @@ def get_mine_info(session_id, user_id):
     return json.loads(r.text)
 
 
+def get_speed_stat(s_type, session_id, user_id):
+    cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
+
+    body = dict(type=s_type, hand='0', v='0', ver='1')
+    r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies)
+    return json.loads(r.text).get('sds')
+
+
 def get_privilege(session_id, user_id):
     body = 'hand=0&v=1&ver=1'
     cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
@@ -128,8 +150,8 @@ def get_privilege(session_id, user_id):
     return json.loads(r.text)
 
 
-def get_device_stat(type, session_id, user_id):
-    url = 'https://red.xunlei.com/?r=mine/devices_stat&hand=0&type=%s&v=2&ver=1' % type
+def get_device_stat(s_type, session_id, user_id):
+    url = 'https://red.xunlei.com/?r=mine/devices_stat&hand=0&type=%s&v=2&ver=1' % s_type
     cookies = dict(sessionid=session_id, userid=user_id, origin="2")
     r = requests.post(url=url, verify=False, cookies=cookies)
 

@@ -79,7 +79,9 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-
+                        <li>
+                            <a href="/dashboard"><i class="fa fa-table fa-dashboard"></i> 监控中心</a>
+                        </li>
                         <li>
                             <a href="/excavators"><i class="fa fa-table fa-sitemap"></i> 我的矿机</a>
                         </li>
@@ -110,11 +112,12 @@
     <!-- Morris Charts JavaScript -->
     <script src="../static/bower_components/raphael/raphael-min.js"></script>
     <script src="../static/bower_components/morrisjs/morris.min.js"></script>
-    <script src="../static/js/morris-data.js"></script>
+
+    <script src="../static/bower_components/Highcharts/js/highcharts.js"></script>
 
     <!-- Custom Theme JavaScript -->
     <script src="../static/dist/js/sb-admin-2.js"></script>
-
+    {% block js_logic %}{% endblock %}
 </body>
 
 </html>
