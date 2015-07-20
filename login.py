@@ -31,12 +31,12 @@ def login(username, md5_password):
                   "B4BCF7C613A5A52B96F59871D8AB9D240ABD4481CCFD758EC3F2FDD54A1D4D56BFFD5C4A95810A8CA25E87FDC75"
                   "2EFA047DF4710C7D67CA025A2DC3EA59B09A9F2E3A41D4A7EFBB31C738B35FFAAA5C6F4E6F", 16)
 
-    param = '{"cmdID":1,"verifyCode":"","isCompressed":0,"rsaKey":{"n":"D6F1CFBF4D9F70710527E1B1911635460B1FF9AB7C202' \
+    param = '{"cmdID":1,"isCompressed":0,"rsaKey":{"n":"D6F1CFBF4D9F70710527E1B1911635460B1FF9AB7C202' \
             '294D04A6F135A906E90E2398123C234340A3CEA0E5EFDCB4BCF7C613A5A52B96F59871D8AB9D240ABD4481CCFD758EC3F2FDD54A' \
             '1D4D56BFFD5C4A95810A8CA25E87FDC752EFA047DF4710C7D67CA025A2DC3EA59B09A9F2E3A41D4A7EFBB31C738B35FFAAA5C6F4' \
             'E6F","e":"010001"},"businessType":61,"passWord":"%s","loginType":0,"platformVersion":1,' \
-            '"verifyKey":"","sessionID":"","protocolVersion":100,"userName":"%s","extensionList":"",' \
-            '"sequenceNo":10000001,"peerID":"%s","clientVersion":"1.0.0"}'
+            '"verifyKey":"","sessionID":"","protocolVersion":101,"userName":"%s","extensionList":"",' \
+            '"sequenceNo":10000015,"peerID":"%s","clientVersion":"1.0.0","appName":"ANDROID-com.xunlei.redcrystalandroid"}'
 
     hash_password = hex(pow_mod(StrToInt(md5_password), exponent, modulus))[2:].upper()
 

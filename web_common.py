@@ -103,7 +103,7 @@ def dashboard():
     today_data['m_pdc'] = today_data.get('yesterday_m_pdc') + today_data.get('pdc')
     today_data['w_pdc'] = today_data.get('yesterday_w_pdc') + today_data.get('pdc')
 
-    if today_data.get('seven_days_chart') is not None:
+    if today_data.get('seven_days_chart') is None:
         category, value = __seven_day_pdc(username)
         today_data['seven_days_chart'] = dict(category=category, value=value)
         need_save = True

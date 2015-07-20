@@ -24,7 +24,7 @@ class ProductionConfig(Config):
 
 
 class DevelopmentConfig(Config):
-    REDIS_CONF = RedisConfig(host='airl.us', port=56379, db=0)
+
     DEBUG = True
 
 
