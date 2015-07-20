@@ -16,10 +16,9 @@ def excavators():
         session['error_message'] = None
 
     accounts_key = 'accounts:%s' % user.get('username')
-    account_set = r_session.smembers(accounts_key)
     accounts = list()
 
-    for acct in account_set:
+    for acct in sorted(r_session.smembers(accounts_key)):
         account_key = 'account:%s:%s' % (user.get('username'), acct.decode("utf-8"))
         account_data_key = account_key+':data'
         account_data_value = r_session.get(account_data_key)

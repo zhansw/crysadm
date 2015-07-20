@@ -18,16 +18,14 @@ def accounts():
         session['error_message'] = None
 
     accounts_key = 'accounts:%s' % user.get('username')
-    account_set = r_session.smembers(accounts_key)
-    accounts = list()
 
-    for acct in account_set:
+    account_s = list()
+    for acct in sorted(r_session.smembers(accounts_key)):
         account_key = 'account:%s:%s' % (user.get('username'), acct.decode("utf-8"))
         account_info = json.loads(r_session.get(account_key).decode("utf-8"))
-        accounts.append(account_info)
+        account_s.append(account_info)
 
-    print(accounts)
-    return render_template('accounts.html', err_msg=err_msg, accounts=accounts)
+    return render_template('accounts.html', err_msg=err_msg, accounts=account_s)
 
 
 @app.route('/account/add', methods=['POST'])
@@ -40,7 +38,6 @@ def account_add():
     user = session.get('user_info')
 
     accounts_key = 'accounts:%s' % user.get('username')
-    account_set = r_session.smembers(accounts_key)
 
     login_result = login(account_name, md5_password)
     if login_result.get('errorCode') != 0:

@@ -136,7 +136,7 @@ def create_user():
     if r_session.get('%s:%s' % ('user', username)) is not None:
         return '账号已存在'
     user = dict(username=username, password=hash_password(password), id=str(uuid.uuid1()),
-                active=True, isadmin=False, max_account_no=2, refresh_interval=30)
+                active=True, is_admin=False, max_account_no=2, refresh_interval=30)
     r_session.set('%s:%s' % ('user', username), json.dumps(user))
     r_session.sadd('users', username)
     return '创建成功'

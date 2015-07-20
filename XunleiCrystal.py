@@ -15,7 +15,7 @@ redis_conf = app.config.get('REDIS_CONF')
 pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis_conf.db)
 r_session = redis.Redis(connection_pool=pool)
 
-from tools import *
+from admin import *
 from user import *
 from web_common import *
 from account import *
