@@ -59,7 +59,6 @@ def __seven_day_pdc(username):
 
 def __get_speed_stat_chart_data(speed_stat_data):
 
-
     now = datetime.now()
     speed_stat_category = list()
     speed_stat_value = list()
