@@ -39,22 +39,24 @@ def __seven_day_pdc(username):
     today = datetime.now().date() + timedelta(days=-1)
     begin_date = today + timedelta(days=-7)
 
-    seven_data = list()
+    category = list()
+    value = list()
     while begin_date < today:
         begin_date = begin_date + timedelta(days=1)
         str_date = begin_date.strftime('%Y-%m-%d')
         key = 'user_data:%s:%s' % (username, str_date)
 
-        this_data = dict(date=str_date, pdc='0')
-        seven_data.append(this_data)
+        category.append(str_date)
+
         b_data = r_session.get(key)
         if b_data is None:
+            value.append(0)
             continue
 
         history_data = json.loads(b_data.decode('utf-8'))
-        this_data['pdc'] = history_data.get('pdc')
+        value.append(history_data.get('pdc'))
 
-    return seven_data
+    return category, [dict(data=value, name='产量'),]
 
 
 def __get_speed_stat_chart_data(speed_stat_data):
@@ -101,15 +103,16 @@ def dashboard():
     today_data['m_pdc'] = today_data.get('yesterday_m_pdc') + today_data.get('pdc')
     today_data['w_pdc'] = today_data.get('yesterday_w_pdc') + today_data.get('pdc')
 
-    if today_data.get('seven_days_pdc') is None:
-        today_data['seven_days_pdc'] = json.dumps(__seven_day_pdc(username))
+    if today_data.get('seven_days_chart') is not None:
+        category, value = __seven_day_pdc(username)
+        today_data['seven_days_chart'] = dict(category=category, value=value)
         need_save = True
-
+        print(category, value)
     if need_save:
         r_session.set(key, json.dumps(today_data))
 
-    today_data['speed_stat_chart_category'], \
-    today_data['speed_stat_chart_value'] = __get_speed_stat_chart_data(today_data.get('speed_stat'))
+    category, value = __get_speed_stat_chart_data(today_data.get('speed_stat'))
+    today_data['speed_stat_chart'] = dict(category=category, value=value)
 
     return render_template('dashboard.html', today_data=today_data)
 

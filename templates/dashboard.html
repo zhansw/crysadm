@@ -132,54 +132,78 @@
 
 {% block js_logic %}
     <script>
-
-        Morris.Line({
-            element: 'seven-day-chart',
-            data: {{ today_data.seven_days_pdc | safe }},
-            xkey: 'date',
-            ykeys: ['pdc'],
-            labels: ['产量'],
-            pointSize: 4,
-            hideHover: 'auto',
-            resize: true
+        $('#seven-day-chart').highcharts({
+            chart: {
+                type: 'spline'
+            },
+            title: {
+                text: '最近产量',
+                x: -20 //center
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: {
+                title: {
+                    text: '产量'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: ' '
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            xAxis: {
+                categories: {{ today_data.seven_days_chart.category | safe }}
+            },
+            series: {{ today_data.seven_days_chart.value | safe }}
         });
 
 
-    $('#container').highcharts({
-        chart: {
-            type: 'spline'
-        },
-        title: {
-            text: '上传速率',
-            x: -20 //center
-        },
-        credits: {
-            enabled: false
-        },
-        yAxis: {
-            title: {
-                text: 'Speed (KByte/s)'
+        $('#container').highcharts({
+            chart: {
+                type: 'spline'
             },
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-        tooltip: {
-            valueSuffix: ' KByte/s'
-        },
-        legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle',
-            borderWidth: 0
-        },
-        xAxis: {
-            categories: {{ today_data.speed_stat_chart_category | safe }}
-        },
-        series: {{ today_data.speed_stat_chart_value | safe }}
-    });
+            title: {
+                text: '上传速率',
+                x: -20 //center
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: {
+                title: {
+                    text: 'Speed (KByte/s)'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: ' KByte/s'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            xAxis: {
+                categories: {{ today_data.speed_stat_chart.category | safe }}
+            },
+            series: {{ today_data.speed_stat_chart.value | safe }}
+        });
 
     </script>
 {% endblock %}
