@@ -64,7 +64,7 @@ def __get_speed_stat_chart_data(speed_stat_data):
     speed_stat_category = list()
     speed_stat_value = list()
     for i in range(-24, 0):
-        speed_stat_category.append('   %s' % (now - timedelta(hours=i)).strftime('%H'))
+        speed_stat_category.append('   %s' % (now + timedelta(hours=i)).strftime('%H'))
 
     for speed_data in speed_stat_data:
         this_data  = dict(name='矿主ID:'+ str(speed_data.get('mid')),data=list())
