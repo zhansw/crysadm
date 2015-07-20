@@ -7,6 +7,7 @@ from util import hash_password
 import uuid
 import re
 
+
 @app.route('/admin')
 @requires_admin
 def admin():
@@ -31,7 +32,6 @@ def admin_user(username):
 
     user = json.loads(r_session.get('user:%s' % username).decode('utf-8'))
 
-
     return render_template('user_management.html', user=user, err_msg=err_msg)
 
 
@@ -44,7 +44,7 @@ def admin_change_password(username):
 
     if re.match(r, n_password) is None:
         session['error_message'] = '密码太弱了(6~15位数字加字母).'
-        return redirect(url_for(endpoint='admin_user',username=username))
+        return redirect(url_for(endpoint='admin_user', username=username))
 
     user_key = '%s:%s' % ('user', username)
     user_info = json.loads(r_session.get(user_key).decode('utf-8'))
@@ -52,7 +52,7 @@ def admin_change_password(username):
     user_info['password'] = hash_password(n_password)
     r_session.set(user_key, json.dumps(user_info))
 
-    return redirect(url_for(endpoint='admin_user',username=username))
+    return redirect(url_for(endpoint='admin_user', username=username))
 
 
 @app.route('/admin/change_property/<field>/<value>/<username>', methods=['POST'])
@@ -68,7 +68,7 @@ def admin_change_property(field, value, username):
 
     r_session.set(user_key, json.dumps(user_info))
 
-    return redirect(url_for(endpoint='admin_user',username=username))
+    return redirect(url_for(endpoint='admin_user', username=username))
 
 
 @app.route('/admin/change_user_info/<username>', methods=['POST'])
@@ -81,30 +81,29 @@ def admin_change_user_info(username):
 
     if re.match(r, refresh_interval) is None:
         session['error_message'] = '刷新时间必须为整数.'
-        return redirect(url_for(endpoint='admin_user',username=username))
+        return redirect(url_for(endpoint='admin_user', username=username))
 
     if re.match(r, max_account_no) is None:
         session['error_message'] = '迅雷账号限制必须为整数.'
-        return redirect(url_for(endpoint='admin_user',username=username))
+        return redirect(url_for(endpoint='admin_user', username=username))
 
     if not 4 < int(refresh_interval) < 301:
         session['error_message'] = '迅雷账号限制必须为 5~300 秒.'
-        return redirect(url_for(endpoint='admin_user',username=username))
+        return redirect(url_for(endpoint='admin_user', username=username))
 
     if not 0 < int(max_account_no) < 21:
         session['error_message'] = '迅雷账号限制必须为 1~20.'
-        return redirect(url_for(endpoint='admin_user',username=username))
+        return redirect(url_for(endpoint='admin_user', username=username))
 
     user_key = '%s:%s' % ('user', username)
     user_info = json.loads(r_session.get(user_key).decode('utf-8'))
-
 
     user_info['max_account_no'] = int(max_account_no)
     user_info['refresh_interval'] = int(refresh_interval)
 
     r_session.set(user_key, json.dumps(user_info))
 
-    return redirect(url_for(endpoint='admin_user',username=username))
+    return redirect(url_for(endpoint='admin_user', username=username))
 
 
 @app.route('/admin/del_user/<username>', methods=['POST'])
@@ -112,10 +111,18 @@ def admin_change_user_info(username):
 def admin_del_user(username):
     if r_session.get('%s:%s' % ('user', username)) is None:
         session['error_message'] = '账号不存在'
-        return redirect(url_for(endpoint='admin_user',username=username))
+        return redirect(url_for(endpoint='admin_user', username=username))
 
-    #do del user
-    #r_session.delete('%s:%s' % ('user', username))
-    #r_session.srem('users', username)
+    # do del user
+    r_session.delete('%s:%s' % ('user', username))
+    r_session.srem('users', username)
+    for b_account_id in r_session.smembers('accounts:' + username):
+        account_id = b_account_id.decode('utf-8')
+        r_session.delete('account:%s:%s' % (username, account_id))
+        r_session.delete('account:%s:%s:data' % (username, account_id))
+    r_session.delete('accounts:' + username)
+
+    for key in r_session.keys('user_data:%s:*' % username):
+        r_session.delete(key.decode('utf-8'))
 
     return redirect(url_for('admin'))

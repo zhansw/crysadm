@@ -127,11 +127,29 @@ def user_change_password():
     return redirect(url_for('user_profile'))
 
 
-@app.route('/tools/create_user', methods=['POST'])
-@requires_admin
-def create_user():
+@app.route('/register')
+def register():
+    if session.get('user_info') is not None:
+        return redirect(url_for('dashboard'))
+
+    err_msg = None
+    if session.get('error_message') is not None:
+        err_msg = session.get('error_message')
+        session['error_message'] = None
+
+    invitation_code = request.values.get('inv_code')
+
+
+
+    return render_template('register.html', err_msg=err_msg)
+
+
+@app.route('/user/register', methods=['POST'])
+def user_register():
+    invitation_code = request.values.get('invitation_code')
     username = request.values.get('username')
     password = request.values.get('password')
+    re_password = request.values.get('re_password')
 
     if r_session.get('%s:%s' % ('user', username)) is not None:
         return '账号已存在'
@@ -140,16 +158,3 @@ def create_user():
     r_session.set('%s:%s' % ('user', username), json.dumps(user))
     r_session.sadd('users', username)
     return '创建成功'
-
-
-@app.route('/tools/del_user', methods=['POST'])
-@requires_admin
-def del_user():
-    username = request.values.get('username')
-
-    if r_session.get('%s:%s' % ('user', username)) is None:
-        return '账号不存在'
-
-    r_session.delete('%s:%s' % ('user', username))
-    r_session.srem('users', username)
-    return '删除成功'
