@@ -158,6 +158,10 @@ def user_register():
         session['error_message'] = '无效的邀请码。'
         return redirect(url_for('register'))
 
+    if username == '':
+        session['error_message'] = '账号名不能为空。'
+        return redirect(url_for('register'))
+
     if r_session.get('%s:%s' % ('user', username)) is not None:
         session['error_message'] = '该账号名已存在。'
         return redirect(url_for('register'))

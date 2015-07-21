@@ -88,7 +88,7 @@
                     </div>
                     <!-- /.panel-heading -->
                     <div class="panel-body">
-                        <div class="col-lg-6">
+                        <div class="col-lg-12">
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
@@ -107,6 +107,7 @@
                                         <td>{{ code.decode('utf-8')|e }}</td>
 
                                         <td>
+                                            https://crystal.airl.us/register?inv_code={{ code.decode('utf-8')|e }}
                                             <a href="/register/{{ code |e }}" class="btn btn-outline btn-default btn-xs">编辑</a>
                                         </td>
                                     </tr>
