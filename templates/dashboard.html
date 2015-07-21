@@ -155,12 +155,7 @@
             tooltip: {
                 valueSuffix: ' '
             },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle',
-                borderWidth: 0
-            },
+
             xAxis: {
                 categories: {{ today_data.seven_days_chart.category | safe }}
             },
@@ -170,7 +165,8 @@
 
         $('#container').highcharts({
             chart: {
-                type: 'spline'
+                type: 'spline',
+                marginTop: 90 //center
             },
             title: {
                 text: '上传速率',
@@ -193,9 +189,10 @@
                 valueSuffix: ' KByte/s'
             },
             legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle',
+                align: 'left',
+                verticalAlign: 'top',
+                y: 20,
+                floating: true,
                 borderWidth: 0
             },
             xAxis: {
