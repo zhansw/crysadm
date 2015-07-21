@@ -4,6 +4,8 @@ from XunleiCrystal import app, r_session
 from auth import requires_admin, requires_auth
 import json
 import requests
+from urllib.parse import urlparse
+import time
 
 
 @app.route('/excavators')
@@ -58,4 +60,20 @@ def collect_all(user_id):
 
     :return:
     """
+    return redirect(url_for('excavators'))
+
+
+@app.route('/reboot_device/<session_id>', methods=['POST'])
+@requires_auth
+def reboot_device(session_id):
+    setting_url = request.values.get('url')
+
+    s_u = urlparse(setting_url)
+
+    url = "http://kjapi.peiluyou.com:5171/ubus_cd?%s&action=reboot" % s_u.query.replace('user_id','account_id')
+    data={"jsonrpc":"2.0","id":1,"method":"call","params":["%s" % session_id,"mnt","reboot",{}]}
+
+    body = dict(data=json.dumps(data), action='onResponse%d' % int(time.time()*1000))
+    r = requests.post(url,data=body)
+
     return redirect(url_for('excavators'))
