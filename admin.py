@@ -6,6 +6,7 @@ import json
 from util import hash_password
 import uuid
 import re
+import random
 
 
 @app.route('/admin')
@@ -19,7 +20,20 @@ def admin():
             continue
         users.append(json.loads(b_user.decode('utf-8')))
 
-    return render_template('admin.html', users=users)
+
+    return render_template('admin.html', users=users,inv_codes=r_session.smembers('invitation_codes'))
+
+
+@app.route('/generate/inv_code', methods=['POST'])
+@requires_admin
+def generate_inv_code():
+    _chars = "0123456789ABCDEF"
+    r_session.smembers('invitation_codes')
+
+    for i in range(0, 10 - r_session.scard('invitation_codes')):
+        r_session.sadd('invitation_codes',''.join(random.sample(_chars, 10)))
+
+    return redirect(url_for('admin'))
 
 
 @app.route('/admin_user/<username>')

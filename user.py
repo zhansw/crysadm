@@ -6,7 +6,7 @@ import json
 from util import hash_password
 import uuid
 import re
-
+from datetime import datetime
 
 @app.route('/user/login', methods=['POST'])
 def user_login():
@@ -137,11 +137,14 @@ def register():
         err_msg = session.get('error_message')
         session['error_message'] = None
 
-    invitation_code = request.values.get('inv_code')
 
+    invitation_code = ''
+    if request.values.get('inv_code') is not None and len(request.values.get('inv_code')) > 0 :
+        invitation_code = request.values.get('inv_code')
+        if not r_session.sismember('invitation_codes', invitation_code):
+            session['error_message'] = '无效的邀请码。'
 
-
-    return render_template('register.html', err_msg=err_msg)
+    return render_template('register.html', err_msg=err_msg,invitation_code=invitation_code)
 
 
 @app.route('/user/register', methods=['POST'])
@@ -151,10 +154,28 @@ def user_register():
     password = request.values.get('password')
     re_password = request.values.get('re_password')
 
+    if not r_session.sismember('invitation_codes', invitation_code):
+        session['error_message'] = '无效的邀请码。'
+        return redirect(url_for('register'))
+
     if r_session.get('%s:%s' % ('user', username)) is not None:
-        return '账号已存在'
+        session['error_message'] = '该账号名已存在。'
+        return redirect(url_for('register'))
+
+    if password != re_password:
+        session['error_message'] = '新密码输入不一致.'
+        return redirect(url_for('register'))
+
+    r = r"(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{6,15})$"
+
+    if re.match(r, password) is None:
+        session['error_message'] = '密码太弱了(6~15位数字加字母).'
+        return redirect(url_for('register'))
+
+    r_session.srem('invitation_codes', invitation_code)
     user = dict(username=username, password=hash_password(password), id=str(uuid.uuid1()),
-                active=True, is_admin=False, max_account_no=2, refresh_interval=30)
+                active=True, is_admin=False, max_account_no=2, refresh_interval=30,
+                created_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     r_session.set('%s:%s' % ('user', username), json.dumps(user))
     r_session.sadd('users', username)
-    return '创建成功'
+    return redirect(url_for('login'))
