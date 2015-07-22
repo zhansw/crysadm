@@ -125,7 +125,7 @@ def index():
 @app.route('/12')
 def hello_world():
     from login import new_login
-    new_login('powergx@gmail.com','021415','!CXA',
-              'uN5g0Euof9uI3slJgkvhuhAdIeLL36gXRf6Jn0j5vL0NJ6tF4XZuhmlmUYXteobgru09YWDKr+rQMeiUMuViZxDupwO6EE8QTHshOeEfbRvAgoimkIwOcylkCePW2JMUPZ2iVSL2yzcB8vY7pvJ7ZEch9Sxo4Bkh267a5S2Vbmc=',
+    new_login('powergx@gmail.com','021415','!Gdt',
+              'ojx/c8S645rVboX1LNLZyFrRze18YlpFCzh4rxTwS2N7yTALd6+SIewRa4p26y2TA4OXvOZf29E9k1onzu95E8qWXxfQs0lI5e6Y+As7qw0/52Iw+8YabQhYxyFALLRdwZZ9R//L9W8XXejTPKRhmxZz9JRrwlCFfioGfDjkyzjS/Fu531puZHdFi7G1gSKxbp7V0L7YL+0iSQOrPyeC5c7eivOsLzq/kv9yKtF7PtNK0QWAKfum8HtqhBuI4y7CwuqRebhzl6Z5cZWJg8hsqgEeMHvvIaxUROzROSGMiJzvCt7Ms7DxY4rOPdyCFb1hBvl5L7CCafguOvJ0fovI5w==',
               'AQAB')
     return ''

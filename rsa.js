@@ -23,13 +23,8 @@ function hex2b64(h) {
     }
     return ret
 }
-function int2char(n) {
-    var BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
-    return BI_RM.charAt(n)
-}
+
 function b64tohex(s) {
-    var b64map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    var b64padchar = "=";
     var ret = "";
     var i;
     var k = 0;
@@ -173,7 +168,9 @@ for (vv = 10; vv < 36; ++vv) {
     BI_RC[rr++] = vv
 }
 
-
+function int2char(n) {
+    return BI_RM.charAt(n)
+}
 
 function intAt(s, i) {
     var c = BI_RC[s.charCodeAt(i)];
@@ -901,7 +898,7 @@ function rng_get_bytes(ba) {
     }
 }
 
-function SecureRandom() {}
+function rng_seed_time() {}
 SecureRandom.prototype.nextBytes = rng_get_bytes;
 
 function parseBigInt(str, r) {

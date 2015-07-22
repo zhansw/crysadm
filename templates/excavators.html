@@ -14,14 +14,13 @@
                         <div class="col-lg-12">
                             <div class="panel panel-default">
                                 <div class="panel-heading" style="height:42px;">
-                                    <div class="col-md-5">矿主ID : {{ row.data.privilege.mid |e }}</div>
-                                    <div class="col-md-5">
-                                         <form style="float:right;" role="form" action="/collect/{{ row.user_id|e }}" method="post">
-                                              <button type="submit" style="float: right;" class="btn btn-info btn-xs">收取</button>
-                                         </form>
+                                    <div class="col-md-3 col-xs-8">矿主ID : {{ row.data.privilege.mid |e }}</div>
 
+                                    <div class="col-md-3 col-xs-4" style="float:right;padding-right: 8px;">
+                                        <form role="form" style="float:right;" action="/collect/{{ row.user_id|e }}" method="post">
+                                            <button type="submit" class="btn btn-info btn-xs">收取</button>
+                                        </form>
                                     </div>
-                                    <div class="col-md-2" style="text-align: right">{{ row.nick_name |e }}</div>
 
                                 </div>
                                 <!-- /.panel-heading -->
@@ -31,8 +30,9 @@
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.dev_m.pdc |e }}<br />赚钱宝产量  </div>
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.dev_pc.pdc |e }}<br />老式矿机产量</div>
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.td_cm_pdc |e }}<br />雇佣矿机产量</div>
-                                        <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.td_box_pdc |e }}<br />宝箱 {{ row.data.mine_info.td_box_pdc |e }}</div>
-                                        <div class="col-md-1" style="text-align: center">{{ row.data.mine_info.td_not_in_a |e }}<br />未收取</div>
+
+                                        <div class="col-md-1" style="text-align: center">{{ row.data.mine_info.td_box_pdc |e }}<br />宝箱 {{ row.data.mine_info.td_box_pdc |e }}</div>
+                                        <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.td_not_in_a |e }}<br />未收取</div>
 
                                     </div>
 
