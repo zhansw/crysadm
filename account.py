@@ -39,6 +39,16 @@ def account_add():
 
     accounts_key = 'accounts:%s' % user.get('username')
 
+    if user.get('max_account_no') is None:
+        user['max_account_no'] = 2
+
+    account_no = r_session.scard(accounts_key)
+
+    if account_no is not None:
+        if account_no >= user.get('max_account_no'):
+            session['error_message'] = '你的账号限制%d个账户。' % account_no
+            return redirect(url_for('accounts'))
+
     login_result = login(account_name, md5_password)
     if login_result.get('errorCode') != 0:
         error_message = login_result.get('errorDesc')
