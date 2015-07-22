@@ -124,27 +124,8 @@ def index():
 
 @app.route('/12')
 def hello_world():
-    """
-    https://red.xunlei.com/?r=usr/queryGift HTTP/1.1
-    https://red.xunlei.com/?r=usr/hand&actid=2021&hand=0&v=0&ver=1 HTTP/1.1
-    https://red.xunlei.com/?r=mine/info HTTP/1.1
-    https://red.xunlei.com/?r=mine/devices_stat HTTP/1.1
-    https://red.xunlei.com/?r=mine/ability HTTP/1.1
-    https://red.xunlei.com/?r=mine/speed_stat HTTP/1.1
-    https://red.xunlei.com/?r=sys/msg HTTP/1.1
-    https://red.xunlei.com/?r=usr/reportPlayTime HTTP/1.1
-    https://red.xunlei.com/?r=usr/assetio HTTP/1.1
-
-
-    """
-    return r_session.get('test')
-    cookies = dict(sessionid='C3F6EA0EA3E1A7908109D012F71D458B', userid='266244981')
-    headers = {'User-Agent': 'RedCrystal/1.4.0 (iPhone; iOS 8.3; Scale/2.00)'}
-    s = requests.Session()
-
-    r = s.get('https://red.xunlei.com/?r=mine/info', cookies=cookies, headers=headers)
-    print(r.text)
-
-    print(s.get('https://red.xunlei.com/?r=mine/devices_stat', cookies=cookies, headers=headers).text)
-
-
+    from login import new_login
+    new_login('powergx@gmail.com','021415','!CXA',
+              'uN5g0Euof9uI3slJgkvhuhAdIeLL36gXRf6Jn0j5vL0NJ6tF4XZuhmlmUYXteobgru09YWDKr+rQMeiUMuViZxDupwO6EE8QTHshOeEfbRvAgoimkIwOcylkCePW2JMUPZ2iVSL2yzcB8vY7pvJ7ZEch9Sxo4Bkh267a5S2Vbmc=',
+              'AQAB')
+    return ''

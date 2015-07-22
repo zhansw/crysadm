@@ -136,7 +136,7 @@
                 type: 'spline'
             },
             title: {
-                text: '最近产量',
+                text: '',
                 x: -20 //center
             },
             credits: {
@@ -165,11 +165,11 @@
 
         $('#container').highcharts({
             chart: {
-                type: 'spline',
-                marginTop: 90 //center
+                type: 'spline'
+
             },
             title: {
-                text: '上传速率',
+                text: '',
                 x: -20 //center
             },
             credits: {
@@ -188,13 +188,7 @@
             tooltip: {
                 valueSuffix: ' KByte/s'
             },
-            legend: {
-                align: 'left',
-                verticalAlign: 'top',
-                y: 20,
-                floating: true,
-                borderWidth: 0
-            },
+
             xAxis: {
                 categories: {{ today_data.speed_stat_chart.category | safe }}
             },

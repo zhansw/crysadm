@@ -2,6 +2,10 @@ __author__ = 'powergx'
 import requests
 import random
 import json
+from Crypto.PublicKey import RSA
+from util import md5
+from Crypto.Cipher import PKCS1_OAEP,PKCS1_v1_5
+from base64 import b64encode
 
 
 def StrToInt(str):
@@ -51,3 +55,152 @@ def login(username, md5_password):
 
     login_status = json.loads(r.text)
     return login_status
+
+
+def int2char(n):
+    BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz"
+    return BI_RM[n]
+
+def b64tohex(s):
+    b64map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    b64padchar = "="
+    ret = ""
+    k = 0
+    slop = None
+    for i in range(0,len(s)):
+        if s[i]== b64padchar:
+            break
+
+        v = b64map.index(s[i])
+        if v < 0:
+            continue
+
+        if k == 0:
+            ret += int2char(v >> 2)
+            slop = v & 3
+            k = 1
+        else:
+            if k == 1:
+                ret += int2char((slop << 2) | (v >> 4))
+                slop = v & 15
+                k = 2
+            else:
+                if k == 2:
+                    ret += int2char(slop)
+                    ret += int2char(v >> 2)
+                    slop = v & 3
+                    k = 3
+                else:
+                    ret += int2char((slop << 2) | (v >> 4))
+                    ret += int2char(v & 15)
+                    k = 0
+
+    if k == 1:
+        ret += int2char(slop << 2)
+
+    return ret
+
+
+class RSAKey():
+    n = None
+    e = 0
+    d = None
+    p = None
+    q = None
+    dmp1 = None
+    dmq1 = None
+    coeff = None
+
+    def __init__(self):
+        pass
+
+
+    def SetPublic(self, N, E):
+        if N != None and E != None and len(N) > 0 and len(E) > 0:
+            self.n = int(N, 16)
+            self.e = int(E, 16)
+        else:
+            print("Invalid RSA public key")
+"""
+    def pkcs1pad3(self,s, n):
+        if n < len(s) + 11:
+            print("Message too long for RSA")
+            return None
+
+        ba = list()
+        i = 0
+        j = 0
+        lens = len(s)
+        while i < lens and j < n:
+
+            c = s[i]
+            i+=1
+            if c < 128:
+
+                ba[j] = c
+                j+=1
+            else:
+                if (c > 127) and (c < 2048):
+
+                    ba[j] = (c >> 6) | 192
+                    j+=1
+                    ba[j] = (c & 63) | 128
+                    j+=1
+                else:
+
+                    ba[j] = (c >> 12) | 224;
+                    j+=1
+                    ba[j] = ((c >> 6) & 63) | 128;
+                    j+=1
+                    ba[j] = (c & 63) | 128
+                    j+=1
+
+
+
+        ba[j] = 0;
+        j+=1
+        rng = SecureRandom();
+        x = list()
+        while j < n:
+            x[0] = 0;
+            while x[0] == 0:
+                rng.nextBytes(x)
+
+            ba[j] = x[0]
+            j+=1
+
+        return int(ba)
+
+
+    def RSAEncrypt(self,text):
+        m = self.pkcs1pad3(text, (len(self.n) + 7) >> 3)
+        if m == None:
+            return None
+
+        c = self.doPublic(m)
+        if c == None:
+            return None
+
+        h = c.toString(16)
+        if (len(h) & 1) == 0:
+            return h
+        else:
+            return "0" + str(h)
+
+
+"""
+
+def new_login(username,password,captcha,check_n,check_e):
+    md5_password = md5(password)
+    b64_n = b64tohex(check_n)
+    b64_e = b64tohex(check_e)
+
+    RSAkey = RSA.construct((int(b64_n, 16),int(b64_e, 16)))
+    RSAkey = RSA.generate(1024)
+    cipher = PKCS1_v1_5.new(RSAkey)
+    b = b64encode(cipher.encrypt((md5_password+captcha.upper()).encode('utf-8')))
+    a = RSAkey.encrypt((md5_password+captcha.upper()).encode('utf-8'),0)
+    t = RSAKey()
+    t.SetPublic(b64tohex(check_n), b64tohex(check_e))
+
+    print(b64_n,b64_e)
