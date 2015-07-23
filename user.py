@@ -93,6 +93,22 @@ def user_change_info():
     return redirect(url_for('user_profile'))
 
 
+@app.route('/user/change_property/<field>/<value>', methods=['POST'])
+@requires_auth
+def user_change_property(field, value):
+    user = session.get('user_info')
+    user_key = '%s:%s' % ('user', user.get('username'))
+
+    user_info = json.loads(r_session.get(user_key).decode('utf-8'))
+
+    if field == 'auto_collect':
+        user_info['auto_collect'] = True if value == '1' else False
+
+    r_session.set(user_key, json.dumps(user_info))
+
+    return redirect(url_for('user_profile'))
+
+
 @app.route('/user/change_password', methods=['POST'])
 @requires_auth
 def user_change_password():

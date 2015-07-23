@@ -42,24 +42,16 @@ def collect_all(user_id):
     session_id = account_info.get('session_id')
     user_id = account_info.get('user_id')
 
-    cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
+    cookies = dict(sessionid=session_id, userid=str(user_id))
+    if len(session_id) != 128:
+        cookies['origin'] = '1'
     r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies)
 
     account_data_key = account_key+':data'
     account_data_value = json.loads(r_session.get(account_data_key).decode("utf-8"))
     account_data_value.get('mine_info')['td_not_in_a'] = 0
     r_session.set(account_data_key, json.dumps(account_data_value))
-    """
-    GET https://red.xunlei.com/index.php?r=mine/collect HTTP/1.1
-    Content-Type: application/x-www-form-urlencoded
-    User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko
-    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
-    Host: red.xunlei.com
-    Cookie: sessionid=45924D1377FF4495F56777E089A00F48; userid=266244981; origin=1
-    Connection: Close
 
-    :return:
-    """
     return redirect(url_for('excavators'))
 
 

@@ -79,6 +79,9 @@ def admin_change_property(field, value, username):
         user_info['is_admin'] = True if value == '1' else False
     elif field == 'active':
         user_info['active'] = True if value == '1' else False
+    elif field == 'auto_collect':
+        user_info['auto_collect'] = True if value == '1' else False
+
 
     r_session.set(user_key, json.dumps(user_info))
 
@@ -101,8 +104,8 @@ def admin_change_user_info(username):
         session['error_message'] = '迅雷账号限制必须为整数.'
         return redirect(url_for(endpoint='admin_user', username=username))
 
-    if not 4 < int(refresh_interval) < 301:
-        session['error_message'] = '迅雷账号限制必须为 5~300 秒.'
+    if not 4 < int(refresh_interval) < 61:
+        session['error_message'] = '迅雷账号限制必须为 5~60 秒.'
         return redirect(url_for(endpoint='admin_user', username=username))
 
     if not 0 < int(max_account_no) < 21:

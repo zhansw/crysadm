@@ -58,7 +58,22 @@
                                                 {% endif %}
                                             </span>
                         </div>
-
+                        <div class="form-group input-group">
+                                            <span class="input-group-addon"><i class="fa fa-rmb"></i>
+                                            </span>
+                            <input type="text" class="form-control" value="{% if user.auto_collect %}O{% else %}X{% endif %}" disabled />
+                                            <span class="input-group-addon" style="padding-top: 0px;padding-bottom: 0px;">
+                                                {% if user.auto_collect  %}
+                                                    <form style="float:right;" role="form" action="/admin/change_property/auto_collect/0/{{ user.username|e }}" method="post">
+                                                        <button type="submit" class="btn btn-default btn-xs">取消自动收取</button>
+                                                    </form>
+                                                {% else %}
+                                                    <form style="float:right;" role="form" action="/admin/change_property/auto_collect/1/{{ user.username|e }}" method="post">
+                                                        <button type="submit" class="btn btn-outline btn-success btn-xs">自动收取</button>
+                                                    </form>
+                                                {% endif %}
+                                            </span>
+                        </div>
                         <div class="form-group input-group">
                                             <span class="input-group-addon"><i class="fa fa-wrench"></i>
                                             </span>

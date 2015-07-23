@@ -21,7 +21,7 @@ pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis
 r_session = redis.Redis(connection_pool=pool)
 
 
-def get_data(username):
+def get_data(username, auto_collect):
     user_data = dict()
     for user_id in r_session.smembers('accounts:%s' % username):
         account_key = 'account:%s:%s' % (username, user_id.decode('utf-8'))
@@ -52,6 +52,11 @@ def get_data(username):
                 cookies['origin'] = '1'
             privilege_info = get_privilege(cookies)
 
+        #自动收取
+        if datetime.now().strftime('%H:%M') in ['23:59', '00:00'] and auto_collect:
+            collect(cookies)
+        #自动收取
+
         mine_info = get_mine_info(cookies)
         zqb = get_device_stat('1', cookies)
         old = get_device_stat('0', cookies)
@@ -74,7 +79,7 @@ def get_data(username):
 
 
 def save_history(username, user_data):
-    if datetime.now().strftime('%H:%M:') == '23:59' or datetime.now().strftime('%H:%M:') == '00:00':
+    if datetime.now().strftime('%H:%M') in ['23:59', '00:00']:
         return
     str_today = datetime.now().strftime('%Y-%m-%d')
     key = 'user_data:%s:%s' % (username, str_today)
@@ -170,6 +175,11 @@ def get_device_stat(s_type, cookies):
     return json.loads(r.text)
 
 
+def collect(cookies):
+    r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies)
+    return json.loads(r.text)
+
+
 def get_crystal_data(username):
     while True:
         user_key = '%s:%s' % ('user', username)
@@ -178,8 +188,14 @@ def get_crystal_data(username):
         if not user_info.get('active'):
             break
 
-        threading.Thread(target=get_data, args=(username,), name=username).start()
+        auto_collect = False
+        if user_info.get('auto_collect') is not None:
+            auto_collect = user_info.get('auto_collect')
+
+        threading.Thread(target=get_data, args=(username, auto_collect), name=username).start()
         time.sleep(refresh_interval)
+
+        #time.sleep(9999)
 
 
 def start_rotate():
@@ -196,7 +212,8 @@ def start_rotate():
 
         for user in users:
             name = user.decode('utf-8')
-
+            #if name != 'powergx':
+            #    continue
             user_key = '%s:%s' % ('user', name)
             user_info = json.loads(r_session.get(user_key).decode('utf-8'))
             if not user_info.get('active'):
