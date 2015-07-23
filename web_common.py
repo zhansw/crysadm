@@ -1,5 +1,4 @@
 __author__ = 'powergx'
-__author__ = 'powergx'
 from flask import request, Response, render_template, session, url_for, redirect
 from XunleiCrystal import app, r_session
 from auth import requires_admin, requires_auth
@@ -122,10 +121,21 @@ def index():
     return redirect(url_for('login'))
 
 
-@app.route('/12')
-def hello_world():
-    from login import new_login
-    new_login('powergx@gmail.com','021415','!Gdt',
-              'ojx/c8S645rVboX1LNLZyFrRze18YlpFCzh4rxTwS2N7yTALd6+SIewRa4p26y2TA4OXvOZf29E9k1onzu95E8qWXxfQs0lI5e6Y+As7qw0/52Iw+8YabQhYxyFALLRdwZZ9R//L9W8XXejTPKRhmxZz9JRrwlCFfioGfDjkyzjS/Fu531puZHdFi7G1gSKxbp7V0L7YL+0iSQOrPyeC5c7eivOsLzq/kv9yKtF7PtNK0QWAKfum8HtqhBuI4y7CwuqRebhzl6Z5cZWJg8hsqgEeMHvvIaxUROzROSGMiJzvCt7Ms7DxY4rOPdyCFb1hBvl5L7CCafguOvJ0fovI5w==',
-              'AQAB')
-    return ''
+@app.route('/install')
+def install():
+    import random, uuid
+    from util import hash_password
+    if r_session.scard('users') == 0:
+        _chars = "0123456789ABCDEF"
+        username = ''.join(random.sample(_chars, 6))
+        password = ''.join(random.sample(_chars, 6))
+
+        user = dict(username=username, password=hash_password(password), id=str(uuid.uuid1()),
+                    active=True, is_admin=True, max_account_no=2, refresh_interval=30,
+                    created_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        r_session.set('%s:%s' % ('user', username), json.dumps(user))
+        r_session.sadd('users', username)
+        return 'username:%s,password:%s' % (username,password)
+
+    return redirect(url_for('login'))
+
