@@ -25,16 +25,16 @@
                                 </div>
                                 <!-- /.panel-heading -->
                                 <div class="panel-body">
+                                    {% if row.data.mine_info.dev_m is defined  %}
                                     <div class="row show-grid">
                                         <div class="col-md-3" style="text-align: center">今日报告<br />{{ row.data.updated_time |e }}</div>
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.dev_m.pdc |e }}<br />赚钱宝产量  </div>
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.dev_pc.pdc |e }}<br />老式矿机产量</div>
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.td_cm_pdc |e }}<br />雇佣矿机产量</div>
-
                                         <div class="col-md-1" style="text-align: center">{{ row.data.mine_info.td_box_pdc |e }}<br />宝箱 {{ row.data.mine_info.td_box_pdc |e }}</div>
                                         <div class="col-md-2" style="text-align: center">{{ row.data.mine_info.td_not_in_a |e }}<br />未收取</div>
-
                                     </div>
+                                    {% endif %}
 
                                     <div class="table-responsive">
                                         <table class="table table-hover">
