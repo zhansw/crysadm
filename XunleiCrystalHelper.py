@@ -25,7 +25,9 @@ def get_data(username):
     user_data = dict()
     for user_id in r_session.smembers('accounts:%s' % username):
         account_key = 'account:%s:%s' % (username, user_id.decode('utf-8'))
+
         account_info = json.loads(r_session.get(account_key).decode('utf-8'))
+
         if not account_info.get('active'):
             continue
         session_id = account_info.get('session_id')
@@ -36,7 +38,9 @@ def get_data(username):
             cookies['origin'] = '1'
 
         privilege_info = get_privilege(cookies)
+
         if privilege_info.get('r') != 0:
+
             success, account_info = relogin(account_info.get('account_name'), account_info.get('password'),
                                             account_info, account_key)
             if not success:
@@ -123,6 +127,7 @@ def get_device_info(user_id):
 
 def relogin(username, password, account_info, account_key):
     login_result = login(username, password,conf.ENCRYPT_PWD_URL)
+
     if login_result.get('errorCode') != 0:
         account_info['status'] = login_result.get('errorDesc')
         account_info['active'] = False
@@ -156,9 +161,10 @@ def get_privilege(cookies):
 
 def get_device_stat(s_type, cookies):
     url = 'https://red.xunlei.com/?r=mine/devices_stat&hand=0&type=%s&v=2&ver=1' % s_type
-    if len(cookies.get('sessionid')) != 128:
-        cookies['origin'] = "2"
-    r = requests.post(url=url, verify=False, cookies=cookies)
+    this_cookies = cookies.copy()
+    if len(this_cookies.get('sessionid')) != 128:
+        this_cookies['origin'] = "2"
+    r = requests.post(url=url, verify=False, cookies=this_cookies)
 
     return json.loads(r.text)
 

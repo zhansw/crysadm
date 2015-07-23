@@ -41,7 +41,7 @@ def old_login(username, md5_password):
             '"verifyKey":"","sessionID":"","protocolVersion":101,"userName":"%s","extensionList":"",' \
             '"sequenceNo":10000015,"peerID":"%s","clientVersion":"1.0.0","appName":"ANDROID-com.xunlei.redcrystalandroid"}'
 
-    hash_password = hex(pow_mod(StrToInt(md5_password), exponent, modulus))[2:].upper()
+    hash_password = hex(pow_mod(StrToInt(md5_password), exponent, modulus))[2:].upper().zfill(256)
 
     _chars = "0123456789ABCDEF"
 
@@ -87,7 +87,7 @@ def login(username, md5_password, encrypt_pwd_url=None):
         return old_login(username, md5_password)
 
     return dict(errorCode=0,sessionID=cookies.get('sessionid'),nickName=cookies.get('usernick'),
-         userName=cookies.get('username'),userID=cookies.get('userid'),userNewNo=cookies.get('usernewno'))
+         userName=cookies.get('usrname'),userID=cookies.get('userid'),userNewNo=cookies.get('usernewno'))
 
 
 
