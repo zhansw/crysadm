@@ -106,6 +106,7 @@ def save_history(username, user_data):
                 today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED') / 1024)
 
     r_session.set(key, json.dumps(today_data))
+    r_session.expire(key, 3600*24*35)
 
 
 def fill_info(device, ext_device_info):
