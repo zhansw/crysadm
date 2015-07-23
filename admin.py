@@ -36,6 +36,18 @@ def generate_inv_code():
     return redirect(url_for('admin'))
 
 
+@app.route('/admin/login_as/<username>', methods=['POST'])
+@requires_admin
+def generate_login_as(username):
+    user_info = r_session.get('%s:%s' % ('user', username))
+
+    user = json.loads(user_info.decode('utf-8'))
+
+    session['user_info'] = user
+
+    return redirect(url_for('dashboard'))
+
+
 @app.route('/admin_user/<username>')
 @requires_admin
 def admin_user(username):

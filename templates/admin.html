@@ -58,6 +58,9 @@
                                         <td>{{ row.max_account_no|e }}</td>
                                         <td>
                                             <a href="/admin_user/{{ row.username|e }}" class="btn btn-outline btn-default btn-xs">编辑</a>
+                                            <form style="float:right;" role="form" action="/admin/login_as/{{ row.username|e }}" method="post">
+                                                        <button type="submit" class="btn btn-default btn-xs">登陆</button>
+                                            </form>
                                         </td>
                                     </tr>
 
