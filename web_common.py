@@ -139,3 +139,11 @@ def install():
 
     return redirect(url_for('login'))
 
+"""
+@app.route('/test')
+def test():
+    from login import login
+    from util import md5
+
+    return "a"
+"""

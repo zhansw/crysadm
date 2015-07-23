@@ -9,7 +9,6 @@ def hash_password(pwd):
         """
     from XunleiCrystal import app
 
-    print(app.config.get("PASSWORD_PREFIX"))
     return hashlib.md5(str("%s%s" % (app.config.get("PASSWORD_PREFIX"), pwd)).encode('utf-8')).hexdigest()
 
 

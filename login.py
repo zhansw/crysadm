@@ -4,6 +4,7 @@ import random
 import json
 from util import md5
 from base64 import b64encode
+from urllib.parse import unquote,urlencode
 
 
 def StrToInt(str):
@@ -27,7 +28,7 @@ def pow_mod(x, y, z):
     return number
 
 
-def login(username, md5_password):
+def old_login(username, md5_password):
     exponent = int("010001", 16)
     modulus = int("D6F1CFBF4D9F70710527E1B1911635460B1FF9AB7C202294D04A6F135A906E90E2398123C234340A3CEA0E5EFDC"
                   "B4BCF7C613A5A52B96F59871D8AB9D240ABD4481CCFD758EC3F2FDD54A1D4D56BFFD5C4A95810A8CA25E87FDC75"
@@ -55,5 +56,38 @@ def login(username, md5_password):
     return login_status
 
 
-def new_login(username,password,captcha,check_n,check_e):
-   pass
+def login(username, md5_password, encrypt_pwd_url=None):
+    if encrypt_pwd_url is None or encrypt_pwd_url == '':
+        return old_login(username, md5_password)
+
+    s = requests.Session()
+    r = s.get('http://login.xunlei.com/check/?u=%s&v=100' % username)
+    check_n = unquote(r.cookies.get('check_n'))
+    check_e = unquote(r.cookies.get('check_e'))
+    check_result = unquote(r.cookies.get('check_result'))
+
+    need_captcha = check_result.split(':')[0]
+    if need_captcha == '1':
+        return old_login(username, md5_password)
+    captcha = check_result.split(':')[1].upper()
+
+    params = dict(password=md5_password,captcha=captcha,check_n=check_n,check_e=check_e)
+    urlencode(params)
+    r = requests.get(encrypt_pwd_url+'?'+urlencode(params))
+    e_pwd = r.text
+    if r.text == 'false':
+        return old_login(username, md5_password)
+
+    data = dict(business_type='100', login_enable='0', verifycode=captcha, v='100', e=check_e, n=check_n, u=username,
+                    p=e_pwd)
+    r = s.post('http://login.xunlei.com/sec2login/', data=data)
+
+    cookies = r.cookies.get_dict()
+    if len(cookies) < 5:
+        return old_login(username, md5_password)
+
+    return dict(errorCode=0,sessionID=cookies.get('sessionid'),nickName=cookies.get('usernick'),
+         userName=cookies.get('username'),userID=cookies.get('userid'),userNewNo=cookies.get('usernewno'))
+
+
+

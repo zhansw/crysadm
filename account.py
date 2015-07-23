@@ -49,7 +49,7 @@ def account_add():
             session['error_message'] = '你的账号限制%d个账户。' % account_no
             return redirect(url_for('accounts'))
 
-    login_result = login(account_name, md5_password)
+    login_result = login(account_name, md5_password, app.config.get('ENCRYPT_PWD_URL'))
     if login_result.get('errorCode') != 0:
         error_message = login_result.get('errorDesc')
         session['error_message'] = '登陆失败，错误信息：%s。' % error_message

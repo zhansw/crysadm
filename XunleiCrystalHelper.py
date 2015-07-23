@@ -31,7 +31,11 @@ def get_data(username):
         session_id = account_info.get('session_id')
         user_id = account_info.get('user_id')
 
-        privilege_info = get_privilege(session_id, user_id)
+        cookies = dict(sessionid=session_id, userid=str(user_id))
+        if len(session_id) != 128:
+            cookies['origin'] = '1'
+
+        privilege_info = get_privilege(cookies)
         if privilege_info.get('r') != 0:
             success, account_info = relogin(account_info.get('account_name'), account_info.get('password'),
                                             account_info, account_key)
@@ -39,11 +43,14 @@ def get_data(username):
                 continue
             session_id = account_info.get('session_id')
             user_id = account_info.get('user_id')
-            privilege_info = get_privilege(session_id, user_id)
+            cookies = dict(sessionid=session_id, userid=str(user_id))
+            if len(session_id) == 128:
+                cookies['origin'] = '1'
+            privilege_info = get_privilege(cookies)
 
-        mine_info = get_mine_info(session_id, user_id)
-        zqb = get_device_stat('1', session_id, user_id)
-        old = get_device_stat('0', session_id, user_id)
+        mine_info = get_mine_info(cookies)
+        zqb = get_device_stat('1', cookies)
+        old = get_device_stat('0', cookies)
         ext_device_info = get_device_info(user_id)
 
         account_data_key = account_key + ':data'
@@ -53,8 +60,8 @@ def get_data(username):
         account_data['privilege'] = privilege_info
         account_data['dev_info'] = fill_info(zqb, ext_device_info)
         account_data['cm_info'] = fill_info(old, ext_device_info)
-        account_data['dev_info']['speed_stat'] = get_speed_stat('1', session_id, user_id)
-        account_data['cm_info']['speed_stat'] = get_speed_stat('0', session_id, user_id)
+        account_data['dev_info']['speed_stat'] = get_speed_stat('1', cookies)
+        account_data['cm_info']['speed_stat'] = get_speed_stat('0', cookies)
 
         user_data[user_id] = account_data
         r_session.set(account_data_key, json.dumps(account_data))
@@ -115,7 +122,7 @@ def get_device_info(user_id):
 
 
 def relogin(username, password, account_info, account_key):
-    login_result = login(username, password)
+    login_result = login(username, password,conf.ENCRYPT_PWD_URL)
     if login_result.get('errorCode') != 0:
         account_info['status'] = login_result.get('errorDesc')
         account_info['active'] = False
@@ -128,31 +135,29 @@ def relogin(username, password, account_info, account_key):
     return True, account_info
 
 
-def get_mine_info(session_id, user_id):
-    cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
+def get_mine_info(cookies):
     body = dict(hand='0', v='2', ver='1')
     r = requests.post('https://red.xunlei.com/?r=mine/info', data=body, verify=False, cookies=cookies)
     return json.loads(r.text)
 
 
-def get_speed_stat(s_type, session_id, user_id):
-    cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
+def get_speed_stat(s_type, cookies):
 
     body = dict(type=s_type, hand='0', v='0', ver='1')
     r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies)
     return json.loads(r.text).get('sds')
 
 
-def get_privilege(session_id, user_id):
+def get_privilege(cookies):
     body = 'hand=0&v=1&ver=1'
-    cookies = dict(sessionid=session_id, userid=str(user_id), origin="1")
     r = requests.post('https://red.xunlei.com/?r=usr/privilege', data=body, verify=False, cookies=cookies)
     return json.loads(r.text)
 
 
-def get_device_stat(s_type, session_id, user_id):
+def get_device_stat(s_type, cookies):
     url = 'https://red.xunlei.com/?r=mine/devices_stat&hand=0&type=%s&v=2&ver=1' % s_type
-    cookies = dict(sessionid=session_id, userid=user_id, origin="2")
+    if len(cookies.get('sessionid')) != 128:
+        cookies['origin'] = "2"
     r = requests.post(url=url, verify=False, cookies=cookies)
 
     return json.loads(r.text)
@@ -184,6 +189,7 @@ def start_rotate():
 
         for user in users:
             name = user.decode('utf-8')
+
             user_key = '%s:%s' % ('user', name)
             user_info = json.loads(r_session.get(user_key).decode('utf-8'))
             if not user_info.get('active'):
