@@ -229,4 +229,47 @@ def start_rotate():
 if __name__ == '__main__':
     start_rotate()
 
+"""
+拾取日志
+POST https://red.xunlei.com/?r=usr/assetio HTTP/1.1
+Host: red.xunlei.com
+Proxy-Connection: keep-alive
+Accept: */*
+Accept-Encoding: gzip, deflate
+Content-Length: 14
+Content-Type: application/x-www-form-urlencoded
+Accept-Language: zh-Hans;q=1, en;q=0.9
+Cookie: lgname=powergx@gmail.com; origin=2; sessionid=05650B3F48D9667A1E25720B62B7910F; userid=266244981; username=powergx
+Connection: keep-alive
+User-Agent: RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)
 
+p=0&ps=20&tp=0
+
+
+水晶余额
+GET https://red.xunlei.com/index.php?r=usr/getinfo&v=1&jsoncallback=jsonp1437727105223_280&_rnd1437727105223_280=1437727105223_280 HTTP/1.1
+Accept: */*
+Referer: https://red.xunlei.com/index.php?r=collect
+Accept-Language: zh-CN
+Accept-Encoding: gzip, deflate
+User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.2; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; .NET CLR 3.5.30729; .NET CLR 2.0.50727; .NET CLR 3.0.30729)
+Host: red.xunlei.com
+Connection: Keep-Alive
+Cookie: Hm_lvt_58da6e2cef1bd719706c77def030bbaf=1437544578,1437545700,1437546952,1437643516; ksessionid=2E7AE4482D9F1352A70C0AA859B9CC70; kuserid=266244981; origin=3; Hm_lpvt_58da6e2cef1bd719706c77def030bbaf=1437643516; downbyte=25651685951; downfile=38; isvip=0; jumpkey=A1EFA3C9EBCD50004C4E70B802F70B7B6EA3EA97B8A9174BA2F33BE704A177104D8CEA7AA211E0D9929206A2A514651BB79B63C5AC4A9B01C84A138086EF34A5C354D2B86E6A7B1DFBA34F218A681325946127C4F1440A115B50ACECE4D2078F; logintype=1; nickname=powergx; onlinetime=610433; order=0; safe=0; score=958; sessionid=7CC5FA574E46A9323A90A3CE9E5648C118C56270B2E6AD687F20388607865771B6D7F1444B2819121B94D83F44CE5DCEE14A720B8EBB7598ECB20EE6B6CB76A6; sex=u; upgrade=0; userid=266244981; usernewno=847058001; usernick=powergx; usertype=0; usrname=powergx
+
+
+POST https://red.xunlei.com/?r=usr/asset HTTP/1.1
+Host: red.xunlei.com
+Proxy-Connection: keep-alive
+Accept: */*
+Accept-Encoding: gzip, deflate
+Content-Length: 16
+Content-Type: application/x-www-form-urlencoded
+Accept-Language: zh-Hans;q=1, en;q=0.9
+Cookie: lgname=powergx@gmail.com; origin=2; sessionid=05650B3F48D9667A1E25720B62B7910F; userid=266244981; username=powergx
+Connection: keep-alive
+User-Agent: RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)
+
+hand=0&v=2&ver=1
+
+"""
