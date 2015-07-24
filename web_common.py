@@ -89,7 +89,24 @@ def dashboard():
 
     b_data = r_session.get(key)
     if b_data is None:
-        pass
+        empty_data = {
+            'speed_stat_chart': {
+                'category': [],
+                'value': []
+            },
+            'm_pdc': 0,
+            'last_speed': 0,
+            'w_pdc': 0,
+            'yesterday_m_pdc': 0,
+            'speed_stat': [],
+            'yesterday_w_pdc': 0,
+            'pdc': 0,
+            'seven_days_chart': {
+                'category': [],
+                'value': []
+            }
+        }
+        return render_template('dashboard.html', today_data=empty_data)
 
     today_data = json.loads(b_data.decode('utf-8'))
     need_save = False
@@ -106,13 +123,12 @@ def dashboard():
         category, value = __seven_day_pdc(username)
         today_data['seven_days_chart'] = dict(category=category, value=value)
         need_save = True
-        print(category, value)
     if need_save:
         r_session.set(key, json.dumps(today_data))
 
     category, value = __get_speed_stat_chart_data(today_data.get('speed_stat'))
     today_data['speed_stat_chart'] = dict(category=category, value=value)
-
+    print(today_data)
     return render_template('dashboard.html', today_data=today_data)
 
 
