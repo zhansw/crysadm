@@ -1,131 +1,142 @@
 {% extends "base.html" %}
 {% block content %}
-<div id="page-wrapper">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">监控中心</h1>
-                </div>
-                <!-- /.col-lg-12 -->
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header" style="display: inline-block;width:100%">
+                    监控中心
+                </h1>
+
             </div>
-            <!-- /.row -->
-            <div class="row">
-
-                <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-green">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa  fa-arrow-circle-up fa-5x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">{{ today_data.last_speed if today_data.last_speed<1024 else (today_data.last_speed/1024*100)|int/100 }}</div>
-                                    <div>上传速度 {% if today_data.last_speed<1024 %}K{% else %}M{% endif %}Byte/s</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-rmb fa-5x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">{{ today_data.pdc if today_data.pdc<1000 else ((today_data.pdc/100)|int/10)|string+'K' }}</div>
-                                    <div>今日产量</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-yellow">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-5x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">{{ today_data.w_pdc if today_data.w_pdc<1000 else ((today_data.w_pdc/100)|int/10)|string+'K' }}</div>
-                                    <div>本周产量</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-red">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-5x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">{{ today_data.m_pdc if today_data.m_pdc<1000 else ((today_data.m_pdc/100)|int/10)|string+'K' }}</div>
-                                    <div>本月产量</div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <!-- /.row -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日产量
-
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="seven-day-chart" style="height: 250px;"></div>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-
-
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-8 -->
-
-                <!-- /.col-lg-4 -->
-            </div>
-            <!-- /.row -->
-            <!-- /.row -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> 矿机速度
-
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="container">
-
-                            </div>
-
-                            <div id="speed-stat-chart"></div>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-
-
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-8 -->
-
-                <!-- /.col-lg-4 -->
-            </div>
-            <!-- /.row -->
         </div>
-        <!-- /#page-wrapper -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        实时数据
+                        <span style="display: inline-block;float: right">账户余额: {{ today_data.balance if today_data.balance<1000 else ((today_data.balance/100)|int/10)|string+'K' }}</span>
+                    </div>
+                    <div class="panel-body" style="padding-left: 0px; padding-right: 0px; padding-bottom: 0px; ">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-green">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa  fa-arrow-circle-up fa-5x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ today_data.last_speed if today_data.last_speed<1024 else (today_data.last_speed/1024*100)|int/100 }}</div>
+                                            <div>上传速度 {% if today_data.last_speed<1024 %}K{% else %}M{% endif %}Byte/s</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-rmb fa-5x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ today_data.pdc if today_data.pdc<1000 else ((today_data.pdc/100)|int/10)|string+'K' }}</div>
+                                            <div>今日产量</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-yellow">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-5x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ today_data.w_pdc if today_data.w_pdc<1000 else ((today_data.w_pdc/100)|int/10)|string+'K' }}</div>
+                                            <div>本周产量</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-red">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-5x"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ today_data.m_pdc if today_data.m_pdc<1000 else ((today_data.m_pdc/100)|int/10)|string+'K' }}</div>
+                                            <div>本月产量</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日产量
+
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div id="seven-day-chart" style="height: 250px;"></div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+
+
+                <!-- /.panel -->
+            </div>
+            <!-- /.col-lg-8 -->
+
+            <!-- /.col-lg-4 -->
+        </div>
+        <!-- /.row -->
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> 矿机速度
+
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div id="container">
+
+                        </div>
+
+                        <div id="speed-stat-chart"></div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+
+
+                <!-- /.panel -->
+            </div>
+            <!-- /.col-lg-8 -->
+
+            <!-- /.col-lg-4 -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /#page-wrapper -->
 
 {% endblock %}
 

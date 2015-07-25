@@ -71,6 +71,7 @@ def get_data(username, auto_collect):
         account_data['cm_info'] = fill_info(old, ext_device_info)
         account_data['dev_info']['speed_stat'] = get_speed_stat('1', cookies)
         account_data['cm_info']['speed_stat'] = get_speed_stat('0', cookies)
+        account_data['income'] = get_income_info(cookies)
 
         user_data[user_id] = account_data
         r_session.set(account_data_key, json.dumps(account_data))
@@ -92,13 +93,18 @@ def save_history(username, user_data):
     today_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     today_data['pdc'] = 0
     today_data['last_speed'] = 0
+    today_data['balance'] = 0
+    today_data['income'] = 0
     today_data['speed_stat'] = list()
     for data in user_data.values():
         today_data.get('speed_stat').append(dict(mid=data.get('privilege').get('mid'),
                                                  dev_speed=data.get('dev_info').get('speed_stat'),
                                                  pc_speed=data.get('cm_info').get('speed_stat')))
-        today_data['pdc'] += data.get('mine_info').get('dev_m').get('pdc') + data.get('mine_info').get('dev_pc').get(
-            'pdc')
+        today_data['pdc'] += data.get('mine_info').get('dev_m').get('pdc') + \
+                             data.get('mine_info').get('dev_pc').get('pdc')
+
+        today_data['balance'] += data.get('income').get('r_can_use')
+        today_data['income'] += data.get('income').get('r_h_a')
         for device in data.get('cm_info').get('info'):
             if device.get('ext_info') is None:
                 today_data['last_speed'] += int(device.get('s') / 8)
@@ -144,6 +150,11 @@ def relogin(username, password, account_info, account_key):
 
     r_session.set(account_key, json.dumps(account_info))
     return True, account_info
+
+
+def get_income_info(cookies):
+    r = requests.get('https://red.xunlei.com/?r=usr/getinfo&v=1', verify=False, cookies=cookies)
+    return json.loads(r.text)
 
 
 def get_mine_info(cookies):
@@ -195,7 +206,7 @@ def get_crystal_data(username):
         threading.Thread(target=get_data, args=(username, auto_collect), name=username).start()
         time.sleep(refresh_interval)
 
-        time.sleep(9999)
+        #time.sleep(9999)
 
 
 def start_rotate():
@@ -212,8 +223,8 @@ def start_rotate():
 
         for user in users:
             name = user.decode('utf-8')
-            if name != 'powergx':
-                continue
+            #if name != 'powergx':
+            #    continue
             user_key = '%s:%s' % ('user', name)
             user_info = json.loads(r_session.get(user_key).decode('utf-8'))
             if not user_info.get('active'):
@@ -228,6 +239,7 @@ def start_rotate():
 
 if __name__ == '__main__':
     start_rotate()
+
 
 """
 拾取日志
@@ -244,18 +256,6 @@ Connection: keep-alive
 User-Agent: RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)
 
 p=0&ps=20&tp=0
-
-
-水晶余额
-GET https://red.xunlei.com/?r=usr/getinfo&v=1 HTTP/1.1
-Accept: */*
-Referer: https://red.xunlei.com/index.php?r=collect
-Accept-Language: zh-CN
-Accept-Encoding: gzip, deflate
-User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.2; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; .NET CLR 3.5.30729; .NET CLR 2.0.50727; .NET CLR 3.0.30729)
-Host: red.xunlei.com
-Connection: Keep-Alive
-Cookie: sessionid=7CC5FA574E46A9323A90A3CE9E5648C1D8F0192BE57FFF671153757A949A6EA48D47056FA45441D0C5E0529396FD8F66F5E07DF770C49BB51BFA7A83EC54CB53; userid=266244981;
 
 
 POST https://red.xunlei.com/?r=usr/asset HTTP/1.1

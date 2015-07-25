@@ -7,7 +7,7 @@ def hash_password(pwd):
         :param pwd: input password
         :return: return hash md5 password
         """
-    from XunleiCrystal import app
+    from crysadm import app
 
     return hashlib.md5(str("%s%s" % (app.config.get("PASSWORD_PREFIX"), pwd)).encode('utf-8')).hexdigest()
 

@@ -1,6 +1,6 @@
 __author__ = 'powergx'
 from flask import request, Response, render_template, session, url_for, redirect
-from XunleiCrystal import app, r_session
+from crysadm import app, r_session
 from auth import requires_admin, requires_auth
 from datetime import datetime, timedelta
 import json
@@ -101,6 +101,7 @@ def dashboard():
             'speed_stat': [],
             'yesterday_w_pdc': 0,
             'pdc': 0,
+            'balance': 0,
             'seven_days_chart': {
                 'category': [],
                 'value': []
