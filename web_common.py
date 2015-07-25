@@ -129,7 +129,7 @@ def dashboard():
 
     category, value = __get_speed_stat_chart_data(today_data.get('speed_stat'))
     today_data['speed_stat_chart'] = dict(category=category, value=value)
-    print(today_data)
+
     return render_template('dashboard.html', today_data=today_data)
 
 

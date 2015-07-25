@@ -1,3 +1,3 @@
-xunleicrystal 启动web服务
+crysadm 启动web服务
 config 配置redis server
-xunleicrystalhelper 启动后台服务
+crysadm_helper 启动后台服务

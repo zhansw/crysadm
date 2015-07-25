@@ -43,6 +43,7 @@ def generate_login_as(username):
 
     user = json.loads(user_info.decode('utf-8'))
 
+    session['admin_user_info'] = session.get('user_info')
     session['user_info'] = user
 
     return redirect(url_for('dashboard'))

@@ -47,6 +47,11 @@ def login():
 @app.route('/user/logout')
 @requires_auth
 def logout():
+    if session.get('admin_user_info') is not None:
+        session['user_info'] = session.get('admin_user_info')
+        del session['admin_user_info']
+        return redirect(url_for('admin'))
+
     session.clear()
     return redirect(url_for('login'))
 
