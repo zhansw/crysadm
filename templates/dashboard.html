@@ -121,6 +121,26 @@
             <!-- /.col-lg-12 -->
         </div>
         <!-- /.row -->
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日速度
+
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div id="speed-comparison"></div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
     </div>
     <!-- /#page-wrapper -->
 
@@ -206,6 +226,47 @@
                 categories: {{ today_data.speed_stat_chart.category | safe }}
             },
             series: {{ today_data.speed_stat_chart.value | safe }}
+        });
+
+        $('#speed-comparison').highcharts({
+            chart: {
+                type: 'spline'
+
+            },
+            title: {
+                text: '',
+                x: -20 //center
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: {
+                title: {
+                    text: 'Speed (KByte/s)'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                shared: true,
+                valueSuffix: ' KByte/s'
+            },
+            plotOptions: {
+                spline: {
+                    lineWidth: 1,
+                    marker: {
+                        lineWidth: 1
+                    }
+                }
+            },
+
+            xAxis: {
+                categories: {{ speed_comparison_data.category | safe }}
+            },
+            series: {{ speed_comparison_data.value | safe }}
         });
 
     </script>
