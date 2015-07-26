@@ -121,7 +121,7 @@ def __get_speed_comparison_data(history_data,today_data,str_updated_time):
             day_speed.append(account.get('pc_speed'))
 
         total_speed = [x/8 for x in [sum(i) for i in zip(*day_speed)]][0-updated_time.hour:]
-        value.append(dict(name=updated_time.strftime('%Y-%m-%d'),data=total_speed))
+        value.append(dict(name='今天', data=total_speed))
 
     return dict(category=category, value=value)
 
