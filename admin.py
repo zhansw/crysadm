@@ -136,7 +136,7 @@ def admin_change_user_info(username):
     return redirect(url_for(endpoint='admin_user', username=username))
 
 
-@app.route('/admin/del_user/<username>', methods=['POST'])
+@app.route('/admin/del_user/<username>', methods=['GET'])
 @requires_admin
 def admin_del_user(username):
     if r_session.get('%s:%s' % ('user', username)) is None:

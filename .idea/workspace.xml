@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="f80b2cca-a64c-45a4-bb81-9a51fe84881b" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/admin.html" afterPath="$PROJECT_DIR$/templates/admin.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web_common.py" afterPath="$PROJECT_DIR$/web_common.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/admin.py" afterPath="$PROJECT_DIR$/admin.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/user_management.html" afterPath="$PROJECT_DIR$/templates/user_management.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="XunleiCrystal.iws" />
@@ -54,31 +56,46 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="admin.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/admin.py">
+      <file leaf-file-name="user_management.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/user_management.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="990" max-vertical-offset="2460">
-              <caret line="84" column="28" selection-start-line="84" selection-start-column="26" selection-end-line="84" selection-end-column="28" />
+            <state vertical-scroll-proportion="0.37301588" vertical-offset="78" max-vertical-offset="1890">
+              <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
               <folding>
-                <element signature="e#23#103#0" expanded="true" />
+                <element signature="e#435#522#0#HTML" expanded="true" />
+                <element signature="e#585#614#0#HTML" expanded="true" />
+                <element signature="e#649#706#0#HTML" expanded="true" />
+                <element signature="e#889#927#0#HTML" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="admin.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="admin.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/admin.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.10191083" vertical-offset="700" max-vertical-offset="2565">
-              <caret line="52" column="24" selection-start-line="52" selection-start-column="24" selection-end-line="52" selection-end-column="24" />
+            <state vertical-scroll-proportion="-13.958333" vertical-offset="685" max-vertical-offset="2340">
+              <caret line="68" column="88" selection-start-line="68" selection-start-column="57" selection-end-line="68" selection-end-column="88" />
               <folding>
                 <element signature="e#531#566#0#HTML" expanded="true" />
-                <element signature="e#4166#4195#0#HTML" expanded="true" />
-                <element signature="e#4487#4516#0#HTML" expanded="true" />
-                <element signature="e#5865#5952#0#HTML" expanded="true" />
-                <element signature="e#6035#6064#0#HTML" expanded="true" />
-                <element signature="e#6119#6176#0#HTML" expanded="true" />
-                <element signature="e#6315#6353#0#HTML" expanded="true" />
+                <element signature="e#3068#3097#0#HTML" expanded="true" />
+                <element signature="e#3341#3370#0#HTML" expanded="true" />
+                <element signature="e#4320#4407#0#HTML" expanded="true" />
+                <element signature="e#4490#4519#0#HTML" expanded="true" />
+                <element signature="e#4574#4631#0#HTML" expanded="true" />
+                <element signature="e#4810#4848#0#HTML" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="admin.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/admin.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.5555556" vertical-offset="1680" max-vertical-offset="2460">
+              <caret line="113" column="74" selection-start-line="113" selection-start-column="74" selection-end-line="113" selection-end-column="74" />
+              <folding>
+                <element signature="e#23#103#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -97,7 +114,7 @@
       <file leaf-file-name="dashboard.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.9607844" vertical-offset="3425" max-vertical-offset="4170">
+            <state vertical-scroll-proportion="-7.2156863" vertical-offset="3412" max-vertical-offset="4170">
               <caret line="252" column="22" selection-start-line="252" selection-start-column="22" selection-end-line="253" selection-end-column="29" />
               <folding>
                 <element signature="e#519#561#0#HTML" expanded="true" />
@@ -142,15 +159,15 @@
         <option value="$PROJECT_DIR$/XunleiCrystalHelper.py" />
         <option value="$PROJECT_DIR$/XunleiCrystal.py" />
         <option value="$PROJECT_DIR$/templates/profile.html" />
-        <option value="$PROJECT_DIR$/templates/user_management.html" />
         <option value="$PROJECT_DIR$/crysadm.py" />
         <option value="$PROJECT_DIR$/templates/excavators.html" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/admin.py" />
         <option value="$PROJECT_DIR$/user.py" />
         <option value="$PROJECT_DIR$/templates/dashboard.html" />
         <option value="$PROJECT_DIR$/web_common.py" />
         <option value="$PROJECT_DIR$/templates/admin.html" />
+        <option value="$PROJECT_DIR$/admin.py" />
+        <option value="$PROJECT_DIR$/templates/user_management.html" />
       </list>
     </option>
   </component>
@@ -240,6 +257,22 @@
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
     <property name="restartRequiresConfirmation" value="true" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="94" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="96" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="100" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="894" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="94" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="96" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="100" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="894" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -737,7 +770,13 @@
       <option name="project" value="LOCAL" />
       <updated>1437848236458</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="管理界面修改">
+      <created>1437884937938</created>
+      <option name="number" value="00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1437884937938</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -772,14 +811,14 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39839357" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32931727" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32931727" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32931727" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3287891" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.276771" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.329591" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32771084" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32771084" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -804,7 +843,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="矿机产量数据显示错误修复" />
     <MESSAGE value="login error message" />
     <MESSAGE value="用户修改email 和 密码" />
     <MESSAGE value="fix 下线矿机" />
@@ -829,7 +867,8 @@
     <MESSAGE value="矿机页面调整" />
     <MESSAGE value="更新login 功能&#10;" />
     <MESSAGE value="高阶报表1: 7日速度分时线" />
-    <option name="LAST_COMMIT_MESSAGE" value="高阶报表1: 7日速度分时线" />
+    <MESSAGE value="管理界面修改" />
+    <option name="LAST_COMMIT_MESSAGE" value="管理界面修改" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1188,13 +1227,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/user_management.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.28954083" vertical-offset="283" max-vertical-offset="1845">
-          <caret line="34" column="118" selection-start-line="34" selection-start-column="32" selection-end-line="34" selection-end-column="118" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/excavators.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.3252551" vertical-offset="210" max-vertical-offset="2265">
@@ -1210,9 +1242,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/web_common.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.9454546" vertical-offset="1253" max-vertical-offset="3375">
+          <caret line="102" column="56" selection-start-line="102" selection-start-column="56" selection-end-line="102" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.5555556" vertical-offset="1680" max-vertical-offset="2460">
+          <caret line="113" column="74" selection-start-line="113" selection-start-column="74" selection-end-line="113" selection-end-column="74" />
+          <folding>
+            <element signature="e#23#103#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/templates/dashboard.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.9607844" vertical-offset="3425" max-vertical-offset="4170">
+        <state vertical-scroll-proportion="-7.2156863" vertical-offset="3412" max-vertical-offset="4170">
           <caret line="252" column="22" selection-start-line="252" selection-start-column="22" selection-end-line="253" selection-end-column="29" />
           <folding>
             <element signature="e#519#561#0#HTML" expanded="true" />
@@ -1229,36 +1279,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web_common.py">
+    <entry file="file://$PROJECT_DIR$/templates/admin.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9454546" vertical-offset="1253" max-vertical-offset="3375">
-          <caret line="102" column="56" selection-start-line="102" selection-start-column="56" selection-end-line="102" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="990" max-vertical-offset="2460">
-          <caret line="84" column="28" selection-start-line="84" selection-start-column="26" selection-end-line="84" selection-end-column="28" />
+        <state vertical-scroll-proportion="-13.958333" vertical-offset="685" max-vertical-offset="2340">
+          <caret line="68" column="88" selection-start-line="68" selection-start-column="57" selection-end-line="68" selection-end-column="88" />
           <folding>
-            <element signature="e#23#103#0" expanded="true" />
+            <element signature="e#531#566#0#HTML" expanded="true" />
+            <element signature="e#3068#3097#0#HTML" expanded="true" />
+            <element signature="e#3341#3370#0#HTML" expanded="true" />
+            <element signature="e#4320#4407#0#HTML" expanded="true" />
+            <element signature="e#4490#4519#0#HTML" expanded="true" />
+            <element signature="e#4574#4631#0#HTML" expanded="true" />
+            <element signature="e#4810#4848#0#HTML" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin.html">
+    <entry file="file://$PROJECT_DIR$/templates/user_management.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.10191083" vertical-offset="700" max-vertical-offset="2565">
-          <caret line="52" column="24" selection-start-line="52" selection-start-column="24" selection-end-line="52" selection-end-column="24" />
+        <state vertical-scroll-proportion="0.37301588" vertical-offset="78" max-vertical-offset="1890">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
           <folding>
-            <element signature="e#531#566#0#HTML" expanded="true" />
-            <element signature="e#4166#4195#0#HTML" expanded="true" />
-            <element signature="e#4487#4516#0#HTML" expanded="true" />
-            <element signature="e#5865#5952#0#HTML" expanded="true" />
-            <element signature="e#6035#6064#0#HTML" expanded="true" />
-            <element signature="e#6119#6176#0#HTML" expanded="true" />
-            <element signature="e#6315#6353#0#HTML" expanded="true" />
+            <element signature="e#435#522#0#HTML" expanded="true" />
+            <element signature="e#585#614#0#HTML" expanded="true" />
+            <element signature="e#649#706#0#HTML" expanded="true" />
+            <element signature="e#889#927#0#HTML" expanded="true" />
           </folding>
         </state>
       </provider>
