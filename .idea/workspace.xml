@@ -3,9 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f80b2cca-a64c-45a4-bb81-9a51fe84881b" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/admin.html" afterPath="$PROJECT_DIR$/templates/admin.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/admin.py" afterPath="$PROJECT_DIR$/admin.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/user_management.html" afterPath="$PROJECT_DIR$/templates/user_management.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="XunleiCrystal.iws" />
@@ -56,34 +53,26 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="user_management.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="user_management.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/user_management.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.37301588" vertical-offset="78" max-vertical-offset="1890">
-              <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-              <folding>
-                <element signature="e#435#522#0#HTML" expanded="true" />
-                <element signature="e#585#614#0#HTML" expanded="true" />
-                <element signature="e#649#706#0#HTML" expanded="true" />
-                <element signature="e#889#927#0#HTML" expanded="true" />
-              </folding>
+            <state vertical-scroll-proportion="29.25" vertical-offset="1107" max-vertical-offset="1890">
+              <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="admin.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="admin.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/admin.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.958333" vertical-offset="685" max-vertical-offset="2340">
-              <caret line="68" column="88" selection-start-line="68" selection-start-column="57" selection-end-line="68" selection-end-column="88" />
+            <state vertical-scroll-proportion="0.75095785" vertical-offset="1182" max-vertical-offset="2010">
+              <caret line="118" column="20" selection-start-line="118" selection-start-column="20" selection-end-line="118" selection-end-column="20" />
               <folding>
                 <element signature="e#531#566#0#HTML" expanded="true" />
                 <element signature="e#3068#3097#0#HTML" expanded="true" />
                 <element signature="e#3341#3370#0#HTML" expanded="true" />
-                <element signature="e#4320#4407#0#HTML" expanded="true" />
-                <element signature="e#4490#4519#0#HTML" expanded="true" />
-                <element signature="e#4574#4631#0#HTML" expanded="true" />
-                <element signature="e#4810#4848#0#HTML" expanded="true" />
+                <element signature="e#5305#5330#0#HTML" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -165,9 +154,9 @@
         <option value="$PROJECT_DIR$/user.py" />
         <option value="$PROJECT_DIR$/templates/dashboard.html" />
         <option value="$PROJECT_DIR$/web_common.py" />
-        <option value="$PROJECT_DIR$/templates/admin.html" />
         <option value="$PROJECT_DIR$/admin.py" />
         <option value="$PROJECT_DIR$/templates/user_management.html" />
+        <option value="$PROJECT_DIR$/templates/admin.html" />
       </list>
     </option>
   </component>
@@ -776,7 +765,13 @@
       <option name="project" value="LOCAL" />
       <updated>1437884937938</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="管理界面修改">
+      <created>1437885895787</created>
+      <option name="number" value="00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1437885895787</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1242,14 +1237,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web_common.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9454546" vertical-offset="1253" max-vertical-offset="3375">
-          <caret line="102" column="56" selection-start-line="102" selection-start-column="56" selection-end-line="102" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/admin.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.5555556" vertical-offset="1680" max-vertical-offset="2460">
@@ -1279,31 +1266,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin.html">
+    <entry file="file://$PROJECT_DIR$/web_common.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.958333" vertical-offset="685" max-vertical-offset="2340">
-          <caret line="68" column="88" selection-start-line="68" selection-start-column="57" selection-end-line="68" selection-end-column="88" />
-          <folding>
-            <element signature="e#531#566#0#HTML" expanded="true" />
-            <element signature="e#3068#3097#0#HTML" expanded="true" />
-            <element signature="e#3341#3370#0#HTML" expanded="true" />
-            <element signature="e#4320#4407#0#HTML" expanded="true" />
-            <element signature="e#4490#4519#0#HTML" expanded="true" />
-            <element signature="e#4574#4631#0#HTML" expanded="true" />
-            <element signature="e#4810#4848#0#HTML" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="-3.9454546" vertical-offset="1253" max-vertical-offset="3375">
+          <caret line="102" column="56" selection-start-line="102" selection-start-column="56" selection-end-line="102" selection-end-column="56" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/user_management.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37301588" vertical-offset="78" max-vertical-offset="1890">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+        <state vertical-scroll-proportion="29.25" vertical-offset="1107" max-vertical-offset="1890">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.75095785" vertical-offset="1182" max-vertical-offset="2010">
+          <caret line="118" column="20" selection-start-line="118" selection-start-column="20" selection-end-line="118" selection-end-column="20" />
           <folding>
-            <element signature="e#435#522#0#HTML" expanded="true" />
-            <element signature="e#585#614#0#HTML" expanded="true" />
-            <element signature="e#649#706#0#HTML" expanded="true" />
-            <element signature="e#889#927#0#HTML" expanded="true" />
+            <element signature="e#531#566#0#HTML" expanded="true" />
+            <element signature="e#3068#3097#0#HTML" expanded="true" />
+            <element signature="e#3341#3370#0#HTML" expanded="true" />
+            <element signature="e#5305#5330#0#HTML" expanded="true" />
           </folding>
         </state>
       </provider>
