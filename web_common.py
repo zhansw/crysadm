@@ -187,7 +187,7 @@ def dashboard():
     today_data['m_pdc'] = today_data.get('yesterday_m_pdc') + today_data.get('pdc')
     today_data['w_pdc'] = today_data.get('yesterday_w_pdc') + today_data.get('pdc')
 
-    if today_data.get('history_speed') is not None:
+    if today_data.get('history_speed') is None:
         today_data['history_speed'] = __get_history_speed_data(username)
         need_save = True
 
@@ -231,11 +231,11 @@ def install():
     return redirect(url_for('login'))
 
 
-"""
 @app.route('/test')
 def test():
-    from login import login
-    from util import md5
+    for key in r_session.keys('user_data:*'):
+        ukey = key.decode('utf-8')
+        if r_session.ttl(ukey) is None:
+            r_session.expire(ukey,3600*24*35)
 
     return "a"
-"""
