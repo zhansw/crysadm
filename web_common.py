@@ -34,18 +34,27 @@ def __get_yesterday_pdc(username):
     return yesterday_m_pdc, yesterday_w_pdc
 
 
-def __seven_day_pdc(username):
+def __seven_day_pdc(username, history_speed):
     today = datetime.now().date() + timedelta(days=-1)
     begin_date = today + timedelta(days=-7)
 
+    dict_history_speed = dict()
+    for speed in history_speed:
+        dict_history_speed[speed.get('name')] = int(sum(speed.get('data'))/24)
+
+    speed_column_value = list()
     category = list()
     value = list()
     while begin_date < today:
         begin_date = begin_date + timedelta(days=1)
         str_date = begin_date.strftime('%Y-%m-%d')
         key = 'user_data:%s:%s' % (username, str_date)
-
         category.append(str_date)
+
+        if str_date in dict_history_speed:
+            speed_column_value.append(dict_history_speed.get(str_date))
+        else:
+            speed_column_value.append(0)
 
         b_data = r_session.get(key)
         if b_data is None:
@@ -55,11 +64,14 @@ def __seven_day_pdc(username):
         history_data = json.loads(b_data.decode('utf-8'))
         value.append(history_data.get('pdc'))
 
-    return category, [dict(data=value, name='产量'),]
+    series = [ {'name': '平均速度',  'yAxis': 1,'type': 'column','data': speed_column_value},
+               {'name': '产量','type': 'spline', 'data': value}]
+    return category, series
+
 
 def __get_history_speed_data(username):
     today = datetime.now().date() + timedelta(days=-1)
-    begin_date = today + timedelta(days=-6)
+    begin_date = today + timedelta(days=-7)
 
     value = list()
     while begin_date < today:
@@ -73,44 +85,44 @@ def __get_history_speed_data(username):
         history_data = json.loads(b_data.decode('utf-8'))
 
         day_speed = list()
-        day_speed.append([0]*24)
+        day_speed.append([0] * 24)
         for account in history_data.get('speed_stat'):
             day_speed.append(account.get('dev_speed'))
             day_speed.append(account.get('pc_speed'))
-        value.append(dict(name=str_date,data=[x/8 for x in [sum(i) for i in zip(*day_speed)]]))
+        value.append(dict(name=str_date, data=[x / 8 for x in [sum(i) for i in zip(*day_speed)]]))
 
     return value
 
 
 def __get_speed_stat_chart_data(speed_stat_data):
-
     now = datetime.now()
     speed_stat_category = list()
     speed_stat_value = list()
     for i in range(-24, 0):
-        speed_stat_category.append('%d:00' % (now + timedelta(hours=i+1)).hour)
+        speed_stat_category.append('%d:00' % (now + timedelta(hours=i + 1)).hour)
 
     for speed_data in speed_stat_data:
-        this_data  = dict(name='矿主ID:'+ str(speed_data.get('mid')),data=list())
+        this_data = dict(name='矿主ID:' + str(speed_data.get('mid')), data=list())
         speed_stat_value.append(this_data)
 
         dev_speed = speed_data.get('dev_speed')
         pc_speed = speed_data.get('pc_speed')
 
         for i in range(0, 24):
-            this_data.get('data').append((dev_speed[i] + pc_speed[i])/8)
+            this_data.get('data').append((dev_speed[i] + pc_speed[i]) / 8)
 
     return dict(category=speed_stat_category, value=speed_stat_value)
 
 
-def __get_speed_comparison_data(history_data,today_data,str_updated_time):
+def __get_speed_comparison_data(history_data, today_data, str_updated_time):
     category = list()
 
     value = list()
-    value += history_data
+
+    value += history_data if len(history_data) < 7 else history_data[-6:]
     for i in range(1, 25):
         if i == 24:
-            i=0
+            i = 0
         category.append('%d:00' % i)
 
     updated_time = datetime.strptime(str_updated_time, '%Y-%m-%d %H:%M:%S')
@@ -120,7 +132,7 @@ def __get_speed_comparison_data(history_data,today_data,str_updated_time):
             day_speed.append(account.get('dev_speed'))
             day_speed.append(account.get('pc_speed'))
 
-        total_speed = [x/8 for x in [sum(i) for i in zip(*day_speed)]][0-updated_time.hour:]
+        total_speed = [x / 8 for x in [sum(i) for i in zip(*day_speed)]][0 - updated_time.hour:]
         value.append(dict(name='今天', data=total_speed))
 
     return dict(category=category, value=value)
@@ -145,7 +157,7 @@ def dashboard():
                 'category': [],
                 'value': []
             },
-            'updated_time':'2015-01-01 00:00:00',
+            'updated_time': '2015-01-01 00:00:00',
             'm_pdc': 0,
             'last_speed': 0,
             'w_pdc': 0,
@@ -172,13 +184,13 @@ def dashboard():
     today_data['m_pdc'] = today_data.get('yesterday_m_pdc') + today_data.get('pdc')
     today_data['w_pdc'] = today_data.get('yesterday_w_pdc') + today_data.get('pdc')
 
-    if today_data.get('seven_days_chart') is None:
-        category, value = __seven_day_pdc(username)
-        today_data['seven_days_chart'] = dict(category=category, value=value)
+    if today_data.get('history_speed') is not None:
+        today_data['history_speed'] = __get_history_speed_data(username)
         need_save = True
 
-    if today_data.get('history_speed') is None:
-        today_data['history_speed'] = __get_history_speed_data(username)
+    if today_data.get('seven_days_chart') is None or (datetime.today().strftime('%Y-%m-%d') == '2015-07-26'):
+        category, value = __seven_day_pdc(username, today_data.get('history_speed'))
+        today_data['seven_days_chart'] = dict(category=category, value=value)
         need_save = True
 
     if need_save:
@@ -187,8 +199,8 @@ def dashboard():
     today_data['speed_stat_chart'] = __get_speed_stat_chart_data(today_data.get('speed_stat'))
     speed_comparison_data = __get_speed_comparison_data(today_data.get('history_speed'), today_data.get('speed_stat'),
                                                         today_data.get('updated_time'))
-    print(speed_comparison_data)
-    return render_template('dashboard.html', today_data=today_data,speed_comparison_data=speed_comparison_data)
+
+    return render_template('dashboard.html', today_data=today_data, speed_comparison_data=speed_comparison_data)
 
 
 @app.route('/')
@@ -200,6 +212,7 @@ def index():
 def install():
     import random, uuid
     from util import hash_password
+
     if r_session.scard('users') == 0:
         _chars = "0123456789ABCDEF"
         username = ''.join(random.sample(_chars, 6))
@@ -210,9 +223,10 @@ def install():
                     created_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         r_session.set('%s:%s' % ('user', username), json.dumps(user))
         r_session.sadd('users', username)
-        return 'username:%s,password:%s' % (username,password)
+        return 'username:%s,password:%s' % (username, password)
 
     return redirect(url_for('login'))
+
 
 """
 @app.route('/test')

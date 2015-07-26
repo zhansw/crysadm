@@ -163,7 +163,7 @@
             credits: {
                 enabled: false
             },
-            yAxis: {
+            yAxis: [{
                 title: {
                     text: '产量'
                 },
@@ -172,7 +172,22 @@
                     width: 1,
                     color: '#808080'
                 }]
-            },
+            },{ // Secondary yAxis
+                title: {
+                    text: '平均速度',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                labels: {
+                    format: '{value} KByte/s',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                opposite: true
+            }
+            ],
             tooltip: {
                 valueSuffix: ' '
             },
