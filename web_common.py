@@ -129,7 +129,7 @@ def __get_speed_comparison_data(history_data, today_data, str_updated_time):
         category.append('%d:00' % i)
 
     updated_time = datetime.strptime(str_updated_time, '%Y-%m-%d %H:%M:%S')
-    if updated_time.date() == datetime.today().date():
+    if updated_time.date() == datetime.today().date() and updated_time.hour != 0:
         day_speed = list()
         for account in today_data:
             day_speed.append(account.get('dev_speed'))
@@ -191,7 +191,7 @@ def dashboard():
         today_data['history_speed'] = __get_history_speed_data(username)
         need_save = True
 
-    if today_data.get('seven_days_chart') is None or (datetime.today().strftime('%Y-%m-%d') == '2015-07-26'):
+    if today_data.get('seven_days_chart') is None:
         category, value = __seven_day_pdc(username, today_data.get('history_speed'))
         today_data['seven_days_chart'] = dict(category=category, value=value)
         need_save = True
@@ -232,10 +232,23 @@ def install():
 
 
 @app.route('/test')
+@requires_admin
 def test():
-    for key in r_session.keys('user_data:*'):
-        ukey = key.decode('utf-8')
-        if r_session.ttl(ukey) is None:
-            r_session.expire(ukey,3600*24*35)
+    none_xlAcct = list()
+    none_active_xlAcct = list()
+    for b_user in r_session.smembers('users'):
+        username = b_user.decode('utf-8')
 
-    return "a"
+        if r_session.smembers('accounts:'+username) is None or len(r_session.smembers('accounts:'+username))  == 0:
+            none_xlAcct.append(username)
+        has_active_account = False
+        for b_xl_account in r_session.smembers('accounts:'+username):
+            xl_account = b_xl_account.decode('utf-8')
+            account = json.loads(r_session.get('account:%s:%s' % (username,xl_account)).decode('utf-8'))
+            if account.get('active'):
+                has_active_account = True
+                break
+        if not has_active_account:
+            none_active_xlAcct.append(username)
+
+    return json.dumps(dict(none_xlAcct=none_xlAcct,none_active_xlAcct=none_active_xlAcct))
