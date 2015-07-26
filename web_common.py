@@ -64,7 +64,10 @@ def __seven_day_pdc(username, history_speed):
         history_data = json.loads(b_data.decode('utf-8'))
         value.append(history_data.get('pdc'))
 
-    series = [ {'name': '平均速度',  'yAxis': 1,'type': 'column','data': speed_column_value},
+    series = [ {'name': '平均速度',  'yAxis': 1,'type': 'column','data': speed_column_value,'tooltip': {
+                'valueSuffix': ' KByte/s'
+            }},
+
                {'name': '产量','type': 'spline', 'data': value}]
     return category, series
 

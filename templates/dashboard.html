@@ -174,13 +174,13 @@
                 }]
             },{ // Secondary yAxis
                 title: {
-                    text: '平均速度',
+                    text: '平均速度 KBytes/s',
                     style: {
                         color: Highcharts.getOptions().colors[0]
                     }
                 },
                 labels: {
-                    format: '{value} KByte/s',
+                    format: '{value}',
                     style: {
                         color: Highcharts.getOptions().colors[0]
                     }
@@ -189,7 +189,8 @@
             }
             ],
             tooltip: {
-                valueSuffix: ' '
+                shared: true,
+                valueSuffix: ''
             },
 
             xAxis: {
@@ -223,7 +224,7 @@
             },
             tooltip: {
                 shared: true,
-                valueSuffix: ' KByte/s'
+                valueSuffix: ' KBytes/s'
             },
             plotOptions: {
                 areaspline: {
