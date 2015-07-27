@@ -252,3 +252,14 @@ def test():
             none_active_xlAcct.append(username)
 
     return json.dumps(dict(none_xlAcct=none_xlAcct,none_active_xlAcct=none_active_xlAcct))
+
+
+@app.context_processor
+def message_box():
+    if session is None or session.get('user_info') is None:
+        return dict()
+    user = session.get('user_info')
+
+    msgs_key = 'user_massages:%s' % user.get('username')
+
+    return dict(content=user.get('username'))

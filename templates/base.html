@@ -55,6 +55,57 @@
         <!-- /.navbar-header -->
 
         <ul class="nav navbar-top-links navbar-right">
+            {{ content }}
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    <i class="fa fa-envelope fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-messages">
+                    <li>
+                        <a href="#">
+                            <div>
+                                <strong>水晶收取通知</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>2015-07-22 23:16</em>
+                                    </span>
+                            </div>
+                            <div>矿主ID:698061 收取水晶成功</div>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#">
+                            <div>
+                                <strong>水晶提现通知</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>2015-07-22 13:16</em>
+                                    </span>
+                            </div>
+                            <div>矿主ID:698061 水晶提现成功</div>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#">
+                            <div>
+                                <strong>固件升级通知</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                            </div>
+                            <div>赚钱宝[黑钻头] 有新固件可以升级</div>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a class="text-center" href="#">
+                            <strong>查看所有通知</strong>
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-messages -->
+            </li>
             <li>
                 <a href="/user/logout"><i class="fa fa-sign-out fa-fw"></i> 登出</a>
             </li>

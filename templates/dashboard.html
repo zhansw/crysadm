@@ -243,7 +243,7 @@
             },
             series: {{ today_data.speed_stat_chart.value | safe }}
         });
-
+        {% if speed_comparison_data is defined %}
         $('#speed-comparison').highcharts({
             chart: {
                 type: 'spline'
@@ -284,6 +284,6 @@
             },
             series: {{ speed_comparison_data.value | safe }}
         });
-
+        {% endif %}
     </script>
 {% endblock %}

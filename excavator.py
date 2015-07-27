@@ -6,6 +6,7 @@ import json
 import requests
 from urllib.parse import urlparse
 import time
+from functools import wraps
 
 
 @app.route('/excavators')
