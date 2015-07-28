@@ -9,6 +9,8 @@ def exec_draw_cash(cookies):
     r = get_drawcash_info(cookies)
     if r.get('r') != 0:
         return r
+    if r.get('is_tm') == 0:
+        return dict(r=0,rd=r.get('tm_tip'))
     """
     可以提现就提，不然返回错误信息。
     """
