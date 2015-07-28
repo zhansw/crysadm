@@ -239,7 +239,7 @@ def test():
     for b_user in r_session.smembers('users'):
         username = b_user.decode('utf-8')
 
-        if r_session.smembers('accounts:'+username) is None or len(r_session.smembers('accounts:'+username))  == 0:
+        if r_session.smembers('accounts:'+username) is None or len(r_session.smembers('accounts:'+username)) == 0:
             none_xlAcct.append(username)
         has_active_account = False
         for b_xl_account in r_session.smembers('accounts:'+username):
@@ -263,3 +263,12 @@ def message_box():
     msgs_key = 'user_massages:%s' % user.get('username')
 
     return dict(content=user.get('username'))
+
+@app.context_processor
+def add_function():
+    def convert_to_yuan(crystal_values):
+        if crystal_values >= 10000:
+            return str(int(crystal_values/1000) / 10)+'元'
+        return str(crystal_values)
+
+    return dict(convert_to_yuan=convert_to_yuan)

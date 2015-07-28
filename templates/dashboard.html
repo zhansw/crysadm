@@ -14,7 +14,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         实时数据
-                        <span style="display: inline-block;float: right">账户余额: {{ today_data.balance if today_data.balance<10000 else ((today_data.balance/1000)|int/10)|string+'元' }}</span>
+                        <span style="display: inline-block;float: right">账户余额: {{ convert_to_yuan(today_data.balance) }}</span>
                     </div>
                     <div class="panel-body" style="padding-left: 0px; padding-right: 0px; padding-bottom: 0px; ">
                         <div class="col-lg-3 col-md-6">
@@ -40,7 +40,7 @@
                                             <i class="fa fa-rmb fa-5x"></i>
                                         </div>
                                         <div class="col-xs-9 text-right">
-                                            <div class="huge">{{ today_data.pdc }}</div>
+                                            <div class="huge">{{ convert_to_yuan(today_data.pdc) }}</div>
                                             <div>今日产量</div>
                                         </div>
                                     </div>
@@ -52,7 +52,7 @@
                                 <div class="panel-heading">
                                     <div class="row">
                                         <div class="col-xs-12 text-right">
-                                            <div class="huge">{{ today_data.w_pdc if today_data.w_pdc<10000 else ((today_data.w_pdc/1000)|int/10)|string+'元' }}</div>
+                                            <div class="huge">{{ convert_to_yuan(today_data.w_pdc) }}</div>
                                             <div>本周产量</div>
                                         </div>
                                     </div>
@@ -64,7 +64,7 @@
                                 <div class="panel-heading">
                                     <div class="row">
                                         <div class="col-xs-12 text-right">
-                                            <div class="huge">{{ today_data.m_pdc if today_data.m_pdc<10000 else ((today_data.m_pdc/1000)|int/10)|string+'元' }}</div>
+                                            <div class="huge">{{ convert_to_yuan(today_data.m_pdc) }}</div>
                                             <div>本月产量</div>
                                         </div>
                                     </div>

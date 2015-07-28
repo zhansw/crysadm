@@ -6,7 +6,6 @@ import json
 import requests
 from urllib.parse import urlparse
 import time
-from functools import wraps
 
 
 @app.route('/excavators')
@@ -17,6 +16,11 @@ def excavators():
     if session.get('error_message') is not None:
         err_msg = session.get('error_message')
         session['error_message'] = None
+
+    info_msg = None
+    if session.get('info_message') is not None:
+        info_msg = session.get('info_message')
+        session['info_message'] = None
 
     accounts_key = 'accounts:%s' % user.get('username')
     accounts = list()
@@ -31,7 +35,7 @@ def excavators():
         accounts.append(account_info)
 
 
-    return render_template('excavators.html', err_msg=err_msg, accounts=accounts)
+    return render_template('excavators.html', err_msg=err_msg, info_msg=info_msg, accounts=accounts)
 
 @app.route('/collect/<user_id>', methods=['POST'])
 @requires_auth
@@ -51,6 +55,32 @@ def collect_all(user_id):
     account_data_key = account_key+':data'
     account_data_value = json.loads(r_session.get(account_data_key).decode("utf-8"))
     account_data_value.get('mine_info')['td_not_in_a'] = 0
+    r_session.set(account_data_key, json.dumps(account_data_value))
+
+    return redirect(url_for('excavators'))
+
+
+@app.route('/drawcash/<user_id>', methods=['POST'])
+@requires_auth
+def drawcash(user_id):
+    user = session.get('user_info')
+    account_key = 'account:%s:%s' % (user.get('username'), user_id)
+    account_info = json.loads(r_session.get(account_key).decode("utf-8"))
+
+    session_id = account_info.get('session_id')
+    user_id = account_info.get('user_id')
+
+    cookies = dict(sessionid=session_id, userid=str(user_id))
+    from api import exec_draw_cash
+    r = exec_draw_cash(cookies)
+    if r.get('r') != 0:
+        session['error_message'] = r.get('rd')
+        return redirect(url_for('excavators'))
+    else:
+        session['info_message'] = r.get('rd')
+    account_data_key = account_key+':data'
+    account_data_value = json.loads(r_session.get(account_data_key).decode("utf-8"))
+    account_data_value.get('income')['r_can_use'] = 0
     r_session.set(account_data_key, json.dumps(account_data_value))
 
     return redirect(url_for('excavators'))
