@@ -35,6 +35,58 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+        @keyframes twinkling{
+            0%{
+                opacity:0; /*透明度为0*/
+            }
+            100%{
+                opacity:1; /*透明度为1*/
+            }
+        }
+        @-ms-keyframes twinkling{
+            0%{
+                opacity:0; /*透明度为0*/
+            }
+            100%{
+                opacity:1; /*透明度为1*/
+            }
+        }
+        @-moz-keyframes twinkling{
+            0%{
+                opacity:0; /*透明度为0*/
+            }
+            100%{
+                opacity:1; /*透明度为1*/
+            }
+        }
+        @-webkit-keyframes twinkling{
+            0%{
+                opacity:0; /*透明度为0*/
+            }
+            100%{
+                opacity:1; /*透明度为1*/
+            }
+        }
+        @-o-keyframes twinkling{
+            0%{
+                opacity:0; /*透明度为0*/
+            }
+            100%{
+                opacity:1; /*透明度为1*/
+            }
+        }
+
+
+        .rightNext{
+            /*Some code*/
+            animation: twinkling 1s linear 0 infinite alternate;
+            -webkit-animation:twinkling 1s linear 0 infinite alternate;
+            -moz-animation:twinkling 1s linear 0 infinite alternate;
+            -o-animation:twinkling 1s linear 0 infinite alternate;
+            -ms-animation:twinkling 1s linear 0 infinite alternate;
+        }
+    </style>
 
 </head>
 
@@ -55,60 +107,55 @@
         <!-- /.navbar-header -->
 
         <ul class="nav navbar-top-links navbar-right">
-            {{ content }}
+            {% if msg_box|length > 0 %}
+                <li class="dropdown open">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-envelope fa-fw rightNext"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-messages">
+                        {% for row in msg_box %}
+                            <li>
+                                <a href="/messagebox">
+                                    <div>
+                                        <strong>{{ row.subject }}</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>{{ row.time }}</em>
+                                    </span>
+                                    </div>
+                                    <div>{{ row.content }}</div>
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+                        {% endfor %}
+
+                        <li>
+                            <a class="text-center" href="/messagebox">
+                                <strong>查看所有通知</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-messages -->
+                </li>
+            {% endif %}
             <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                    <i class="fa fa-envelope fa-fw"></i> <i class="fa fa-caret-down"></i>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">
+                    <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                 </a>
-                <ul class="dropdown-menu dropdown-messages">
-                    <li>
-                        <a href="#">
-                            <div>
-                                <strong>水晶收取通知</strong>
-                                    <span class="pull-right text-muted">
-                                        <em>2015-07-22 23:16</em>
-                                    </span>
-                            </div>
-                            <div>矿主ID:698061 收取水晶成功</div>
-                        </a>
+                <ul class="dropdown-menu dropdown-user">
+
+                    <li><a href="/messagebox"><i class="fa fa-envelope fa-fw"></i> 消息盒子</a>
+                    </li>
+                    <li><a href="/user/profile"><i class="fa fa-user fa-fw"></i> 我的信息</a>
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a href="#">
-                            <div>
-                                <strong>水晶提现通知</strong>
-                                    <span class="pull-right text-muted">
-                                        <em>2015-07-22 13:16</em>
-                                    </span>
-                            </div>
-                            <div>矿主ID:698061 水晶提现成功</div>
-                        </a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a href="#">
-                            <div>
-                                <strong>固件升级通知</strong>
-                                    <span class="pull-right text-muted">
-                                        <em>Yesterday</em>
-                                    </span>
-                            </div>
-                            <div>赚钱宝[黑钻头] 有新固件可以升级</div>
-                        </a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a class="text-center" href="#">
-                            <strong>查看所有通知</strong>
-                            <i class="fa fa-angle-right"></i>
-                        </a>
+                        <a href="/user/logout"><i class="fa fa-sign-out fa-fw"></i> 登出</a>
                     </li>
                 </ul>
-                <!-- /.dropdown-messages -->
+                <!-- /.dropdown-user -->
             </li>
-            <li>
-                <a href="/user/logout"><i class="fa fa-sign-out fa-fw"></i> 登出</a>
-            </li>
+
 
             <!-- /.dropdown -->
         </ul>

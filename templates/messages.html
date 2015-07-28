@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+    <div id="page-wrapper" style="min-height: 753px;">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">消息盒子</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                {% for row in messages %}
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <strong>{{ row.subject }}</strong>
+                            <span class="pull-right text-muted">
+                                        <em>{{ row.time }}</em>
+                                    </span>
+                        </div>
+                        <div class="panel-body">
+                            <p>{{ row.content }}</p>
+                        </div>
+                        <div class="panel-footer">
+                            Panel Footer
+                        </div>
+                    </div>
+                {% endfor %}
+                <!-- /.panel -->
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+
+    </div>
+{% endblock %}

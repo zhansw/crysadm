@@ -40,7 +40,7 @@ def __seven_day_pdc(username, history_speed):
 
     dict_history_speed = dict()
     for speed in history_speed:
-        dict_history_speed[speed.get('name')] = int(sum(speed.get('data'))/24)
+        dict_history_speed[speed.get('name')] = int(sum(speed.get('data')) / 24)
 
     speed_column_value = list()
     category = list()
@@ -64,11 +64,11 @@ def __seven_day_pdc(username, history_speed):
         history_data = json.loads(b_data.decode('utf-8'))
         value.append(history_data.get('pdc'))
 
-    series = [ {'name': '平均速度',  'yAxis': 1,'type': 'column','data': speed_column_value,'tooltip': {
-                'valueSuffix': ' KByte/s'
-            }},
+    series = [{'name': '平均速度', 'yAxis': 1, 'type': 'column', 'data': speed_column_value, 'tooltip': {
+        'valueSuffix': ' KByte/s'
+    }},
 
-               {'name': '产量','type': 'spline', 'data': value}]
+              {'name': '产量', 'type': 'spline', 'data': value}]
     return category, series
 
 
@@ -231,27 +231,37 @@ def install():
     return redirect(url_for('login'))
 
 
-@app.route('/test')
+@app.route('/none_user')
 @requires_admin
-def test():
+def none_user():
     none_xlAcct = list()
     none_active_xlAcct = list()
     for b_user in r_session.smembers('users'):
         username = b_user.decode('utf-8')
 
-        if r_session.smembers('accounts:'+username) is None or len(r_session.smembers('accounts:'+username)) == 0:
+        if r_session.smembers('accounts:' + username) is None or len(r_session.smembers('accounts:' + username)) == 0:
             none_xlAcct.append(username)
         has_active_account = False
-        for b_xl_account in r_session.smembers('accounts:'+username):
+        for b_xl_account in r_session.smembers('accounts:' + username):
             xl_account = b_xl_account.decode('utf-8')
-            account = json.loads(r_session.get('account:%s:%s' % (username,xl_account)).decode('utf-8'))
+            account = json.loads(r_session.get('account:%s:%s' % (username, xl_account)).decode('utf-8'))
             if account.get('active'):
                 has_active_account = True
                 break
         if not has_active_account:
             none_active_xlAcct.append(username)
 
-    return json.dumps(dict(none_xlAcct=none_xlAcct,none_active_xlAcct=none_active_xlAcct))
+    return json.dumps(dict(none_xlAcct=none_xlAcct, none_active_xlAcct=none_active_xlAcct))
+
+
+@app.context_processor
+def add_function():
+    def convert_to_yuan(crystal_values):
+        if crystal_values >= 10000:
+            return str(int(crystal_values / 1000) / 10) + '元'
+        return str(crystal_values)
+
+    return dict(convert_to_yuan=convert_to_yuan)
 
 
 @app.context_processor
@@ -262,13 +272,20 @@ def message_box():
 
     msgs_key = 'user_massages:%s' % user.get('username')
 
-    return dict(content=user.get('username'))
+    msg_box = list()
+    for b_msg_id in r_session.lrange(msgs_key, 0, -1):
+        msg_id = b_msg_id.decode('utf-8')
+        b_msg = r_session.get(msg_id)
+        if b_msg is None:
+            r_session.lrem(msgs_key,msg_id)
+            continue
 
-@app.context_processor
-def add_function():
-    def convert_to_yuan(crystal_values):
-        if crystal_values >= 10000:
-            return str(int(crystal_values/1000) / 10)+'元'
-        return str(crystal_values)
+        msg = json.loads(b_msg.decode('utf-8'))
+        if msg.get('is_read'):
+            continue
 
-    return dict(convert_to_yuan=convert_to_yuan)
+        msg_box.append(msg)
+        if len(msg_box) > 3:
+            break
+
+    return dict(msg_box=msg_box)

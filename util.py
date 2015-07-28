@@ -1,5 +1,6 @@
 __author__ = 'powergx'
 import hashlib
+from flask import session
 
 
 def hash_password(pwd):
@@ -16,3 +17,11 @@ def md5(s):
     import hashlib
 
     return hashlib.md5(s.encode('utf-8')).hexdigest().lower()
+
+
+def get_message():
+    err_msg = None
+    if session.get('error_message') is not None:
+        err_msg = session.get('error_message')
+        session['error_message'] = None
+    return err_msg
