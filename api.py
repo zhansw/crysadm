@@ -16,7 +16,9 @@ def exec_draw_cash(cookies):
     if r.get('r') != 0:
         return r
     wc_pkg = r.get('wc_pkg')
-    print(1)
+    if wc_pkg > 200:
+        wc_pkg = 200
+
     r = draw_cash(cookies, wc_pkg)
     if r.get('r') != 0:
         return r

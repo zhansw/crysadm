@@ -8,6 +8,8 @@ from login import login
 from datetime import datetime, timedelta
 
 
+requests.packages.urllib3.disable_warnings()
+
 conf = None
 if socket.gethostname() == 'GXMBP.local':
     conf = config.DevelopmentConfig
