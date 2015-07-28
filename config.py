@@ -19,7 +19,7 @@ class Config(object):
     PASSWORD_PREFIX = "08b3db21-d120-11e1-9ttd-10ddb199c373"
     ENCRYPT_PWD_URL = ''
     SERVER_IP = '0.0.0.0'
-    SERVER_PORT = '5000'
+    SERVER_PORT = 5000
 
 
 class ProductionConfig(Config):
