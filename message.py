@@ -36,7 +36,7 @@ def messagebox():
 @app.route('/add_msg')
 @requires_admin
 def add_msg():
-    send_msg('powergx', '水晶提现通知', '账号xxxx 水晶提现成功', expire=60)
+    send_msg('powergx', '水晶提现通知', '账号xxxx 水晶提现成功', expire=6000)
     return '发送成功'
 
 

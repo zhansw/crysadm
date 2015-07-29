@@ -30,7 +30,7 @@ def generate_inv_code():
     _chars = "0123456789ABCDEF"
     r_session.smembers('invitation_codes')
 
-    for i in range(0, 10 - r_session.scard('invitation_codes')):
+    for i in range(0, 20 - r_session.scard('invitation_codes')):
         r_session.sadd('invitation_codes',''.join(random.sample(_chars, 10)))
 
     return redirect(url_for('admin'))
