@@ -142,7 +142,7 @@
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">
                     <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                 </a>
-                <ul class="dropdown-menu dropdown-user">
+                <ul class="dropdown-menu dropdown-messages" style="width: 150px;">
 
                     <li><a href="/messagebox"><i class="fa fa-envelope fa-fw"></i> 消息盒子</a>
                     </li>
@@ -172,8 +172,6 @@
                     </li>
                     <li>
                         <a href="/accounts"><i class="fa fa-fw fa-user-md"></i> 账号管理</a>
-                    </li>
-                    <li><a href="/user/profile"><i class="fa fa-user fa-fw"></i> 我的信息</a>
                     </li>
                     {% if session.user_info.is_admin %}
                         <li><a href="/admin"><i class="fa fa-gear fa-fw"></i> 系统管理</a>
