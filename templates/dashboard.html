@@ -162,16 +162,7 @@
             credits: {
                 enabled: false
             },
-            yAxis: [{
-                title: {
-                    text: '产量'
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },{ // Secondary yAxis
+            yAxis: [{ // Secondary yAxis
                 title: {
                     text: '平均速度 KBytes/s',
                     style: {
@@ -185,8 +176,16 @@
                     }
                 },
                 opposite: true
-            }
-            ],
+            },{
+                title: {
+                    text: '产量'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            }],
             tooltip: {
                 shared: true,
                 valueSuffix: ''

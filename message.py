@@ -19,18 +19,20 @@ def messagebox():
     msgs_key = 'user_messages:%s' % user.get('username')
 
     msg_box = list()
+    show_read_all = False
     for b_msg_id in r_session.lrange(msgs_key, 0, -1):
-        msg_id = b_msg_id.decode('utf-8')
-        b_msg = r_session.get(msg_id)
+        msg_key = 'user_message:%s' % b_msg_id.decode('utf-8')
+        b_msg = r_session.get(msg_key)
         if b_msg is None:
-            r_session.lrem(msgs_key,msg_id)
+            r_session.lrem(msgs_key,msg_key)
             continue
 
         msg = json.loads(b_msg.decode('utf-8'))
-
+        if show_read_all or not msg.get('is_read'):
+            show_read_all = True
         msg_box.append(msg)
 
-    return render_template('messages.html', err_msg=err_msg, messages=msg_box)
+    return render_template('messages.html', err_msg=err_msg, messages=msg_box,show_read_all=show_read_all)
 
 
 @app.route('/message/mark_read/<msg_id>')
@@ -62,11 +64,45 @@ def mark_all_read():
     msgs_key = 'user_messages:%s' % user.get('username')
 
     for b_msg_id in r_session.lrange(msgs_key, 0, -1):
-        msg_id = b_msg_id.decode('utf-8')
-        msg_key = 'user_message:%s' % msg_id
+        msg_key = 'user_message:%s' % b_msg_id.decode('utf-8')
         msg = json.loads(r_session.get(msg_key).decode('utf-8'))
         msg['is_read'] = True
         r_session.set(msg_key,json.dumps(msg))
+
+    return redirect(url_for('messagebox'))
+
+
+@app.route('/message/del/<msg_id>')
+@requires_auth
+def message_del(msg_id):
+    user = session.get('user_info')
+
+    msgs_key = 'user_messages:%s' % user.get('username')
+
+    if bytes(msg_id,'utf-8') not in r_session.lrange(msgs_key, 0, -1):
+        util.set_message('没有权限修改')
+        return redirect(url_for('accounts'))
+
+    r_session.lrem(msgs_key, msg_id)
+    msg_key = 'user_message:%s' % msg_id
+    r_session.delete(msg_key)
+
+    return redirect(url_for('messagebox'))
+
+
+
+@app.route('/message/del_all/')
+@requires_auth
+def message_del_all():
+    user = session.get('user_info')
+
+    msgs_key = 'user_messages:%s' % user.get('username')
+
+    for b_msg_id in r_session.lrange(msgs_key, 0, -1):
+        msg_key = 'user_message:%s' % b_msg_id.decode('utf-8')
+        r_session.delete(msg_key)
+
+    r_session.delete(msgs_key)
 
     return redirect(url_for('messagebox'))
 
