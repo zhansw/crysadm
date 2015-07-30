@@ -105,10 +105,9 @@
             <a class="navbar-brand" href="/">Crysadm v0.3</a>
         </div>
         <!-- /.navbar-header -->
-
         <ul class="nav navbar-top-links navbar-right">
             {% if msg_box|length > 0 %}
-                <li class="dropdown open">
+                <li class="dropdown{% if request.endpoint != 'messagebox' %} open{% endif %}">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                         <i class="fa fa-envelope fa-fw rightNext"></i> <i class="fa fa-caret-down"></i>
                     </a>
@@ -144,7 +143,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-messages" style="width: 150px;">
 
-                    <li><a href="/messagebox"><i class="fa fa-envelope fa-fw"></i> 消息盒子</a>
+                    <li><a href="/messagebox"><i class="fa fa-envelope fa-fw"></i> 通知中心</a>
                     </li>
                     <li><a href="/user/profile"><i class="fa fa-user fa-fw"></i> 我的信息</a>
                     </li>

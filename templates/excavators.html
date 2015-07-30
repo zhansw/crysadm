@@ -51,7 +51,7 @@
                                     {% if row.data is defined  %}
                                         <tr>
                                             <td>{{ row.data.privilege.mid |e }}</td>
-                                            <td>{{ row.data.mine_info.dev_m.pdc |e }}</td>
+                                            <td>{{ row.data.mine_info.dev_m.pdc |default('0') }}</td>
                                             <td>{{ row.data.mine_info.dev_pc.pdc |e }}</td>
                                             <td>{{ row.data.mine_info.td_cm_pdc |e }}</td>
                                             <td>{{ row.data.mine_info.td_box_pdc |e }}/{{ row.data.mine_info.td_box_pdc |e }}</td>

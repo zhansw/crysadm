@@ -64,11 +64,9 @@ def __seven_day_pdc(username, history_speed):
         history_data = json.loads(b_data.decode('utf-8'))
         value.append(history_data.get('pdc'))
 
-    series = [{'name': '平均速度', 'yAxis': 1, 'type': 'column', 'data': speed_column_value, 'tooltip': {
+    series = [{'name': '平均速度', 'yAxis': 1, 'type': 'spline', 'data': speed_column_value, 'tooltip': {
         'valueSuffix': ' KByte/s'
-    }},
-
-              {'name': '产量', 'type': 'spline', 'data': value}]
+    }}, {'name': '产量', 'type': 'column', 'data': value}]
     return category, series
 
 
@@ -277,7 +275,7 @@ def message_box():
         msg_id = b_msg_id.decode('utf-8')
         b_msg = r_session.get(msg_id)
         if b_msg is None:
-            r_session.lrem(msgs_key,msg_id)
+            r_session.lrem(msgs_key, msg_id)
             continue
 
         msg = json.loads(b_msg.decode('utf-8'))
