@@ -25,3 +25,9 @@ def get_message():
         err_msg = session.get('error_message')
         session['error_message'] = None
     return err_msg
+
+def set_message(message,type='error'):
+    if type == 'error':
+        session['error_message'] = message
+    elif type == 'info':
+        session['info_message'] = message

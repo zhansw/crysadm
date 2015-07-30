@@ -268,7 +268,7 @@ def message_box():
         return dict()
     user = session.get('user_info')
 
-    msgs_key = 'user_massages:%s' % user.get('username')
+    msgs_key = 'user_messages:%s' % user.get('username')
 
     msg_box = list()
     for b_msg_id in r_session.lrange(msgs_key, 0, -1):
@@ -281,6 +281,9 @@ def message_box():
         msg = json.loads(b_msg.decode('utf-8'))
         if msg.get('is_read'):
             continue
+
+        if len(msg.get('content')) > 35:
+            msg['content'] = msg.get('content')[:35]+'...'
 
         msg_box.append(msg)
         if len(msg_box) > 3:
