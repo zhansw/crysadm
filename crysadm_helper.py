@@ -6,7 +6,7 @@ import requests
 import json
 from login import login
 from datetime import datetime, timedelta
-
+from api import get_can_drawcash
 
 requests.packages.urllib3.disable_warnings()
 
@@ -54,10 +54,10 @@ def get_data(username, auto_collect):
                 cookies['origin'] = '1'
             privilege_info = get_privilege(cookies)
 
-        #自动收取
+        # 自动收取
         if datetime.now().strftime('%H:%M') in ['23:59', '00:00'] and auto_collect:
             collect(cookies)
-        #自动收取
+        # 自动收取
 
         mine_info = get_mine_info(cookies)
         zqb = get_device_stat('1', cookies)
@@ -77,6 +77,12 @@ def get_data(username, auto_collect):
 
         user_data[user_id] = account_data
         r_session.set(account_data_key, json.dumps(account_data))
+
+        if not r_session.exists('can_drawcash'):
+            r = get_can_drawcash(cookies=cookies)
+            if r.get('r') == 0:
+                r_session.set('can_drawcash', r.get('is_tm'))
+                r_session.expire('can_drawcash', 60)
 
     save_history(username, user_data)
 
@@ -119,7 +125,7 @@ def save_history(username, user_data):
                 today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED') / 1024)
 
     r_session.set(key, json.dumps(today_data))
-    r_session.expire(key, 3600*24*35)
+    r_session.expire(key, 3600 * 24 * 35)
 
 
 def fill_info(device, ext_device_info):
@@ -140,7 +146,7 @@ def get_device_info(user_id):
 
 
 def relogin(username, password, account_info, account_key):
-    login_result = login(username, password,conf.ENCRYPT_PWD_URL)
+    login_result = login(username, password, conf.ENCRYPT_PWD_URL)
 
     if login_result.get('errorCode') != 0:
         account_info['status'] = login_result.get('errorDesc')
@@ -166,7 +172,6 @@ def get_mine_info(cookies):
 
 
 def get_speed_stat(s_type, cookies):
-
     body = dict(type=s_type, hand='0', v='0', ver='1')
     r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies)
     return json.loads(r.text).get('sds')
@@ -208,7 +213,7 @@ def get_crystal_data(username):
         threading.Thread(target=get_data, args=(username, auto_collect), name=username).start()
         time.sleep(refresh_interval)
 
-        #time.sleep(9999)
+        # time.sleep(9999)
 
 
 def start_rotate():
@@ -225,7 +230,7 @@ def start_rotate():
 
         for user in users:
             name = user.decode('utf-8')
-            #if name != 'powergx':
+            # if name != 'powergx':
             #    continue
             user_key = '%s:%s' % ('user', name)
             user_info = json.loads(r_session.get(user_key).decode('utf-8'))
@@ -241,7 +246,6 @@ def start_rotate():
 
 if __name__ == '__main__':
     start_rotate()
-
 
 """
 拾取日志

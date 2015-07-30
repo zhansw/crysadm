@@ -74,3 +74,16 @@ def get_balance_info(cookies):
     body = dict(hand='0',v='2',ver='1')
     r = requests.post('https://red.xunlei.com/?r=usr/asset', data=body, verify=False, cookies=cookies)
     return json.loads(r.text)
+
+
+def get_can_drawcash(cookies):
+    "获取余额"
+    if len(cookies.get('sessionid')) == 128:
+        if cookies.get('origin') is not None:
+            del cookies['origin']
+    else:
+        cookies['origin'] = '2'
+
+    body = dict(hand='0',v='1',ver='1')
+    r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies)
+    return json.loads(r.text)
