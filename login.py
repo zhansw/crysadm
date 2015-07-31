@@ -61,7 +61,7 @@ def login(username, md5_password, encrypt_pwd_url=None):
         return old_login(username, md5_password)
 
     s = requests.Session()
-    r = s.get('http://login2.xunlei.com/check/?u=%s&v=100' % username)
+    r = s.get('http://login.xunlei.com/check/?u=%s&v=100' % username)
     check_n = unquote(r.cookies.get('check_n'))
     check_e = unquote(r.cookies.get('check_e'))
     check_result = unquote(r.cookies.get('check_result'))
