@@ -22,11 +22,11 @@
                                 <div class="panel-heading">
                                     <div class="row">
                                         <div class="col-xs-3">
-                                            <i class="fa  fa-arrow-circle-up fa-5x"></i>
+                                            <i class="fa  fa-arrow-circle-up fa-4x"></i>
                                         </div>
-                                        <div class="col-xs-9 text-right">
-                                            <div class="huge">{{ today_data.last_speed if today_data.last_speed<1024 else (today_data.last_speed/1024*100)|int/100 }}</div>
-                                            <div>上传速度 {% if today_data.last_speed<1024 %}K{% else %}M{% endif %}Byte/s</div>
+                                        <div class="col-xs-9 text-right" style="padding-left: 5px;">
+                                            <div id="last_speed" class="huge">{{ today_data.last_speed if today_data.last_speed<1024 else (today_data.last_speed/1024*100)|int/100 }}</div>
+                                            <div>上传速度 <span id="speed_unit">{% if today_data.last_speed<1024 %}K{% else %}M{% endif %}</span>Byte/s</div>
                                         </div>
                                     </div>
                                 </div>
@@ -37,10 +37,10 @@
                                 <div class="panel-heading">
                                     <div class="row">
                                         <div class="col-xs-3">
-                                            <i class="fa fa-rmb fa-5x"></i>
+                                            <i class="fa fa-rmb fa-4x"></i>
                                         </div>
-                                        <div class="col-xs-9 text-right">
-                                            <div class="huge">{{ convert_to_yuan(today_data.pdc) }}</div>
+                                        <div class="col-xs-9 text-right" style="padding-left: 5px;">
+                                            <div class="huge" id="pdc">{{ convert_to_yuan(today_data.pdc) }}</div>
                                             <div>今日产量</div>
                                         </div>
                                     </div>
@@ -52,7 +52,7 @@
                                 <div class="panel-heading">
                                     <div class="row">
                                         <div class="col-xs-12 text-right">
-                                            <div class="huge">{{ convert_to_yuan(today_data.w_pdc) }}</div>
+                                            <div class="huge" id="w_pdc">{{ convert_to_yuan(today_data.w_pdc) }}</div>
                                             <div>本周产量</div>
                                         </div>
                                     </div>
@@ -64,7 +64,7 @@
                                 <div class="panel-heading">
                                     <div class="row">
                                         <div class="col-xs-12 text-right">
-                                            <div class="huge">{{ convert_to_yuan(today_data.m_pdc) }}</div>
+                                            <div class="huge" id="m_pdc">{{ convert_to_yuan(today_data.m_pdc) }}</div>
                                             <div>本月产量</div>
                                         </div>
                                     </div>
@@ -242,46 +242,217 @@
             series: {{ today_data.speed_stat_chart.value | safe }}
         });
         {% if speed_comparison_data is defined %}
-        $('#speed-comparison').highcharts({
-            chart: {
-                type: 'spline'
+            $('#speed-comparison').highcharts({
+                chart: {
+                    type: 'spline'
 
-            },
-            title: {
-                text: '',
-                x: -20 //center
-            },
-            credits: {
-                enabled: false
-            },
-            yAxis: {
+                },
                 title: {
-                    text: 'Speed (KByte/s)'
-                },min: 0,
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            tooltip: {
-                shared: true,
-                valueSuffix: ' KByte/s'
-            },
-            plotOptions: {
-                spline: {
-                    lineWidth: 1,
-                    marker: {
-                        lineWidth: 1
+                    text: '',
+                    x: -20 //center
+                },
+                credits: {
+                    enabled: false
+                },
+                yAxis: {
+                    title: {
+                        text: 'Speed (KByte/s)'
+                    },min: 0,
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    shared: true,
+                    valueSuffix: ' KByte/s'
+                },
+                plotOptions: {
+                    spline: {
+                        lineWidth: 1,
+                        marker: {
+                            lineWidth: 1
+                        }
                     }
-                }
-            },
+                },
 
-            xAxis: {
-                categories: {{ speed_comparison_data.category | safe }}
-            },
-            series: {{ speed_comparison_data.value | safe }}
-        });
+                xAxis: {
+                    categories: {{ speed_comparison_data.category | safe }}
+                },
+                series: {{ speed_comparison_data.value | safe }}
+            });
         {% endif %}
+
+        function convert_to_yuan(crystal_values) {
+            if (crystal_values >= 10000) {
+                return parseInt(crystal_values / 1000) / 10 + '元';
+            }
+            return crystal_values;
+        }
+        function convert_speed(speed) {
+            if (speed >= 1024) {
+                return parseInt(speed / 1024*100) / 100;
+            }
+            return speed;
+        }
+        var reload_data = function(){
+
+            $.getJSON( "/dashboard_data", function( data ) {
+                $('#last_speed').html(convert_speed(data.today_data.last_speed));
+                $('#pdc').html(convert_to_yuan(data.today_data.pdc));
+                $('#w_pdc').html(convert_to_yuan(data.today_data.w_pdc));
+                $('#m_pdc').html(convert_to_yuan(data.today_data.m_pdc));
+                if(data.today_data.last_speed > 1024){
+                    $('#speed_unit').html('M')
+                }else{
+                    $('#speed_unit').html('K')
+                }
+
+                $('#seven-day-chart').highcharts({
+                    chart: {
+
+                    },
+                    title: {
+                        text: '',
+                        x: -20 //center
+                    },
+                    legend: {
+                        enabled:false
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    yAxis: [{ // Secondary yAxis
+                        title: {
+                            text: '平均速度 KBytes/s',
+                            style: {
+                                color: Highcharts.getOptions().colors[0]
+                            }
+                        },min: 0,
+                        labels: {
+                            format: '{value}',
+                            style: {
+                                color: Highcharts.getOptions().colors[0]
+                            }
+                        },
+                        opposite: true
+                    },{
+                        title: {
+                            text: '产量'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    }],
+                    plotOptions: {
+                        series: {
+                            animation: false
+                        }
+                    },
+                    tooltip: {
+                        shared: true,
+                        valueSuffix: ''
+                    },
+                    xAxis: {
+                        categories: data.today_data.seven_days_chart.category
+                    },
+                    series: data.today_data.seven_days_chart.value
+                });
+                $('#speed-stat-chart').highcharts({
+                    chart: {
+                        type: 'areaspline'
+
+                    },
+                    title: {
+                        text: '',
+                        x: -20 //center
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Speed (KByte/s)'
+                        },min: 0,
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    },
+                    tooltip: {
+                        shared: true,
+                        valueSuffix: ' KBytes/s'
+                    },
+                    plotOptions: {
+                        areaspline: {
+                            stacking: 'normal',
+                            lineColor: '#666666',
+                            lineWidth: 1,
+                            marker: {
+                                lineWidth: 1,
+                                lineColor: '#666666'
+                            },
+                            animation: false
+                        }
+                    },
+
+                    xAxis: {
+                        categories: data.today_data.speed_stat_chart.category
+                    },
+                    series: data.today_data.speed_stat_chart.value
+                });
+                if (data.speed_comparison_data != undefined) {
+                    $('#speed-comparison').highcharts({
+                        chart: {
+                            type: 'spline'
+
+                        },
+                        title: {
+                            text: '',
+                            x: -20 //center
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'Speed (KByte/s)'
+                            }, min: 0,
+                            plotLines: [{
+                                value: 0,
+                                width: 1,
+                                color: '#808080'
+                            }]
+                        },
+                        tooltip: {
+                            shared: true,
+                            valueSuffix: ' KByte/s'
+                        },
+                        plotOptions: {
+                            spline: {
+                                lineWidth: 1,
+                                marker: {
+                                    lineWidth: 1
+                                },
+                                animation: false
+                            }
+                        },
+
+                        xAxis: {
+                            categories: data.speed_comparison_data.category
+                        },
+                        series: data.speed_comparison_data.value
+                    });
+                }
+            })
+        }
+        $(document).ready(function(){
+            setInterval(reload_data,{{ refresh_interval*1000 | default(30000) }});
+        });
+
     </script>
 {% endblock %}
