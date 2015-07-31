@@ -170,11 +170,7 @@ def dashboard():
             'speed_stat': [],
             'yesterday_w_pdc': 0,
             'pdc': 0,
-            'balance': 0,
-            'seven_days_chart': {
-                'category': [],
-                'value': []
-            }
+            'balance': 0
         }
         return render_template('dashboard.html', today_data=empty_data)
 
@@ -201,7 +197,6 @@ def dashboard():
     if need_save:
         r_session.set(key, json.dumps(today_data))
 
-    today_data['speed_stat_chart'] = __get_speed_stat_chart_data(today_data.get('speed_stat'))
     speed_comparison_data = __get_speed_comparison_data(today_data.get('history_speed'), today_data.get('speed_stat'),
                                                         today_data.get('updated_time'))
 
@@ -236,11 +231,7 @@ def dashboard_data():
             'speed_stat': [],
             'yesterday_w_pdc': 0,
             'pdc': 0,
-            'balance': 0,
-            'seven_days_chart': {
-                'category': [],
-                'value': []
-            }
+            'balance': 0
         }
         return Response(json.dumps(dict(today_data=empty_data)), mimetype='application/json')
 
@@ -267,11 +258,32 @@ def dashboard_data():
     if need_save:
         r_session.set(key, json.dumps(today_data))
 
-    today_data['speed_stat_chart'] = __get_speed_stat_chart_data(today_data.get('speed_stat'))
     speed_comparison_data = __get_speed_comparison_data(today_data.get('history_speed'), today_data.get('speed_stat'),
                                                         today_data.get('updated_time'))
 
     return Response(json.dumps(dict(today_data=today_data, speed_comparison_data=speed_comparison_data)), mimetype='application/json')
+
+
+@app.route('/analyzer')
+@requires_auth
+def analyzer():
+    user = session.get('user_info')
+    username = user.get('username')
+
+    user_key = 'user:%s' % username
+    user = json.loads(r_session.get(user_key).decode('utf-8'))
+    str_today = datetime.now().strftime('%Y-%m-%d')
+    key = 'user_data:%s:%s' % (username, str_today)
+
+    b_data = r_session.get(key)
+    if b_data is None:
+        return render_template('analyzer.html', speed_stat_chart=dict(category=[], value=[]))
+
+    today_data = json.loads(b_data.decode('utf-8'))
+
+    speed_stat_chart = __get_speed_stat_chart_data(today_data.get('speed_stat'))
+
+    return render_template('analyzer.html', speed_stat_chart=speed_stat_chart)
 
 
 @app.route('/')

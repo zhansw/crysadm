@@ -101,26 +101,7 @@
             <!-- /.col-lg-4 -->
         </div>
         <!-- /.row -->
-        <!-- /.row -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-bar-chart-o fa-fw"></i> 矿机速度
 
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        <div id="speed-stat-chart"></div>
-                    </div>
-                    <!-- /.panel-body -->
-                </div>
-                <!-- /.panel -->
-
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
         <!-- /.row -->
         <div class="row">
             <div class="col-lg-12">
@@ -197,50 +178,6 @@
             series: {{ today_data.seven_days_chart.value | safe }}
         });
 
-
-        $('#speed-stat-chart').highcharts({
-            chart: {
-                type: 'areaspline'
-
-            },
-            title: {
-                text: '',
-                x: -20 //center
-            },
-            credits: {
-                enabled: false
-            },
-            yAxis: {
-                title: {
-                    text: 'Speed (KByte/s)'
-                },min: 0,
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            tooltip: {
-                shared: true,
-                valueSuffix: ' KBytes/s'
-            },
-            plotOptions: {
-                areaspline: {
-                    stacking: 'normal',
-                    lineColor: '#666666',
-                    lineWidth: 1,
-                    marker: {
-                        lineWidth: 1,
-                        lineColor: '#666666'
-                    }
-                }
-            },
-
-            xAxis: {
-                categories: {{ today_data.speed_stat_chart.category | safe }}
-            },
-            series: {{ today_data.speed_stat_chart.value | safe }}
-        });
         {% if speed_comparison_data is defined %}
             $('#speed-comparison').highcharts({
                 chart: {
@@ -361,50 +298,7 @@
                     },
                     series: data.today_data.seven_days_chart.value
                 });
-                $('#speed-stat-chart').highcharts({
-                    chart: {
-                        type: 'areaspline'
 
-                    },
-                    title: {
-                        text: '',
-                        x: -20 //center
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Speed (KByte/s)'
-                        },min: 0,
-                        plotLines: [{
-                            value: 0,
-                            width: 1,
-                            color: '#808080'
-                        }]
-                    },
-                    tooltip: {
-                        shared: true,
-                        valueSuffix: ' KBytes/s'
-                    },
-                    plotOptions: {
-                        areaspline: {
-                            stacking: 'normal',
-                            lineColor: '#666666',
-                            lineWidth: 1,
-                            marker: {
-                                lineWidth: 1,
-                                lineColor: '#666666'
-                            },
-                            animation: false
-                        }
-                    },
-
-                    xAxis: {
-                        categories: data.today_data.speed_stat_chart.category
-                    },
-                    series: data.today_data.speed_stat_chart.value
-                });
                 if (data.speed_comparison_data != undefined) {
                     $('#speed-comparison').highcharts({
                         chart: {
