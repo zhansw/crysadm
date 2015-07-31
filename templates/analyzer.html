@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header" style="display: inline-block;width:100%">
+                    数据分析器
+                </h1>
+
+            </div>
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> 矿机速度
+
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div id="speed-stat-chart"></div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /#page-wrapper -->
+
+{% endblock %}
+
+{% block js_logic %}
+    <script>
+        $('#speed-stat-chart').highcharts({
+            chart: {
+                type: 'areaspline'
+
+            },
+            title: {
+                text: '',
+                x: -20 //center
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: {
+                title: {
+                    text: 'Speed (KByte/s)'
+                },min: 0,
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                shared: true,
+                valueSuffix: ' KBytes/s'
+            },
+            plotOptions: {
+                areaspline: {
+                    stacking: 'normal',
+                    lineColor: '#666666',
+                    lineWidth: 1,
+                    marker: {
+                        lineWidth: 1,
+                        lineColor: '#666666',
+                        enabled: false
+                    }
+                }
+            },
+
+            xAxis: {
+                categories: {{ speed_stat_chart.category | safe }}
+            },
+            series: {{ speed_stat_chart.value | safe }}
+        });
+
+    </script>
+{% endblock %}
