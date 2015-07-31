@@ -4,7 +4,7 @@ import random
 import json
 from util import md5
 from base64 import b64encode
-from urllib.parse import unquote,urlencode
+from urllib.parse import unquote, urlencode
 
 
 def StrToInt(str):
@@ -61,7 +61,7 @@ def login(username, md5_password, encrypt_pwd_url=None):
         return old_login(username, md5_password)
 
     s = requests.Session()
-    r = s.get('http://login.xunlei.com/check/?u=%s&v=100' % username)
+    r = s.get('http://login2.xunlei.com/check/?u=%s&v=100' % username)
     check_n = unquote(r.cookies.get('check_n'))
     check_e = unquote(r.cookies.get('check_e'))
     check_result = unquote(r.cookies.get('check_result'))
@@ -71,23 +71,20 @@ def login(username, md5_password, encrypt_pwd_url=None):
         return old_login(username, md5_password)
     captcha = check_result.split(':')[1].upper()
 
-    params = dict(password=md5_password,captcha=captcha,check_n=check_n,check_e=check_e)
+    params = dict(password=md5_password, captcha=captcha, check_n=check_n, check_e=check_e)
     urlencode(params)
-    r = requests.get(encrypt_pwd_url+'?'+urlencode(params))
+    r = requests.get(encrypt_pwd_url + '?' + urlencode(params))
     e_pwd = r.text
     if r.text == 'false':
         return old_login(username, md5_password)
 
     data = dict(business_type='100', login_enable='0', verifycode=captcha, v='100', e=check_e, n=check_n, u=username,
-                    p=e_pwd)
+                p=e_pwd)
     r = s.post('http://login.xunlei.com/sec2login/', data=data)
 
     cookies = r.cookies.get_dict()
     if len(cookies) < 5:
         return old_login(username, md5_password)
 
-    return dict(errorCode=0,sessionID=cookies.get('sessionid'),nickName=cookies.get('usernick'),
-         userName=cookies.get('usrname'),userID=cookies.get('userid'),userNewNo=cookies.get('usernewno'))
-
-
-
+    return dict(errorCode=0, sessionID=cookies.get('sessionid'), nickName=cookies.get('usernick'),
+                userName=cookies.get('usrname'), userID=cookies.get('userid'), userNewNo=cookies.get('usernewno'))
