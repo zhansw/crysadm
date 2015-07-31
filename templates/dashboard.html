@@ -233,6 +233,109 @@
             }
             return speed;
         }
+        var last_upd_hour = new Date().getHours();
+        function reload_chart(data){
+            if (last_upd_hour == new Date().getHours()){
+                return;
+            }
+            last_upd_hour = new Date().getHours();
+            $('#seven-day-chart').highcharts({
+                chart: {
+
+                },
+                title: {
+                    text: '',
+                    x: -20 //center
+                },
+                legend: {
+                    enabled:false
+                },
+                credits: {
+                    enabled: false
+                },
+                yAxis: [{ // Secondary yAxis
+                    title: {
+                        text: '平均速度 KBytes/s',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },min: 0,
+                    labels: {
+                        format: '{value}',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    opposite: true
+                },{
+                    title: {
+                        text: '产量'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                }],
+                plotOptions: {
+                    series: {
+                        animation: false
+                    }
+                },
+                tooltip: {
+                    shared: true,
+                    valueSuffix: ''
+                },
+                xAxis: {
+                    categories: data.today_data.seven_days_chart.category
+                },
+                series: data.today_data.seven_days_chart.value
+            });
+
+            if (data.speed_comparison_data != undefined) {
+                $('#speed-comparison').highcharts({
+                    chart: {
+                        type: 'spline'
+
+                    },
+                    title: {
+                        text: '',
+                        x: -20 //center
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Speed (KByte/s)'
+                        }, min: 0,
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    },
+                    tooltip: {
+                        shared: true,
+                        valueSuffix: ' KByte/s'
+                    },
+                    plotOptions: {
+                        spline: {
+                            lineWidth: 1,
+                            marker: {
+                                lineWidth: 1
+                            },
+                            animation: false
+                        }
+                    },
+
+                    xAxis: {
+                        categories: data.speed_comparison_data.category
+                    },
+                    series: data.speed_comparison_data.value
+                });
+            }
+        }
         var reload_data = function(){
 
             $.getJSON( "/dashboard_data", function( data ) {
@@ -245,103 +348,8 @@
                 }else{
                     $('#speed_unit').html('K')
                 }
+                reload_chart(data)
 
-                $('#seven-day-chart').highcharts({
-                    chart: {
-
-                    },
-                    title: {
-                        text: '',
-                        x: -20 //center
-                    },
-                    legend: {
-                        enabled:false
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    yAxis: [{ // Secondary yAxis
-                        title: {
-                            text: '平均速度 KBytes/s',
-                            style: {
-                                color: Highcharts.getOptions().colors[0]
-                            }
-                        },min: 0,
-                        labels: {
-                            format: '{value}',
-                            style: {
-                                color: Highcharts.getOptions().colors[0]
-                            }
-                        },
-                        opposite: true
-                    },{
-                        title: {
-                            text: '产量'
-                        },
-                        plotLines: [{
-                            value: 0,
-                            width: 1,
-                            color: '#808080'
-                        }]
-                    }],
-                    plotOptions: {
-                        series: {
-                            animation: false
-                        }
-                    },
-                    tooltip: {
-                        shared: true,
-                        valueSuffix: ''
-                    },
-                    xAxis: {
-                        categories: data.today_data.seven_days_chart.category
-                    },
-                    series: data.today_data.seven_days_chart.value
-                });
-
-                if (data.speed_comparison_data != undefined) {
-                    $('#speed-comparison').highcharts({
-                        chart: {
-                            type: 'spline'
-
-                        },
-                        title: {
-                            text: '',
-                            x: -20 //center
-                        },
-                        credits: {
-                            enabled: false
-                        },
-                        yAxis: {
-                            title: {
-                                text: 'Speed (KByte/s)'
-                            }, min: 0,
-                            plotLines: [{
-                                value: 0,
-                                width: 1,
-                                color: '#808080'
-                            }]
-                        },
-                        tooltip: {
-                            shared: true,
-                            valueSuffix: ' KByte/s'
-                        },
-                        plotOptions: {
-                            spline: {
-                                lineWidth: 1,
-                                marker: {
-                                    lineWidth: 1
-                                },
-                                animation: false
-                            }
-                        },
-
-                        xAxis: {
-                            categories: data.speed_comparison_data.category
-                        },
-                        series: data.speed_comparison_data.value
-                    });
-                }
             })
         }
         $(document).ready(function(){
