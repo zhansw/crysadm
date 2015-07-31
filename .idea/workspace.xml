@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f80b2cca-a64c-45a4-bb81-9a51fe84881b" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/analyzer.html" afterPath="$PROJECT_DIR$/templates/analyzer.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web_common.py" afterPath="$PROJECT_DIR$/web_common.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/base.html" afterPath="$PROJECT_DIR$/templates/base.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/excavators.html" afterPath="$PROJECT_DIR$/templates/excavators.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="XunleiCrystal.iws" />
@@ -57,6 +57,16 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="base.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/base.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.24404761" vertical-offset="1336" max-vertical-offset="3285">
+              <caret line="100" column="40" selection-start-line="100" selection-start-column="40" selection-end-line="100" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="login.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/login.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -67,11 +77,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="web_common.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="web_common.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web_common.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.395574" vertical-offset="2534" max-vertical-offset="5700">
-              <caret line="188" column="30" selection-start-line="188" selection-start-column="30" selection-end-line="188" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2534" max-vertical-offset="5700">
+              <caret line="192" column="26" selection-start-line="192" selection-start-column="26" selection-end-line="192" selection-end-column="26" />
               <folding>
                 <element signature="e#23#103#0" expanded="true" />
               </folding>
@@ -94,6 +104,16 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="450">
               <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="excavators.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/excavators.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-13.125" vertical-offset="1110" max-vertical-offset="2940">
+              <caret line="95" column="16" selection-start-line="95" selection-start-column="16" selection-end-line="95" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -174,14 +194,14 @@
         <option value="$PROJECT_DIR$/templates/messages.html" />
         <option value="$PROJECT_DIR$/crysadm.py" />
         <option value="$PROJECT_DIR$/message.py" />
-        <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/config.py" />
         <option value="$PROJECT_DIR$/login.py" />
         <option value="$PROJECT_DIR$/crysadm_helper.py" />
         <option value="$PROJECT_DIR$/templates/analyzer.html" />
-        <option value="$PROJECT_DIR$/templates/excavators.html" />
         <option value="$PROJECT_DIR$/templates/dashboard.html" />
         <option value="$PROJECT_DIR$/web_common.py" />
+        <option value="$PROJECT_DIR$/templates/excavators.html" />
+        <option value="$PROJECT_DIR$/templates/base.html" />
       </list>
     </option>
   </component>
@@ -652,12 +672,6 @@
       <option name="number" value="Default" />
       <updated>1435503618343</updated>
     </task>
-    <task id="LOCAL-00007" summary="获取挖矿信息">
-      <created>1436981588405</created>
-      <option name="number" value="00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1436981588405</updated>
-    </task>
     <task id="LOCAL-00008" summary="bug 修复">
       <created>1437059449702</created>
       <option name="number" value="00008" />
@@ -946,7 +960,13 @@
       <option name="project" value="LOCAL" />
       <updated>1438356689452</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="bug fix">
+      <created>1438359026496</created>
+      <option name="number" value="00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1438359026496</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1014,7 +1034,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="new login" />
     <MESSAGE value="new login&#10;" />
     <MESSAGE value="00:00 自动收取" />
     <MESSAGE value="管理增加 login as 功能" />
@@ -1039,7 +1058,8 @@
     <MESSAGE value="监控中心 图表1小时刷新一次" />
     <MESSAGE value="登陆接口修改" />
     <MESSAGE value="dashboard" />
-    <option name="LAST_COMMIT_MESSAGE" value="dashboard" />
+    <MESSAGE value="bug fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fix" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1374,13 +1394,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.48792884" vertical-offset="0" max-vertical-offset="0">
-          <caret line="169" column="42" selection-start-line="169" selection-start-column="34" selection-end-line="169" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="630">
@@ -1401,14 +1414,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-10.666667" vertical-offset="494" max-vertical-offset="1350">
           <caret line="50" column="20" selection-start-line="50" selection-start-column="20" selection-end-line="50" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/excavators.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.32401526" vertical-offset="1110" max-vertical-offset="2940">
-          <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1447,11 +1452,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/web_common.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.395574" vertical-offset="2534" max-vertical-offset="5700">
-          <caret line="188" column="30" selection-start-line="188" selection-start-column="30" selection-end-line="188" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2534" max-vertical-offset="5700">
+          <caret line="192" column="26" selection-start-line="192" selection-start-column="26" selection-end-line="192" selection-end-column="26" />
           <folding>
             <element signature="e#23#103#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/excavators.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.125" vertical-offset="1110" max-vertical-offset="2940">
+          <caret line="95" column="16" selection-start-line="95" selection-start-column="16" selection-end-line="95" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.24404761" vertical-offset="1336" max-vertical-offset="3285">
+          <caret line="100" column="40" selection-start-line="100" selection-start-column="40" selection-end-line="100" selection-end-column="40" />
+          <folding />
         </state>
       </provider>
     </entry>
