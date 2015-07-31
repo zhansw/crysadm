@@ -145,16 +145,10 @@
             },
             yAxis: [{ // Secondary yAxis
                 title: {
-                    text: '平均速度 KBytes/s',
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
+                    text: '平均速度 KBytes/s'
                 },min: 0,
                 labels: {
-                    format: '{value}',
-                    style: {
-                        color: Highcharts.getOptions().colors[0]
-                    }
+                    format: '{value}'
                 },
                 opposite: true
             },{
@@ -163,8 +157,7 @@
                 },
                 plotLines: [{
                     value: 0,
-                    width: 1,
-                    color: '#808080'
+                    width: 1
                 }]
             }],
             tooltip: {

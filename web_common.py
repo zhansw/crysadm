@@ -64,8 +64,8 @@ def __seven_day_pdc(username, history_speed):
         history_data = json.loads(b_data.decode('utf-8'))
         value.append(history_data.get('pdc'))
 
-    series = [{'name': '产量', 'type': 'column', 'data': value},
-              {'name': '平均速度', 'yAxis': 1, 'type': 'spline', 'data': speed_column_value, 'tooltip': {
+    series = [{'name': '产量', 'yAxis': 1, 'type': 'column', 'data': value},
+              {'name': '平均速度', 'yAxis': 0, 'type': 'spline', 'data': speed_column_value, 'tooltip': {
         'valueSuffix': ' KByte/s'
     }} ]
     return category, series
@@ -189,7 +189,7 @@ def dashboard():
         today_data['history_speed'] = __get_history_speed_data(username)
         need_save = True
 
-    if today_data.get('seven_days_chart') is None:
+    if today_data.get('seven_days_chart') is not None:
         category, value = __seven_day_pdc(username, today_data.get('history_speed'))
         today_data['seven_days_chart'] = dict(category=category, value=value)
         need_save = True
