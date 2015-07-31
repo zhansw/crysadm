@@ -110,11 +110,16 @@ def message_del_all():
 @app.route('/add_msg')
 @requires_admin
 def add_msg():
-    send_msg('powergx', '水晶提现通知', '账号xxxx 水晶提现成', expire=6000)
+    return '功能已关闭'
+    for b_username in r_session.smembers('users'):
+
+        send_msg(b_username.decode('utf-8'), '有新功能啦！', '监控中心已支持自动刷新，普通用户30秒刷新一次数据', expire=3600*24)
     return '发送成功'
 
 
 def send_msg(username, subject, content, expire=3600 * 24 * 7):
+    if bytes(username,'utf-8') not in r_session.smembers('users'):
+        return '找不到该用户。'
     msgs_key = 'user_messages:%s' % username
     msg_id = str(uuid.uuid1())
     msg = dict(id=msg_id, subject=subject, content=content,
@@ -123,3 +128,4 @@ def send_msg(username, subject, content, expire=3600 * 24 * 7):
     r_session.set(msg_key, json.dumps(msg))
     r_session.expire(msg_key, expire)
     r_session.lpush(msgs_key, msg_id)
+    return '发送成功'
