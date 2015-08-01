@@ -155,7 +155,7 @@ def relogin(username, password, account_info, account_key):
         return False, account_info
 
     account_info['session_id'] = login_result.get('sessionID')
-
+    account_info['status'] = 'OK'
     r_session.set(account_key, json.dumps(account_info))
     return True, account_info
 

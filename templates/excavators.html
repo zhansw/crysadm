@@ -48,7 +48,7 @@
                                 </thead>
                                 <tbody>
                                 {% for row in accounts %}
-                                    {% if row.data is defined  %}
+                                    {% if row.data is defined and row.data.mine_info.r == 0 %}
                                         <tr>
                                             <td>{{ row.data.privilege.mid |e }}</td>
                                             <td>{{ row.data.mine_info.dev_m.pdc |default('0') }}</td>
@@ -95,12 +95,12 @@
                                         <thead>
                                         <tr>
 
-                                            <th class="col-md-2">矿机名</th>
+                                            <th class="col-md-1">矿机名</th>
                                             <th class="col-md-1">类型</th>
                                             <th class="col-md-2">上传/最快 KB/s</th>
                                             <th class="col-md-1">下载 KB/s</th>
-                                            <th class="col-md-2">缓存 GByte</th>
-                                            <th class="col-md-1">状态</th>
+                                            <th class="col-md-1">缓存 GB</th>
+                                            <th class="col-md-2">状态</th>
                                             <th class="col-md-2">IP</th>
                                             <th class="col-md-1" style="text-align: right;padding-right: 30px;">操作</th>
                                         </tr>
@@ -115,7 +115,6 @@
                                                     <td>{{ (cm.ext_info.CUR_DEPLOY_SPEED/1024)|int }}</td>
                                                     <td>{{ (cm.ext_info.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (cm.ext_info.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
                                                     <td>
-
                                                         {% if cm.ext_info.ON_OFF_STATE == 1 %}
                                                             <span type="button" class="btn btn-info disabled btn-xs">
                                                             工作
@@ -143,13 +142,19 @@
                                                         <td>{{ (dev.ext_info.CUR_DEPLOY_SPEED/1024)|int }}</td>
                                                         <td>{{ (dev.ext_info.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.ext_info.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
                                                         <td>
+
                                                             {% if dev.ext_info.ON_OFF_STATE == 1 %}
                                                                 <span type="button" class="btn btn-info disabled btn-xs">
                                                                 工作
                                                                 </span>
                                                             {% elif dev.ext_info.ON_OFF_STATE == 2 %}
-                                                                <span type="button" class="btn btn-danger disabled btn-xs">
+                                                                <span type="button" class="btn btn-warning disabled btn-xs">
                                                                 断网
+                                                                </span>
+                                                            {% endif %}
+                                                            {% if dev.upgrade %}
+                                                                <span type="button" class="btn btn-danger disabled btn-xs">
+                                                                有升级
                                                                 </span>
                                                             {% endif %}
                                                         </td>
