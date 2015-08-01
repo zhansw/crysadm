@@ -271,7 +271,6 @@ def analyzer():
     username = user.get('username')
 
     user_key = 'user:%s' % username
-    user = json.loads(r_session.get(user_key).decode('utf-8'))
     str_today = datetime.now().strftime('%Y-%m-%d')
     key = 'user_data:%s:%s' % (username, str_today)
 
