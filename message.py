@@ -75,9 +75,12 @@ def message_action():
 @requires_admin
 def add_msg():
     return '功能已关闭'
+    i =0
     for b_username in r_session.smembers('users'):
-
-        send_msg(b_username.decode('utf-8'), '有新功能啦！', '监控中心已支持自动刷新，普通用户30秒刷新一次数据', expire=3600*24)
+        i += 1
+        if i >5:
+            break
+        send_msg('powergx', '有新功能啦！', '监控中心已支持自动刷新，普通用户30秒刷新一次数据', expire=3600*24)
     return '发送成功'
 
 

@@ -352,6 +352,7 @@ def message_box():
     msgs_key = 'user_messages:%s' % user.get('username')
 
     msg_box = list()
+    msg_count=0
     for b_msg_id in r_session.lrange(msgs_key, 0, -1):
         msg_key = 'user_message:%s' % b_msg_id.decode('utf-8')
         b_msg = r_session.get(msg_key)
@@ -366,11 +367,11 @@ def message_box():
         if len(msg.get('content')) > 35:
             msg['content'] = msg.get('content')[:35]+'...'
 
-        msg_box.append(msg)
-        if len(msg_box) > 3:
-            break
+        msg_count += 1
+        if not len(msg_box) > 3:
+            msg_box.append(msg)
 
-    return dict(msg_box=msg_box)
+    return dict(msg_box=msg_box,msg_count=msg_count)
 
 
 @app.context_processor
