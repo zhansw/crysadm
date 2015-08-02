@@ -35,74 +35,38 @@ def messagebox():
     return render_template('messages.html', err_msg=err_msg, messages=msg_box,show_read_all=show_read_all)
 
 
-@app.route('/message/mark_read/<msg_id>')
+@app.route('/message/action', methods=['POST'])
 @requires_auth
-def message_mark_read(msg_id):
+def message_action():
     user = session.get('user_info')
+
+    if request.form['btn'] is None:
+        util.set_message('参数错误')
+        return redirect(url_for('messagebox'))
 
     msgs_key = 'user_messages:%s' % user.get('username')
 
-    if bytes(msg_id,'utf-8') not in r_session.lrange(msgs_key, 0, -1):
-        util.set_message('没有权限修改')
-        return redirect(url_for('accounts'))
+    all_message = r_session.lrange(msgs_key, 0, -1)
 
-    msg_key = 'user_message:%s' % msg_id
+    for val in request.form:
+        if len(val) < 4 or val[0:3] != 'msg':
+            continue
 
-    msg = json.loads(r_session.get(msg_key).decode('utf-8'))
-    msg['is_read'] = True
-    r_session.set(msg_key,json.dumps(msg))
+        msg_id = val[4:]
+        if bytes(msg_id, 'utf-8') not in all_message:
+            continue
 
-    return redirect(url_for('messagebox'))
+        if request.form['btn'] == 'mark_as_read':
+            msg_key = 'user_message:%s' % msg_id
 
+            msg = json.loads(r_session.get(msg_key).decode('utf-8'))
+            msg['is_read'] = True
+            r_session.set(msg_key,json.dumps(msg))
 
-
-@app.route('/message/mark_all_read/')
-@requires_auth
-def mark_all_read():
-    user = session.get('user_info')
-
-    msgs_key = 'user_messages:%s' % user.get('username')
-
-    for b_msg_id in r_session.lrange(msgs_key, 0, -1):
-        msg_key = 'user_message:%s' % b_msg_id.decode('utf-8')
-        msg = json.loads(r_session.get(msg_key).decode('utf-8'))
-        msg['is_read'] = True
-        r_session.set(msg_key,json.dumps(msg))
-
-    return redirect(url_for('messagebox'))
-
-
-@app.route('/message/del/<msg_id>')
-@requires_auth
-def message_del(msg_id):
-    user = session.get('user_info')
-
-    msgs_key = 'user_messages:%s' % user.get('username')
-
-    if bytes(msg_id,'utf-8') not in r_session.lrange(msgs_key, 0, -1):
-        util.set_message('没有权限修改')
-        return redirect(url_for('accounts'))
-
-    r_session.lrem(msgs_key, msg_id)
-    msg_key = 'user_message:%s' % msg_id
-    r_session.delete(msg_key)
-
-    return redirect(url_for('messagebox'))
-
-
-
-@app.route('/message/del_all/')
-@requires_auth
-def message_del_all():
-    user = session.get('user_info')
-
-    msgs_key = 'user_messages:%s' % user.get('username')
-
-    for b_msg_id in r_session.lrange(msgs_key, 0, -1):
-        msg_key = 'user_message:%s' % b_msg_id.decode('utf-8')
-        r_session.delete(msg_key)
-
-    r_session.delete(msgs_key)
+        elif request.form['btn'] == 'delete':
+            r_session.lrem(msgs_key, msg_id)
+            msg_key = 'user_message:%s' % msg_id
+            r_session.delete(msg_key)
 
     return redirect(url_for('messagebox'))
 

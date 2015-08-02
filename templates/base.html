@@ -13,7 +13,7 @@
 
     <link href="../static/css/animate.css" rel="stylesheet">
     <link href="../static/css/style.css" rel="stylesheet">
-
+    {% block css_block %}{% endblock %}
 </head>
 
 <body>
@@ -88,7 +88,7 @@
                 </div>
                 <ul class="nav navbar-top-links navbar-right">
                     <li>
-                        <span class="m-r-sm text-muted">账户余额: {{ convert_to_yuan(balance) }}</span>
+                        <span class="m-r-sm text-muted">余额: {{ convert_to_yuan(balance) }}</span>
 
                     </li>
                     {% if msg_box|length > 0 %}
@@ -169,8 +169,6 @@
 <!-- Custom and plugin javascript -->
 <script src="../static/js/inspinia.js"></script>
 <script src="../static/js/plugins/pace/pace.min.js"></script>
-
-<script src="../static/js/highcharts.js"></script>
 
 {% block js_logic %}{% endblock %}
 
