@@ -1,100 +1,97 @@
 {% extends "base.html" %}
 {% block content %}
-    <div id="page-wrapper">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header" style="display: inline-block;width:100%">
-                    监控中心
-                </h1>
 
-            </div>
-        </div>
         <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        实时数据
-                        <span style="display: inline-block;float: right">账户余额: {{ convert_to_yuan(today_data.balance) }}</span>
-                    </div>
-                    <div class="panel-body" style="padding-left: 0px; padding-right: 0px; padding-bottom: 0px; ">
+
                         <div class="col-lg-3 col-md-6">
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <span class="label label-success pull-right" style="padding-top: 5px;">实时</span>
+                                    <h5>上传速度</h5>
+                                </div>
+                                <div class="ibox-content">
+
                                     <div class="row">
                                         <div class="col-xs-3">
-                                            <i class="fa  fa-arrow-circle-up fa-4x"></i>
+                                            <i class="fa fa-arrow-circle-up fa-4x"></i>
                                         </div>
                                         <div class="col-xs-9 text-right" style="padding-left: 5px;">
-                                            <div id="last_speed" class="huge">{{ today_data.last_speed if today_data.last_speed<1024 else (today_data.last_speed/1024*100)|int/100 }}</div>
-                                            <div>上传速度 <span id="speed_unit">{% if today_data.last_speed<1024 %}K{% else %}M{% endif %}</span>Byte/s</div>
+                                            <h1 class="no-margins" style=" font-weight: bold;" id="last_speed">{{ today_data.last_speed if today_data.last_speed<1024 else (today_data.last_speed/1024*100)|int/100 }}</h1>
+                                            <small style=" font-weight: bold;"><span id="speed_unit">{% if today_data.last_speed<1024 %}K{% else %}M{% endif %}</span>Byte/s</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-lg-3 col-md-6">
-                            <div class="panel panel-primary">
-                                <div class="panel-heading">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <span class="label label-info pull-right" style="padding-top: 5px;">今日</span>
+                                    <h5>水晶产量</h5>
+                                </div>
+                                <div class="ibox-content">
+
                                     <div class="row">
                                         <div class="col-xs-3">
                                             <i class="fa fa-rmb fa-4x"></i>
                                         </div>
                                         <div class="col-xs-9 text-right" style="padding-left: 5px;">
-                                            <div class="huge" id="pdc">{{ convert_to_yuan(today_data.pdc) }}</div>
-                                            <div>今日产量</div>
+                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="pdc">{{ convert_to_yuan(today_data.pdc) }}</h1>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="panel panel-yellow">
-                                <div class="panel-heading">
-                                    <div class="row">
-                                        <div class="col-xs-12 text-right">
-                                            <div class="huge" id="w_pdc">{{ convert_to_yuan(today_data.w_pdc) }}</div>
-                                            <div>本周产量</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="panel panel-red">
-                                <div class="panel-heading">
-                                    <div class="row">
-                                        <div class="col-xs-12 text-right">
-                                            <div class="huge" id="m_pdc">{{ convert_to_yuan(today_data.m_pdc) }}</div>
-                                            <div>本月产量</div>
-                                        </div>
-                                    </div>
-                                </div>
 
+                        <div class="col-lg-3 col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <span class="label label-primary pull-right" style="padding-top: 5px;">本周</span>
+                                    <h5>水晶产量</h5>
+                                </div>
+                                <div class="ibox-content" style="height: 88px;">
+
+                                    <div class="row">
+                                        <div class="col-xs-12 text-right" style="padding-left: 5px;">
+                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="w_pdc">{{ convert_to_yuan(today_data.w_pdc) }}</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-6">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <span class="label label-danger pull-right" style="padding-top: 5px;">本月</span>
+                                    <h5>水晶产量</h5>
+                                </div>
+                                <div class="ibox-content" style="height: 88px;">
+
+                                    <div class="row">
+                                        <div class="col-xs-12 text-right" style="padding-left: 5px;">
+                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="m_pdc">{{ convert_to_yuan(today_data.m_pdc) }}</h1>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-        </div>
         <!-- /.row -->
         <div class="row">
             <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
                         <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日产量
 
                     </div>
                     <!-- /.panel-heading -->
-                    <div class="panel-body">
+                    <div class="ibox-content">
                         <div id="seven-day-chart" style="height: 250px;"></div>
                     </div>
                     <!-- /.panel-body -->
                 </div>
-                <!-- /.panel -->
-
-
-                <!-- /.panel -->
             </div>
             <!-- /.col-lg-8 -->
 
@@ -105,13 +102,13 @@
         <!-- /.row -->
         <div class="row">
             <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
                         <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日速度
 
                     </div>
                     <!-- /.panel-heading -->
-                    <div class="panel-body">
+                    <div class="ibox-content">
                         <div id="speed-comparison"></div>
                     </div>
                     <!-- /.panel-body -->
@@ -122,8 +119,6 @@
             <!-- /.col-lg-12 -->
         </div>
         <!-- /.row -->
-    </div>
-    <!-- /#page-wrapper -->
 
 {% endblock %}
 
@@ -351,3 +346,18 @@
 
     </script>
 {% endblock %}
+
+{% block navibar %}
+    <div class="col-lg-10">
+        <h2>监控中心</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href="/">Home</a>
+            </li>
+            <li class="active">
+                <strong>Dashboard</strong>
+            </li>
+        </ol>
+    </div>
+{% endblock %}
+{% set active_page = "dashboard" %}

@@ -1,195 +1,203 @@
 {% extends "base.html" %}
 {% block content %}
-    <div id="page-wrapper" style="min-height: 753px;">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">我的矿机</h1>
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <div class="row">
-            {% if err_msg %}
-                <div class="col-lg-12">
-                    <div class="alert alert-danger alert-dismissable">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        {{ err_msg }}
-                    </div>
-                </div>
-            {% endif %}
-            {% if info_msg %}
-                <div class="col-lg-12">
-                    <div class="alert alert-danger alert-dismissable">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        {{ info_msg }}
-                    </div>
-                </div>
-            {% endif %}
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading" style="height:42px;">
-                        账号信息
-                    </div>
-                    <div class="panel-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
 
-                                    <th class="col-md-1">矿主ID</th>
-                                    <th class="col-md-1">赚钱宝</th>
-                                    <th class="col-md-1">老式矿机</th>
-                                    <th class="col-md-1">雇佣矿机</th>
-                                    <th class="col-md-1">宝箱</th>
-                                    <th class="col-md-1">未收取</th>
-                                    <th class="col-md-1">余额</th>
-                                    <th class="col-md-2">更新时间</th>
-                                    <th class="col-md-2" style="text-align: right;padding-right: 30px;">操作</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for row in accounts %}
-                                    {% if row.data is defined and row.data.mine_info.r == 0 %}
-                                        <tr>
-                                            <td>{{ row.data.privilege.mid |e }}</td>
-                                            <td>{{ row.data.mine_info.dev_m.pdc |default('0') }}</td>
-                                            <td>{{ row.data.mine_info.dev_pc.pdc |e }}</td>
-                                            <td>{{ row.data.mine_info.td_cm_pdc |e }}</td>
-                                            <td>{{ row.data.mine_info.td_box_pdc |e }}/{{ row.data.mine_info.td_box_pdc |e }}</td>
-                                            <td>{{ row.data.mine_info.td_not_in_a |e }}</td>
-                                            <td>{{ convert_to_yuan(row.data.income.r_can_use) |e }}</td>
-                                            <td>{{ row.data.updated_time| e }}</td>
-                                            <td>
-                                                {% if show_drawcash %}
-                                                    <form role="form" style="margin-left: 10px;float:right;" action="/drawcash/{{ row.user_id|e }}" method="post">
-                                                        <button type="submit" class="btn btn-info btn-xs">提现</button>
-                                                    </form>
-                                                {% endif %}
-                                                <form role="form" style="float:right;" action="/collect/{{ row.user_id|e }}" method="post">
-                                                    <button type="submit" class="btn btn-info btn-xs">收取</button>
+    <div class="row">
+        {% if err_msg %}
+            <div class="col-lg-12">
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    {{ err_msg }}
+                </div>
+            </div>
+        {% endif %}
+        {% if info_msg %}
+            <div class="col-lg-12">
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    {{ info_msg }}
+                </div>
+            </div>
+        {% endif %}
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="height:42px;">
+                    账号信息
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+
+                                <th class="col-md-1">矿主ID</th>
+                                <th class="col-md-1">赚钱宝</th>
+                                <th class="col-md-1">老式矿机</th>
+                                <th class="col-md-1">雇佣矿机</th>
+                                <th class="col-md-1">宝箱</th>
+                                <th class="col-md-1">未收取</th>
+                                <th class="col-md-1">余额</th>
+                                <th class="col-md-2">更新时间</th>
+                                <th class="col-md-2" style="text-align: right;padding-right: 30px;">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for row in accounts %}
+                                {% if row.data is defined and row.data.mine_info.r == 0 %}
+                                    <tr>
+                                        <td>{{ row.data.privilege.mid |e }}</td>
+                                        <td>{{ row.data.mine_info.dev_m.pdc |default('0') }}</td>
+                                        <td>{{ row.data.mine_info.dev_pc.pdc |e }}</td>
+                                        <td>{{ row.data.mine_info.td_cm_pdc |e }}</td>
+                                        <td>{{ row.data.mine_info.td_box_pdc |e }}/{{ row.data.mine_info.td_box_pdc |e }}</td>
+                                        <td>{{ row.data.mine_info.td_not_in_a |e }}</td>
+                                        <td>{{ convert_to_yuan(row.data.income.r_can_use) |e }}</td>
+                                        <td>{{ row.data.updated_time| e }}</td>
+                                        <td>
+                                            {% if show_drawcash %}
+                                                <form role="form" style="margin-left: 10px;float:right;" action="/drawcash/{{ row.user_id|e }}" method="post">
+                                                    <button type="submit" class="btn btn-info btn-xs">提现</button>
                                                 </form>
-                                            </td>
-                                        </tr>
-                                    {% endif %}
-                                    <!-- /.row -->
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                                            {% endif %}
+                                            <form role="form" style="float:right;" action="/collect/{{ row.user_id|e }}" method="post">
+                                                <button type="submit" class="btn btn-info btn-xs">收取</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                                <!-- /.row -->
+                            {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading" style="height:42px;">
-                        设备信息
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        {% for row in accounts %}
-                            {% if row.data is defined  %}
-                                <div class="table-responsive">
-                                <h5 style="text-align: right">矿主ID : {{ row.data.privilege.mid |e }}</h5>
-                                    <table class="table table-hover">
-                                        <thead>
-                                        <tr>
-
-                                            <th class="col-md-1">矿机名</th>
-                                            <th class="col-md-1">类型</th>
-                                            <th class="col-md-2">上传/最快 KB/s</th>
-                                            <th class="col-md-1">下载 KB/s</th>
-                                            <th class="col-md-1">缓存 GB</th>
-                                            <th class="col-md-2">状态</th>
-                                            <th class="col-md-2">IP</th>
-                                            <th class="col-md-1" style="text-align: right;padding-right: 30px;">操作</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% if row.data.cm_info is defined  %}
-                                            {% for cm in row.data.cm_info.info %}
-                                                <tr>
-                                                    <td>{{ cm.hn|e }}</td>
-                                                    <td>PC</td>
-                                                    <td>{{ (cm.ext_info.CUR_UPLOAD_SPEED/1024)|int }}/{{ (cm.ext_info.MAX_UPLOAD_SPEED/1024)|int }}</td>
-                                                    <td>{{ (cm.ext_info.CUR_DEPLOY_SPEED/1024)|int }}</td>
-                                                    <td>{{ (cm.ext_info.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (cm.ext_info.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
-                                                    <td>
-                                                        {% if cm.ext_info.ON_OFF_STATE == 1 %}
-                                                            <span type="button" class="btn btn-info disabled btn-xs">
-                                                            工作
-                                                            </span>
-                                                        {% elif cm.ext_info.ON_OFF_STATE == 2 %}
-                                                            <span type="button" class="btn btn-danger disabled btn-xs">
-                                                            断网
-                                                            </span>
-                                                        {% endif %}
-
-                                                    </td>
-                                                    <td>{{ cm.ip|e }}</td>
-                                                    <td></td>
-                                                </tr>
-
-                                            {% endfor %}
-                                        {% endif %}
-                                        {% if row.data.dev_info is defined %}
-                                            {% for dev in row.data.dev_info.info %}
-                                                {% if dev.ext_info is defined and dev.ext_info is not none %}
-                                                    <tr>
-                                                        <td>{{ dev.hn|e }}</td>
-                                                        <td>赚钱宝</td>
-                                                        <td>{{ (dev.ext_info.CUR_UPLOAD_SPEED/1024)|int |default('') }}/{{ (dev.ext_info.MAX_UPLOAD_SPEED/1024)|int }}</td>
-                                                        <td>{{ (dev.ext_info.CUR_DEPLOY_SPEED/1024)|int }}</td>
-                                                        <td>{{ (dev.ext_info.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.ext_info.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
-                                                        <td>
-
-                                                            {% if dev.ext_info.ON_OFF_STATE == 1 %}
-                                                                <span type="button" class="btn btn-info disabled btn-xs">
-                                                                工作
-                                                                </span>
-                                                            {% elif dev.ext_info.ON_OFF_STATE == 2 %}
-                                                                <span type="button" class="btn btn-warning disabled btn-xs">
-                                                                断网
-                                                                </span>
-                                                            {% endif %}
-                                                            {% if dev.upgrade %}
-                                                                <span type="button" class="btn btn-danger disabled btn-xs">
-                                                                有升级
-                                                                </span>
-                                                            {% endif %}
-                                                        </td>
-                                                        <td>{{ dev.ip|e }}</td>
-                                                        <td>
-                                                            <form style="float:right;" role="form" action="/reboot_device/{{ row.session_id |e }}" method="post">
-                                                                <input type="hidden" name="url" value="{{ dev.url }}" />
-                                                                <button type="submit" style="float: right;" class="btn btn-info btn-xs">重启</button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                {% endif %}
-
-                                            {% endfor %}
-                                        {% endif %}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-
-
-
-
-                                <!-- /.table-responsive -->
-
-
-                            {% endif %}
-                            <!-- /.row -->
-                        {% endfor %}
-                    </div>
-                    <!-- /.panel-body -->
-                </div>
-                <!-- /.panel -->
-            </div>
-
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="height:42px;">
+                    设备信息
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    {% for row in accounts %}
+                        {% if row.data is defined  %}
+                            <div class="table-responsive">
+                                <h5 style="text-align: right">矿主ID : {{ row.data.privilege.mid |e }}</h5>
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+
+                                        <th class="col-md-1">矿机名</th>
+                                        <th class="col-md-1">类型</th>
+                                        <th class="col-md-2">上传/最快 KB/s</th>
+                                        <th class="col-md-1">下载 KB/s</th>
+                                        <th class="col-md-1">缓存 GB</th>
+                                        <th class="col-md-2">状态</th>
+                                        <th class="col-md-2">IP</th>
+                                        <th class="col-md-1" style="text-align: right;padding-right: 30px;">操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if row.data.cm_info is defined  %}
+                                        {% for cm in row.data.cm_info.info %}
+                                            <tr>
+                                                <td>{{ cm.hn|e }}</td>
+                                                <td>PC</td>
+                                                <td>{{ (cm.ext_info.CUR_UPLOAD_SPEED/1024)|int }}/{{ (cm.ext_info.MAX_UPLOAD_SPEED/1024)|int }}</td>
+                                                <td>{{ (cm.ext_info.CUR_DEPLOY_SPEED/1024)|int }}</td>
+                                                <td>{{ (cm.ext_info.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (cm.ext_info.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
+                                                <td>
+                                                    {% if cm.ext_info.ON_OFF_STATE == 1 %}
+                                                        <span type="button" class="btn btn-info disabled btn-xs">
+                                                            工作
+                                                            </span>
+                                                    {% elif cm.ext_info.ON_OFF_STATE == 2 %}
+                                                        <span type="button" class="btn btn-danger disabled btn-xs">
+                                                            断网
+                                                            </span>
+                                                    {% endif %}
+
+                                                </td>
+                                                <td>{{ cm.ip|e }}</td>
+                                                <td></td>
+                                            </tr>
+
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% if row.data.dev_info is defined %}
+                                        {% for dev in row.data.dev_info.info %}
+                                            {% if dev.ext_info is defined and dev.ext_info is not none %}
+                                                <tr>
+                                                    <td>{{ dev.hn|e }}</td>
+                                                    <td>赚钱宝</td>
+                                                    <td>{{ (dev.ext_info.CUR_UPLOAD_SPEED/1024)|int |default('') }}/{{ (dev.ext_info.MAX_UPLOAD_SPEED/1024)|int }}</td>
+                                                    <td>{{ (dev.ext_info.CUR_DEPLOY_SPEED/1024)|int }}</td>
+                                                    <td>{{ (dev.ext_info.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.ext_info.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
+                                                    <td>
+
+                                                        {% if dev.ext_info.ON_OFF_STATE == 1 %}
+                                                            <span type="button" class="btn btn-info disabled btn-xs">
+                                                                工作
+                                                                </span>
+                                                        {% elif dev.ext_info.ON_OFF_STATE == 2 %}
+                                                            <span type="button" class="btn btn-warning disabled btn-xs">
+                                                                断网
+                                                                </span>
+                                                        {% endif %}
+                                                        {% if dev.upgrade %}
+                                                            <span type="button" class="btn btn-danger disabled btn-xs">
+                                                                有升级
+                                                                </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ dev.ip|e }}</td>
+                                                    <td>
+                                                        <form style="float:right;" role="form" action="/reboot_device/{{ row.session_id |e }}" method="post">
+                                                            <input type="hidden" name="url" value="{{ dev.url }}" />
+                                                            <button type="submit" style="float: right;" class="btn btn-info btn-xs">重启</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+
+
+
+                            <!-- /.table-responsive -->
+
+
+                        {% endif %}
+                        <!-- /.row -->
+                    {% endfor %}
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+
+    </div>
 {% endblock %}
+
+{% block navibar %}
+    <div class="col-lg-10">
+        <h2>我的矿机</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href="/">Home</a>
+            </li>
+            <li class="active">
+                <strong>Excavators</strong>
+            </li>
+        </ol>
+    </div>
+{% endblock %}
+{% set active_page = "excavators" %}

@@ -371,3 +371,20 @@ def message_box():
             break
 
     return dict(msg_box=msg_box)
+
+
+@app.context_processor
+def header_info():
+    if session is None or session.get('user_info') is None:
+        return dict()
+    user = session.get('user_info')
+
+    str_today = datetime.now().strftime('%Y-%m-%d')
+    key = 'user_data:%s:%s' % (user.get('username'), str_today)
+
+    b_data = r_session.get(key)
+
+    if b_data is None:
+        return dict(balance=0)
+    data = json.loads(b_data.decode('utf-8'))
+    return dict(balance=data.get('balance'))

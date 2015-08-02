@@ -1,213 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Crysadm v0.4</title>
+    <title>Crysadm+</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="../static/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/font-awesome/css/font-awesome.css" rel="stylesheet">
 
-    <!-- MetisMenu CSS -->
-    <link href="../static/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
-
-    <!-- Timeline CSS -->
-    <link href="../static/dist/css/timeline.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="../static/dist/css/sb-admin-2.css" rel="stylesheet">
-
-    <!-- Morris Charts CSS -->
-    <link href="../static/bower_components/morrisjs/morris.css" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="../static/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <style>
-        @keyframes twinkling{
-            0%{
-                opacity:0; /*透明度为0*/
-            }
-            100%{
-                opacity:1; /*透明度为1*/
-            }
-        }
-        @-ms-keyframes twinkling{
-            0%{
-                opacity:0; /*透明度为0*/
-            }
-            100%{
-                opacity:1; /*透明度为1*/
-            }
-        }
-        @-moz-keyframes twinkling{
-            0%{
-                opacity:0; /*透明度为0*/
-            }
-            100%{
-                opacity:1; /*透明度为1*/
-            }
-        }
-        @-webkit-keyframes twinkling{
-            0%{
-                opacity:0; /*透明度为0*/
-            }
-            100%{
-                opacity:1; /*透明度为1*/
-            }
-        }
-        @-o-keyframes twinkling{
-            0%{
-                opacity:0; /*透明度为0*/
-            }
-            100%{
-                opacity:1; /*透明度为1*/
-            }
-        }
-
-
-        .rightNext{
-            /*Some code*/
-            animation: twinkling 1s linear 0 infinite alternate;
-            -webkit-animation:twinkling 1s linear 0 infinite alternate;
-            -moz-animation:twinkling 1s linear 0 infinite alternate;
-            -o-animation:twinkling 1s linear 0 infinite alternate;
-            -ms-animation:twinkling 1s linear 0 infinite alternate;
-        }
-    </style>
+    <link href="../static/css/animate.css" rel="stylesheet">
+    <link href="../static/css/style.css" rel="stylesheet">
 
 </head>
 
 <body>
 
+
+{% set navigation_bar = [
+    ('dashboard','/dashboard', '<i class="fa fa-fw fa-dashboard"></i>', '监控中心'),
+    ('analyzer','/analyzer', '<i class="fa fa-fw fa-bar-chart-o"></i>', '数据分析'),
+    ('excavators','/excavators', '<i class="fa fa-fw fa-sitemap"></i>', '我的矿机'),
+    ('accounts','/accounts', '<i class="fa fa-fw fa-user-md"></i>', '账号管理')
+] -%}
+{% set navigation_admin_bar = [
+    ('admin','/admin', '<i class="fa fa-fw fa-gear"></i>', '系统管理')
+] -%}
+{% set active_page = active_page|default('index_temp') -%}
+
 <div id="wrapper">
-    <!-- Navigation -->
-    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">Crysadm v0.4</a>
-        </div>
-        <!-- /.navbar-header -->
-        <ul class="nav navbar-top-links navbar-right">
-            {% if msg_box|length > 0 %}
-                <li class="dropdown{% if request.endpoint != 'messagebox' %} open{% endif %}">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                        <i class="fa fa-envelope fa-fw rightNext"></i> <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-messages">
-                        {% for row in msg_box %}
+
+    <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="side-menu">
+                <li class="nav-header" style="padding-top: 0px;">
+
+                    <div class="dropdown profile-element">
+                        <h1><b>Crysadm+</b></h1>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="clear"> <span class="block m-t-xs">
+                                <strong class="font-bold">{{ session.user_info.username }}</strong><b class="caret"></b>
+                             </span> </span> </a>
+
+                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+
+                            <li><a href="/messagebox"><i class="fa fa-envelope fa-fw"></i> 通知中心</a>
+                            </li>
+                            <li><a href="/user/profile"><i class="fa fa-user fa-fw"></i> 我的信息</a>
+                            </li>
+                            <li class="divider"></li>
                             <li>
-                                <a href="/messagebox">
-                                    <div>
-                                        <strong>{{ row.subject }}</strong>
+                                <a href="/user/logout"><i class="fa fa-sign-out fa-fw"></i> 登出</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="logo-element">
+                        CA+
+                    </div>
+                </li>
+                {% for id, href, icon, caption in navigation_bar %}
+                    <li{% if id == active_page %} class="active"{% endif %}>
+                        <a href="{{ href|e }}">{{ icon|safe }} <span class="nav-label">{{ caption|e }}</span></a>
+                    </li>
+                {% endfor %}
+                {% if session.user_info.is_admin %}
+                    {% for id, href, icon, caption in navigation_admin_bar %}
+                    <li{% if id == active_page %} class="active"{% endif %}>
+                        <a href="{{ href|e }}">{{ icon|safe }} <span class="nav-label">{{ caption|e }}</span></a>
+                    </li>
+                {% endfor %}
+                {% endif %}
+
+            </ul>
+
+        </div>
+    </nav>
+
+
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom">
+            <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                <div class="navbar-header">
+                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+
+                </div>
+                <ul class="nav navbar-top-links navbar-right">
+                    <li>
+                        <span class="m-r-sm text-muted">账户余额: {{ convert_to_yuan(balance) }}</span>
+
+                    </li>
+                    {% if msg_box|length > 0 %}
+                        <li class="dropdown">
+                            <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                                <i class="fa fa-envelope"></i>  <span class="label label-warning">{{ msg_box|length }}</span>
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-messages">
+
+                                {% for row in msg_box %}
+                                    <li>
+                                        <a href="/messagebox">
+                                            <div>
+                                                <strong>{{ row.subject }}</strong>
                                     <span class="pull-right text-muted">
                                         <em>{{ row.time }}</em>
                                     </span>
-                                    </div>
-                                    <div>{{ row.content }}</div>
-                                </a>
-                            </li>
-                            <li class="divider"></li>
-                        {% endfor %}
+                                            </div>
+                                            <div>{{ row.content }}</div>
+                                        </a>
+                                    </li>
+                                    <li class="divider"></li>
+                                {% endfor %}
 
+                                <li>
+                                    <a class="text-center" href="/messagebox">
+                                        <strong>查看所有通知</strong>
+                                        <i class="fa fa-angle-right"></i>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+                    {% else %}
                         <li>
-                            <a class="text-center" href="/messagebox">
-                                <strong>查看所有通知</strong>
-                                <i class="fa fa-angle-right"></i>
+                            <a href="/messagebox">
+                                <i class="fa fa-envelope"></i>
                             </a>
                         </li>
-                    </ul>
-                    <!-- /.dropdown-messages -->
-                </li>
-            {% endif %}
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="true">
-                    <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
-                </a>
-                <ul class="dropdown-menu dropdown-messages" style="width: 150px;">
 
-                    <li><a href="/messagebox"><i class="fa fa-envelope fa-fw"></i> 通知中心</a>
-                    </li>
-                    <li><a href="/user/profile"><i class="fa fa-user fa-fw"></i> 我的信息</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a href="/user/logout"><i class="fa fa-sign-out fa-fw"></i> 登出</a>
-                    </li>
-                </ul>
-                <!-- /.dropdown-user -->
-            </li>
-
-
-            <!-- /.dropdown -->
-        </ul>
-        <!-- /.navbar-top-links -->
-
-        <div class="navbar-default sidebar" role="navigation">
-            <div class="sidebar-nav navbar-collapse">
-                <ul class="nav" id="side-menu">
-                    <li>
-                        <a href="/dashboard"><i class="fa fa-fw fa-dashboard"></i> 监控中心</a>
-                    </li>
-                    <li>
-                        <a href="/analyzer"><i class="fa fa-bar-chart-o fa-fw"></i> 数据分析</a>
-                    </li>
-
-                    <li>
-                        <a href="/excavators"><i class="fa fa-fw fa-sitemap"></i> 我的矿机</a>
-                    </li>
-                    <li>
-                        <a href="/accounts"><i class="fa fa-fw fa-user-md"></i> 账号管理</a>
-                    </li>
-                    {% if session.user_info.is_admin %}
-                        <li><a href="/admin"><i class="fa fa-gear fa-fw"></i> 系统管理</a>
-                        </li>
                     {% endif %}
-
-
+                    <li>
+                        <a href="/user/logout">
+                            <i class="fa fa-sign-out"></i> 登出
+                        </a>
+                    </li>
                 </ul>
-            </div>
-            <!-- /.sidebar-collapse -->
+
+            </nav>
         </div>
-        <!-- /.navbar-static-side -->
-    </nav>
+        <div class="row wrapper border-bottom white-bg page-heading hidden-xs">
+            {% block navibar %}{% endblock %}
 
-    {% block content %}{% endblock %}
+            <div class="col-lg-2">
 
+            </div>
+        </div>
+        <div class="wrapper wrapper-content">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="footer">
+
+            <div class="pull-right">
+                <strong>Copyright</strong> powergx &copy; 2015-
+            </div>
+        </div>
+
+    </div>
 </div>
-<!-- /#wrapper -->
 
-<!-- jQuery -->
-<script src="../static/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Mainly scripts -->
+<script src="../static/js/jquery-2.1.1.js"></script>
+<script src="../static/js/bootstrap.min.js"></script>
+<script src="../static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="../static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 
-<!-- Bootstrap Core JavaScript -->
-<script src="../static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- Custom and plugin javascript -->
+<script src="../static/js/inspinia.js"></script>
+<script src="../static/js/plugins/pace/pace.min.js"></script>
 
-<!-- Metis Menu Plugin JavaScript -->
-<script src="../static/bower_components/metisMenu/dist/metisMenu.min.js"></script>
+<script src="../static/js/highcharts.js"></script>
 
-<script src="../static/bower_components/Highcharts/js/highcharts.js"></script>
-
-<!-- Custom Theme JavaScript -->
-<script src="../static/dist/js/sb-admin-2.js"></script>
 {% block js_logic %}{% endblock %}
+
 </body>
 
 </html>
