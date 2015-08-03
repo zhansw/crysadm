@@ -37,8 +37,6 @@ def get_data(username, auto_collect):
         user_id = account_info.get('user_id')
 
         cookies = dict(sessionid=session_id, userid=str(user_id))
-        if len(session_id) != 128:
-            cookies['origin'] = '1'
 
         privilege_info = get_privilege(cookies)
 
@@ -184,7 +182,7 @@ def start_rotate():
 
         for user in users:
             name = user.decode('utf-8')
-            #if name != 'powergx':
+            #if name != 'chaoqi':
             #   continue
             user_key = '%s:%s' % ('user', name)
             user_info = json.loads(r_session.get(user_key).decode('utf-8'))

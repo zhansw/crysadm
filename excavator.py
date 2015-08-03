@@ -102,3 +102,18 @@ def reboot_device(session_id):
     r = requests.post(url,data=body)
 
     return redirect(url_for('excavators'))
+
+
+def change_device_name(session_id):
+    setting_url = request.values.get('url')
+
+    s_u = urlparse(setting_url)
+
+    url = "http://kjapi.peiluyou.com:5171/ubus_cd?%s&action=reboot" % s_u.query.replace('user_id','account_id')
+    data={"jsonrpc":"2.0","id":1,"method":"call","params":["%s" % session_id,"mnt","reboot",{}]}
+    data={"jsonrpc":"2.0","id":1,"method":"call","params":["%s" % session_id,"server","set_device_name",{"device_name":"挖挖挖","device_id":"TjgwHZdP6259"}]}
+
+    body = dict(data=json.dumps(data), action='onResponse%d' % int(time.time()*1000))
+    r = requests.post(url,data=body)
+
+    return redirect(url_for('excavators'))
