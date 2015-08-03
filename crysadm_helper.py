@@ -6,7 +6,8 @@ import requests
 import json
 from login import login
 from datetime import datetime, timedelta
-from api import get_can_drawcash
+from api import *
+
 
 requests.packages.urllib3.disable_warnings()
 
@@ -60,19 +61,18 @@ def get_data(username, auto_collect):
         # 自动收取
 
         mine_info = get_mine_info(cookies)
-        zqb = get_device_stat('1', cookies)
-        old = get_device_stat('0', cookies)
-        ext_device_info = get_device_info(user_id)
+        red_zqb = get_device_stat('1', cookies)
+        # red_old = get_device_stat('0', cookies)
+        blue_device_info = get_device_info(user_id)
 
         account_data_key = account_key + ':data'
         account_data = dict()
         account_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         account_data['mine_info'] = mine_info
         account_data['privilege'] = privilege_info
-        account_data['dev_info'] = fill_info(zqb, ext_device_info)
-        account_data['cm_info'] = fill_info(old, ext_device_info)
-        account_data['dev_info']['speed_stat'] = get_speed_stat('1', cookies)
-        account_data['cm_info']['speed_stat'] = get_speed_stat('0', cookies)
+        account_data['device_info'] = merge_device_data(red_zqb, blue_device_info)
+        account_data['zqb_speed_stat'] = get_speed_stat('1', cookies)
+        account_data['old_speed_stat'] = get_speed_stat('0', cookies)
         account_data['income'] = get_income_info(cookies)
 
         user_data[user_id] = account_data
@@ -85,6 +85,16 @@ def get_data(username, auto_collect):
                 r_session.expire('can_drawcash', 60)
 
     save_history(username, user_data)
+
+
+def merge_device_data(red_zqb, blue_device_info):
+    for blue_info in blue_device_info.get('DEVICE_INFO'):
+        for red_info in red_zqb.get('info'):
+            if red_info.get('dv_id') == blue_info.get('DCDNID'):
+                blue_info['red_info'] = red_info
+                break
+
+    return blue_device_info.get('DEVICE_INFO')
 
 
 def save_history(username, user_data):
@@ -106,36 +116,18 @@ def save_history(username, user_data):
     today_data['speed_stat'] = list()
     for data in user_data.values():
         today_data.get('speed_stat').append(dict(mid=data.get('privilege').get('mid'),
-                                                 dev_speed=data.get('dev_info').get('speed_stat'),
-                                                 pc_speed=data.get('cm_info').get('speed_stat')))
+                                                 dev_speed=data.get('zqb_speed_stat'),
+                                                 pc_speed=data.get('old_speed_stat')))
         today_data['pdc'] += data.get('mine_info').get('dev_m').get('pdc') + \
                              data.get('mine_info').get('dev_pc').get('pdc')
 
         today_data['balance'] += data.get('income').get('r_can_use')
         today_data['income'] += data.get('income').get('r_h_a')
-        for device in data.get('cm_info').get('info'):
-            if device.get('ext_info') is None:
-                today_data['last_speed'] += int(device.get('s') / 8)
-            else:
-                today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED') / 1024)
-        for device in data.get('dev_info').get('info'):
-            if device.get('ext_info') is None:
-                today_data['last_speed'] += int(device.get('s') / 8)
-            else:
-                today_data['last_speed'] += int(device.get('ext_info').get('CUR_UPLOAD_SPEED') / 1024)
+        for device in data.get('device_info'):
+            today_data['last_speed'] += int(device.get('CUR_UPLOAD_SPEED') / 1024)
 
     r_session.set(key, json.dumps(today_data))
     r_session.expire(key, 3600 * 24 * 35)
-
-
-def fill_info(device, ext_device_info):
-    for device_info in device.get('info'):
-        for ext_device in ext_device_info.get('DEVICE_INFO'):
-            if device_info.get('dv_id') == ext_device.get('DCDNID'):
-                device_info['ext_info'] = ext_device
-                break
-
-    return device
 
 
 def get_device_info(user_id):
@@ -160,44 +152,6 @@ def relogin(username, password, account_info, account_key):
     return True, account_info
 
 
-def get_income_info(cookies):
-    r = requests.get('https://red.xunlei.com/?r=usr/getinfo&v=1', verify=False, cookies=cookies)
-    return json.loads(r.text)
-
-
-def get_mine_info(cookies):
-    body = dict(hand='0', v='2', ver='1')
-    r = requests.post('https://red.xunlei.com/?r=mine/info', data=body, verify=False, cookies=cookies)
-    return json.loads(r.text)
-
-
-def get_speed_stat(s_type, cookies):
-    body = dict(type=s_type, hand='0', v='0', ver='1')
-    r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies)
-    return json.loads(r.text).get('sds')
-
-
-def get_privilege(cookies):
-    body = 'hand=0&v=1&ver=1'
-    r = requests.post('https://red.xunlei.com/?r=usr/privilege', data=body, verify=False, cookies=cookies)
-    return json.loads(r.text)
-
-
-def get_device_stat(s_type, cookies):
-    url = 'https://red.xunlei.com/?r=mine/devices_stat&hand=0&type=%s&v=2&ver=1' % s_type
-    this_cookies = cookies.copy()
-    if len(this_cookies.get('sessionid')) != 128:
-        this_cookies['origin'] = "2"
-    r = requests.post(url=url, verify=False, cookies=this_cookies)
-
-    return json.loads(r.text)
-
-
-def collect(cookies):
-    r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies)
-    return json.loads(r.text)
-
-
 def get_crystal_data(username):
     while True:
         user_key = '%s:%s' % ('user', username)
@@ -213,7 +167,7 @@ def get_crystal_data(username):
         threading.Thread(target=get_data, args=(username, auto_collect), name=username).start()
         time.sleep(refresh_interval)
 
-        # time.sleep(9999)
+        #time.sleep(9999)
 
 
 def start_rotate():
@@ -230,8 +184,8 @@ def start_rotate():
 
         for user in users:
             name = user.decode('utf-8')
-            # if name != 'powergx':
-            #    continue
+            #if name != 'powergx':
+            #   continue
             user_key = '%s:%s' % ('user', name)
             user_info = json.loads(r_session.get(user_key).decode('utf-8'))
             if not user_info.get('active'):

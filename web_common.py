@@ -4,6 +4,8 @@ from crysadm import app, r_session
 from auth import requires_admin, requires_auth
 from datetime import datetime, timedelta
 import json
+import socket
+import struct
 
 
 def __get_yesterday_pdc(username):
@@ -340,7 +342,20 @@ def add_function():
             return str(int(crystal_values / 1000) / 10) + '元'
         return str(crystal_values)
 
-    return dict(convert_to_yuan=convert_to_yuan)
+    def get_device_type(device_code):
+        if device_code==121:
+            return 'PC'
+        elif device_code==421:
+            return '路由'
+        elif device_code ==321:
+            return '赚钱宝'
+
+        return '不知道'
+
+    def int2ip(int_ip):
+        return socket.inet_ntoa(struct.pack("I", int_ip))
+
+    return dict(convert_to_yuan=convert_to_yuan, get_device_type=get_device_type,int2ip=int2ip)
 
 
 @app.context_processor

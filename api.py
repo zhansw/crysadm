@@ -41,7 +41,9 @@ def draw_cash(cookies,m):
         cookies['origin'] = '2'
 
     body = dict(hand='0',m=str(m),v='3',ver='1')
-    r = requests.post('https://red.xunlei.com/?r=usr/drawpkg',data=body, verify=False, cookies=cookies)
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    r = requests.post('https://red.xunlei.com/?r=usr/drawpkg',data=body, verify=False, cookies=cookies,
+                      headers=headers)
     return json.loads(r.text)
 
 
@@ -59,7 +61,9 @@ def get_drawcash_info(cookies):
         cookies['origin'] = '2'
 
     body = dict(hand='0',v='1',ver='1')
-    r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies)
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
+                      headers=headers)
     return json.loads(r.text)
 
 
@@ -72,7 +76,9 @@ def get_balance_info(cookies):
         cookies['origin'] = '2'
 
     body = dict(hand='0',v='2',ver='1')
-    r = requests.post('https://red.xunlei.com/?r=usr/asset', data=body, verify=False, cookies=cookies)
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    r = requests.post('https://red.xunlei.com/?r=usr/asset', data=body, verify=False, cookies=cookies,
+                      headers=headers)
     return json.loads(r.text)
 
 
@@ -85,5 +91,88 @@ def get_can_drawcash(cookies):
         cookies['origin'] = '2'
 
     body = dict(hand='0',v='1',ver='1')
-    r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies)
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
+                      headers=headers)
     return json.loads(r.text)
+
+
+def get_income_info(cookies):
+    if len(cookies.get('sessionid')) == 128:
+        if cookies.get('origin') is not None:
+            del cookies['origin']
+    else:
+        cookies['origin'] = '1'
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    r = requests.get('https://red.xunlei.com/?r=usr/getinfo&v=1', verify=False, cookies=cookies,
+                     headers=headers)
+    return json.loads(r.text)
+
+
+def get_mine_info(cookies):
+    if len(cookies.get('sessionid')) == 128:
+        if cookies.get('origin') is not None:
+            del cookies['origin']
+    else:
+        cookies['origin'] = '1'
+    body = dict(hand='0', v='2', ver='1')
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    r = requests.post('https://red.xunlei.com/?r=mine/info', data=body, verify=False, cookies=cookies,
+                      headers=headers)
+    return json.loads(r.text)
+
+
+def get_speed_stat(s_type, cookies):
+    if len(cookies.get('sessionid')) == 128:
+        if cookies.get('origin') is not None:
+            del cookies['origin']
+    else:
+        cookies['origin'] = '1'
+    body = dict(type=s_type, hand='0', v='0', ver='1')
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies,
+                      headers=headers)
+    return json.loads(r.text).get('sds')
+
+
+def get_privilege(cookies):
+    if len(cookies.get('sessionid')) == 128:
+        if cookies.get('origin') is not None:
+            del cookies['origin']
+    else:
+        cookies['origin'] = '1'
+    body = dict(hand='0', v='0', ver='1')
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    r = requests.post('https://red.xunlei.com/?r=usr/privilege', data=body, verify=False, cookies=cookies,
+                      headers=headers)
+    return json.loads(r.text)
+
+
+def get_device_stat(s_type, cookies):
+    if len(cookies.get('sessionid')) == 128:
+        if cookies.get('origin') is not None:
+            del cookies['origin']
+    else:
+        cookies['origin'] = '1'
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    url = 'https://red.xunlei.com/?r=mine/devices_stat&hand=0&type=%s&v=2&ver=1' % s_type
+    this_cookies = cookies.copy()
+    if len(this_cookies.get('sessionid')) != 128:
+        this_cookies['origin'] = "2"
+    r = requests.post(url=url, verify=False, cookies=this_cookies,
+                      headers=headers)
+
+    return json.loads(r.text)
+
+
+def collect(cookies):
+    if len(cookies.get('sessionid')) == 128:
+        if cookies.get('origin') is not None:
+            del cookies['origin']
+    else:
+        cookies['origin'] = '1'
+    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies,
+                     headers=headers)
+    return json.loads(r.text)
+
