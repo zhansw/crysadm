@@ -4,8 +4,8 @@
 <head>
 
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="HandheldFriendly" content="true" />
     <title>Crysadm+</title>
 
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
@@ -14,6 +14,22 @@
     <link href="../static/css/animate.css" rel="stylesheet">
     <link href="../static/css/style.css" rel="stylesheet">
     {% block css_block %}{% endblock %}
+    <style>
+
+        @media (max-width: 640px) {
+            .col-lg-12, .col-md-6, .ibox, .col-lg-12>div>.ibox-content{
+              padding:0;
+              margin:0;
+            }
+
+            #page-wrapper {
+              padding:0px 5px 0px 5px;
+              margin:0;
+            }
+
+
+        }
+    </style>
 </head>
 
 <body>
@@ -88,7 +104,7 @@
                 </div>
                 <ul class="nav navbar-top-links navbar-right">
                     <li>
-                        <span class="m-r-sm text-muted">余额: {{ convert_to_yuan(balance) }}</span>
+                        <span class="m-r-sm text-muted"><span class="fa fa-rmb visible-xs-inline"></span><span class="hidden-xs">余额:</span> {{ convert_to_yuan(balance) }}</span>
 
                     </li>
                     {% if msg_box|length > 0 %}
