@@ -1,4 +1,4 @@
-运行环境 python3 , redis
+运行环境 python3.3+ , redis
 crysadm 启动web服务
 config 配置redis server
 crysadm_helper 启动后台服务

@@ -1,82 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>迅雷矿场云监工</title>
+    <title>Crysadm+ | Login</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/font-awesome/css/font-awesome.css" rel="stylesheet">
 
-    <!-- MetisMenu CSS -->
-    <link href="{{ url_for('static', filename='bower_components/metisMenu/dist/metisMenu.min.css') }}" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="{{ url_for('static', filename='bower_components/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <link href="../static/css/animate.css" rel="stylesheet">
+    <link href="../static/css/style.css" rel="stylesheet">
 
 </head>
 
-<body>
+<body class="gray-bg">
 
-    <div class="container">
+    <div class="loginColumns animated fadeInDown">
         <div class="row">
-            <div class="col-md-4 col-md-offset-4">
-                <div class="login-panel panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">请登陆</h3>
-                    </div>
-                    <div class="panel-body">
-                        {% if err_msg %}
+
+            <div class="col-md-6">
+                <h2 class="font-bold">欢迎来到 Crysadm+</h2>
+
+                <p>
+                    提供最优美的界面.
+                </p>
+
+                <p>
+                    提供最方便的监控方式.
+                </p>
+
+                <p>
+                    我是迅雷矿场云端监控大师.
+                </p>
+
+                <p>
+                    <small>免费但是好用.</small>
+                </p>
+
+            </div>
+            <div class="col-md-6">
+                <div class="ibox-content">
+                    {% if err_msg %}
                         <div class="alert alert-danger alert-dismissable">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                 {{ err_msg }}
                         </div>
-                        {% endif %}
-                        <form role="form" action="/user/login" method="post">
-                            <fieldset>
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="用户名" name="username" type="text" autofocus>
-                                </div>
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="密码" name="password" type="password" value="">
-                                </div>
-                                <!-- Change this to a button or input when using this as a form -->
-                                <input class="btn btn-lg btn-success btn-block" name="login" type="submit" value="登陆" />
-                            </fieldset>
-                        </form>
-                    </div>
+                    {% endif %}
+                    <form class="m-t" role="form" action="/user/login" method="post">
+                        <div class="form-group">
+                            <input type="text" name="username" class="form-control" placeholder="用户名" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" class="form-control" placeholder="密码" required="">
+                        </div>
+                        <button type="submit" class="btn btn-primary block full-width m-b">登陆</button>
+<!--
+                        <a href="#">
+                            <small>Forgot password?</small>
+                        </a>
+-->
+                        <p class="text-muted text-center">
+                            <small>没有账号?</small>
+                        </p>
+                        <a class="btn btn-sm btn-white btn-block" href="/register">注册一个吧</a>
+                    </form>
+                    <p class="m-t">
+                        <small>Inspinia threme &copy; 2014</small>
+                    </p>
                 </div>
             </div>
         </div>
+        <hr/>
+        <div class="row">
+            <div class="col-md-6">
+                Copyright powergx
+            </div>
+            <div class="col-md-6 text-right">
+               <small>© 2015-</small>
+            </div>
+        </div>
     </div>
-
-    <!-- jQuery -->
-    <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="{{ url_for('static', filename='bower_components/metisMenu/dist/metisMenu.min.js') }}"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="{{ url_for('static', filename='dist/js/sb-admin-2.js') }}"></script>
 
 </body>
 
