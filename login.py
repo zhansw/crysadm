@@ -60,8 +60,13 @@ def login(username, md5_password, encrypt_pwd_url=None):
     if encrypt_pwd_url is None or encrypt_pwd_url == '':
         return old_login(username, md5_password)
 
+    xunlei_domain = 'login.xunlei.com'
     s = requests.Session()
-    r = s.get('http://login.xunlei.com/check/?u=%s&v=100' % username)
+    r = s.get('http://%s/check/?u=%s&v=100' % (xunlei_domain, username))
+    if r.cookies.get('check_n') is None:
+        xunlei_domain = 'login2.xunlei.com'
+        r = s.get('http://%s/check/?u=%s&v=100' % (xunlei_domain, username))
+
     if r.cookies.get('check_n') is None:
         return old_login(username, md5_password)
     check_n = unquote(r.cookies.get('check_n'))
@@ -82,7 +87,7 @@ def login(username, md5_password, encrypt_pwd_url=None):
 
     data = dict(business_type='100', login_enable='0', verifycode=captcha, v='100', e=check_e, n=check_n, u=username,
                 p=e_pwd)
-    r = s.post('http://login.xunlei.com/sec2login/', data=data)
+    r = s.post('http://%s/sec2login/' % xunlei_domain, data=data)
 
     cookies = r.cookies.get_dict()
     if len(cookies) < 5:
