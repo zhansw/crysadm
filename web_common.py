@@ -4,6 +4,8 @@ from crysadm import app, r_session
 from auth import requires_admin, requires_auth
 from datetime import datetime, timedelta
 import json
+import socket
+import struct
 
 
 def __get_yesterday_pdc(username):
@@ -340,7 +342,20 @@ def add_function():
             return str(int(crystal_values / 1000) / 10) + '元'
         return str(crystal_values)
 
-    return dict(convert_to_yuan=convert_to_yuan)
+    def get_device_type(device_code):
+        if device_code==121:
+            return 'PC'
+        elif device_code==421:
+            return '路由'
+        elif device_code ==321:
+            return '赚钱宝'
+
+        return '不知道'
+
+    def int2ip(int_ip):
+        return socket.inet_ntoa(struct.pack("I", int_ip))
+
+    return dict(convert_to_yuan=convert_to_yuan, get_device_type=get_device_type,int2ip=int2ip)
 
 
 @app.context_processor
@@ -352,6 +367,7 @@ def message_box():
     msgs_key = 'user_messages:%s' % user.get('username')
 
     msg_box = list()
+    msg_count=0
     for b_msg_id in r_session.lrange(msgs_key, 0, -1):
         msg_key = 'user_message:%s' % b_msg_id.decode('utf-8')
         b_msg = r_session.get(msg_key)
@@ -366,8 +382,25 @@ def message_box():
         if len(msg.get('content')) > 35:
             msg['content'] = msg.get('content')[:35]+'...'
 
-        msg_box.append(msg)
-        if len(msg_box) > 3:
-            break
+        msg_count += 1
+        if not len(msg_box) > 3:
+            msg_box.append(msg)
 
-    return dict(msg_box=msg_box)
+    return dict(msg_box=msg_box,msg_count=msg_count)
+
+
+@app.context_processor
+def header_info():
+    if session is None or session.get('user_info') is None:
+        return dict()
+    user = session.get('user_info')
+
+    str_today = datetime.now().strftime('%Y-%m-%d')
+    key = 'user_data:%s:%s' % (user.get('username'), str_today)
+
+    b_data = r_session.get(key)
+
+    if b_data is None:
+        return dict(balance=0)
+    data = json.loads(b_data.decode('utf-8'))
+    return dict(balance=data.get('balance'))

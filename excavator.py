@@ -6,6 +6,7 @@ import json
 import requests
 from urllib.parse import urlparse
 import time
+from api import collect
 
 
 @app.route('/excavators')
@@ -51,9 +52,7 @@ def collect_all(user_id):
     user_id = account_info.get('user_id')
 
     cookies = dict(sessionid=session_id, userid=str(user_id))
-    if len(session_id) != 128:
-        cookies['origin'] = '1'
-    r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies)
+    r = collect(cookies)
 
     account_data_key = account_key+':data'
     account_data_value = json.loads(r_session.get(account_data_key).decode("utf-8"))
