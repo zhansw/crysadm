@@ -6,7 +6,6 @@ import requests
 import json
 from login import login
 from datetime import datetime, timedelta
-from api import *
 
 
 requests.packages.urllib3.disable_warnings()
@@ -23,8 +22,13 @@ redis_conf = conf.REDIS_CONF
 pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis_conf.db)
 r_session = redis.Redis(connection_pool=pool)
 
+from api import *
+
 
 def get_data(username, auto_collect):
+    if r_session.exists('api_error_info'):
+        return
+
     user_data = dict()
     for user_id in r_session.smembers('accounts:%s' % username):
         account_key = 'account:%s:%s' % (username, user_id.decode('utf-8'))
@@ -39,6 +43,9 @@ def get_data(username, auto_collect):
         cookies = dict(sessionid=session_id, userid=str(user_id))
 
         mine_info = get_mine_info(cookies)
+
+        if is_api_error(mine_info):
+            return
         if mine_info.get('r') != 0:
 
             success, account_info = relogin(account_info.get('account_name'), account_info.get('password'),
@@ -63,6 +70,9 @@ def get_data(username, auto_collect):
         # red_old = get_device_stat('0', cookies)
         blue_device_info = get_device_info(user_id)
 
+        if r_session.exists('api_error_info'):
+            return
+
         account_data_key = account_key + ':data'
         exist_account_data = r_session.get(account_data_key)
         if exist_account_data is None:
@@ -72,7 +82,7 @@ def get_data(username, auto_collect):
             account_data = json.loads(exist_account_data.decode('utf-8'))
 
         if account_data.get('updated_time') is not None:
-            last_updated_time = datetime.strptime(account_data.get('updated_time'),'%Y-%m-%d %H:%M:%S')
+            last_updated_time = datetime.strptime(account_data.get('updated_time'), '%Y-%m-%d %H:%M:%S')
             if last_updated_time.hour != datetime.now().hour:
                 account_data['zqb_speed_stat'] = get_speed_stat('1', cookies)
                 account_data['old_speed_stat'] = get_speed_stat('0', cookies)
@@ -85,6 +95,9 @@ def get_data(username, auto_collect):
         account_data['device_info'] = merge_device_data(red_zqb, blue_device_info)
         account_data['income'] = get_income_info(cookies)
 
+        if r_session.exists('api_error_info'):
+            return
+
         user_data[user_id] = account_data
         r_session.set(account_data_key, json.dumps(account_data))
 
@@ -93,6 +106,7 @@ def get_data(username, auto_collect):
             if r.get('r') == 0:
                 r_session.set('can_drawcash', r.get('is_tm'))
                 r_session.expire('can_drawcash', 60)
+
 
     save_history(username, user_data)
 
@@ -170,7 +184,7 @@ def get_crystal_data(username):
         threading.Thread(target=get_data, args=(username, auto_collect), name=username).start()
         time.sleep(refresh_interval)
 
-        #time.sleep(9999)
+        time.sleep(9999)
 
 
 def start_rotate():
@@ -187,8 +201,8 @@ def start_rotate():
 
         for user in users:
             name = user.decode('utf-8')
-            #if name != 'powergx':
-            #   continue
+            if name != 'powergx':
+                continue
             user_key = '%s:%s' % ('user', name)
             user_info = json.loads(r_session.get(user_key).decode('utf-8'))
             if not user_info.get('active'):

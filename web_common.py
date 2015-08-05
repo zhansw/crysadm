@@ -398,9 +398,14 @@ def header_info():
     str_today = datetime.now().strftime('%Y-%m-%d')
     key = 'user_data:%s:%s' % (user.get('username'), str_today)
 
-    b_data = r_session.get(key)
+    data = dict(balance=0)
 
-    if b_data is None:
-        return dict(balance=0)
-    data = json.loads(b_data.decode('utf-8'))
-    return dict(balance=data.get('balance'))
+    b_data = r_session.get(key)
+    if b_data is not None:
+        data['balance'] = json.loads(b_data.decode('utf-8')).get('balance')
+
+    b_api_error_info = session.get('api_error_info')
+    if b_api_error_info is not None:
+        data['api_error_info'] = b_api_error_info.decode('utf-8')
+
+    return data

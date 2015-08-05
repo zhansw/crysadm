@@ -13,6 +13,7 @@
 
     <link href="../static/css/animate.css" rel="stylesheet">
     <link href="../static/css/style.css" rel="stylesheet">
+
     {% block css_block %}{% endblock %}
     <style>
 
@@ -27,6 +28,9 @@
             #page-wrapper {
               padding:0px 5px 0px 5px;
               margin:0;
+            }
+            #sys_error_box>div{
+                font-size: 16px!important;
             }
         }
     </style>
@@ -47,7 +51,13 @@
 {% set active_page = active_page|default('index_temp') -%}
 
 <div id="wrapper">
-
+    {% if api_error_info is defined %}
+    <header id="sys_error_box" class="navbar" style="background-color: #1ab394;margin: 0px;height: 20px;">
+        <div class="col-lg-12" style="font-size:28px;color: #fff;font-weight: bold;text-align: center">
+            {{ api_error_info }}
+        </div>
+    </header>
+{% endif %}
     <nav class="navbar-default navbar-static-side" role="navigation">
         <div class="sidebar-collapse">
             <ul class="nav" id="side-menu">

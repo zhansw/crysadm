@@ -53,7 +53,11 @@ def collect_all(user_id):
 
     cookies = dict(sessionid=session_id, userid=str(user_id))
     r = collect(cookies)
+    if r.get('r') != 0:
+        session['error_message'] = r.get('rd')
+        return redirect(url_for('excavators'))
 
+    session['info_message'] = '收取水晶成功.'
     account_data_key = account_key+':data'
     account_data_value = json.loads(r_session.get(account_data_key).decode("utf-8"))
     account_data_value.get('mine_info')['td_not_in_a'] = 0
