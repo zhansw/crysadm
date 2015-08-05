@@ -253,6 +253,9 @@ def __handle_exception(e=None, rd='接口故障', r=-12345):
         r_session.set('api_error_info','迅雷矿场API故障中,攻城狮正在赶往事故现场,请耐心等待.')
         r_session.expire('api_error_info',60)
 
+    err_count_ttl = r_session.ttl('api_error_count')
+    if err_count_ttl is None:
+        err_count_ttl = 30
     r_session.set('api_error_count', str(err_count))
-    r_session.expire(r_session.ttl('api_error_count') + 5)
+    r_session.expire('api_error_count', err_count_ttl + 1)
     return dict(r=r, rd=rd)
