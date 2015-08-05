@@ -70,7 +70,7 @@ def get_data(username, auto_collect):
         # red_old = get_device_stat('0', cookies)
         blue_device_info = get_device_info(user_id)
 
-        if r_session.exists('api_error_info'):
+        if is_api_error(red_zqb) or is_api_error(blue_device_info):
             return
 
         account_data_key = account_key + ':data'
@@ -95,7 +95,7 @@ def get_data(username, auto_collect):
         account_data['device_info'] = merge_device_data(red_zqb, blue_device_info)
         account_data['income'] = get_income_info(cookies)
 
-        if r_session.exists('api_error_info'):
+        if is_api_error(account_data.get('income')):
             return
 
         user_data[user_id] = account_data
@@ -184,7 +184,7 @@ def get_crystal_data(username):
         threading.Thread(target=get_data, args=(username, auto_collect), name=username).start()
         time.sleep(refresh_interval)
 
-        time.sleep(9999)
+        #time.sleep(9999)
 
 
 def start_rotate():
@@ -201,8 +201,8 @@ def start_rotate():
 
         for user in users:
             name = user.decode('utf-8')
-            if name != 'powergx':
-                continue
+            #if name != 'powergx':
+            #    continue
             user_key = '%s:%s' % ('user', name)
             user_info = json.loads(r_session.get(user_key).decode('utf-8'))
             if not user_info.get('active'):
