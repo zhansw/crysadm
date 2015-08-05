@@ -140,13 +140,6 @@ def save_history(username, user_data):
     r_session.expire(key, 3600 * 24 * 35)
 
 
-def get_device_info(user_id):
-    url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s' % user_id
-    r = requests.get(url, verify=False)
-
-    return json.loads(r.text)
-
-
 def relogin(username, password, account_info, account_key):
     login_result = login(username, password, conf.ENCRYPT_PWD_URL)
 

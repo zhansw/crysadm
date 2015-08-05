@@ -166,3 +166,9 @@ def collect(cookies):
                      headers=headers)
     return json.loads(r.text)
 
+
+def get_device_info(user_id):
+    url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s' % user_id
+    r = requests.get(url, verify=False)
+
+    return json.loads(r.text)
