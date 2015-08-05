@@ -38,9 +38,8 @@ def get_data(username, auto_collect):
 
         cookies = dict(sessionid=session_id, userid=str(user_id))
 
-        privilege_info = get_privilege(cookies)
-
-        if privilege_info.get('r') != 0:
+        mine_info = get_mine_info(cookies)
+        if mine_info.get('r') != 0:
 
             success, account_info = relogin(account_info.get('account_name'), account_info.get('password'),
                                             account_info, account_key)
@@ -51,26 +50,39 @@ def get_data(username, auto_collect):
             cookies = dict(sessionid=session_id, userid=str(user_id))
             if len(session_id) == 128:
                 cookies['origin'] = '1'
-            privilege_info = get_privilege(cookies)
+
+            mine_info = get_mine_info(cookies)
 
         # 自动收取
         if datetime.now().strftime('%H:%M') in ['23:59', '00:00'] and auto_collect:
             collect(cookies)
         # 自动收取
 
-        mine_info = get_mine_info(cookies)
+
         red_zqb = get_device_stat('1', cookies)
         # red_old = get_device_stat('0', cookies)
         blue_device_info = get_device_info(user_id)
 
         account_data_key = account_key + ':data'
-        account_data = dict()
+        exist_account_data = r_session.get(account_data_key)
+        if exist_account_data is None:
+            account_data = dict()
+            account_data['privilege'] = get_privilege(cookies)
+        else:
+            account_data = json.loads(exist_account_data.decode('utf-8'))
+
+        if account_data.get('updated_time') is not None:
+            last_updated_time = datetime.strptime(account_data.get('updated_time'),'%Y-%m-%d %H:%M:%S')
+            if last_updated_time.hour != datetime.now().hour:
+                account_data['zqb_speed_stat'] = get_speed_stat('1', cookies)
+                account_data['old_speed_stat'] = get_speed_stat('0', cookies)
+        else:
+            account_data['zqb_speed_stat'] = get_speed_stat('1', cookies)
+            account_data['old_speed_stat'] = get_speed_stat('0', cookies)
+
         account_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         account_data['mine_info'] = mine_info
-        account_data['privilege'] = privilege_info
         account_data['device_info'] = merge_device_data(red_zqb, blue_device_info)
-        account_data['zqb_speed_stat'] = get_speed_stat('1', cookies)
-        account_data['old_speed_stat'] = get_speed_stat('0', cookies)
         account_data['income'] = get_income_info(cookies)
 
         user_data[user_id] = account_data
@@ -182,7 +194,7 @@ def start_rotate():
 
         for user in users:
             name = user.decode('utf-8')
-            #if name != 'chaoqi':
+            #if name != 'powergx':
             #   continue
             user_key = '%s:%s' % ('user', name)
             user_info = json.loads(r_session.get(user_key).decode('utf-8'))

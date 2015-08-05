@@ -102,4 +102,3 @@ def reboot_device(session_id):
     r = requests.post(url,data=body)
 
     return redirect(url_for('excavators'))
-
