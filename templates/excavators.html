@@ -12,18 +12,18 @@
         {% endif %}
         {% if info_msg %}
             <div class="col-lg-12">
-                <div class="alert alert-danger alert-dismissable">
+                <div class="alert alert-info alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                     {{ info_msg }}
                 </div>
             </div>
         {% endif %}
         <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading" style="height:42px;">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title" style="height:42px;">
                     账号信息
                 </div>
-                <div class="panel-body">
+                <div class="ibox-content">
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -50,7 +50,7 @@
                                         <td>{{ row.data.mine_info.td_cm_pdc |e }}</td>
                                         <td>{{ row.data.mine_info.td_box_pdc |e }}/{{ row.data.mine_info.td_box_pdc |e }}</td>
                                         <td>{{ row.data.mine_info.td_not_in_a |e }}</td>
-                                        <td>{{ convert_to_yuan(row.data.income.r_can_use) |e }}</td>
+                                        <td>{{ convert_to_yuan(row.data.income.r_can_use | default(0)) |e }}</td>
                                         <td>{{ row.data.updated_time| e }}</td>
                                         <td>
                                             {% if show_drawcash %}
@@ -75,12 +75,12 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading" style="height:42px;">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title" style="height:42px;">
                     设备信息
                 </div>
                 <!-- /.panel-heading -->
-                <div class="panel-body">
+                <div class="ibox-content">
                     {% for row in accounts %}
                         {% if row.data is defined  %}
                             <div class="table-responsive">

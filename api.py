@@ -1,16 +1,18 @@
 __author__ = 'powergx'
 import json
 import requests
+from crysadm_helper import r_session
 
 
 requests.packages.urllib3.disable_warnings()
+
 
 def exec_draw_cash(cookies):
     r = get_drawcash_info(cookies)
     if r.get('r') != 0:
         return r
     if r.get('is_tm') == 0:
-        return dict(r=0,rd=r.get('tm_tip'))
+        return dict(r=0, rd=r.get('tm_tip'))
     """
     可以提现就提，不然返回错误信息。
     """
@@ -28,22 +30,26 @@ def exec_draw_cash(cookies):
     return r
 
 
-def draw_cash(cookies,m):
+def draw_cash(cookies, m):
     """
     提现
     :param cookies:
     :return:
     """
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '2'
 
-    body = dict(hand='0',m=str(m),v='3',ver='1')
+    body = dict(hand='0', m=str(m), v='3', ver='1')
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    r = requests.post('https://red.xunlei.com/?r=usr/drawpkg',data=body, verify=False, cookies=cookies,
-                      headers=headers)
+    try:
+        r = requests.post('https://red.xunlei.com/?r=usr/drawpkg', data=body, verify=False, cookies=cookies,
+                          headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text)
 
 
@@ -55,103 +61,130 @@ def get_drawcash_info(cookies):
     :return:
     """
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '2'
 
-    body = dict(hand='0',v='1',ver='1')
+    body = dict(hand='0', v='1', ver='1')
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
-                      headers=headers)
+    try:
+        r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
+                          headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text)
 
 
 def get_balance_info(cookies):
     "获取余额"
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '2'
 
-    body = dict(hand='0',v='2',ver='1')
+    body = dict(hand='0', v='2', ver='1')
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    r = requests.post('https://red.xunlei.com/?r=usr/asset', data=body, verify=False, cookies=cookies,
-                      headers=headers)
+    try:
+        r = requests.post('https://red.xunlei.com/?r=usr/asset', data=body, verify=False, cookies=cookies,
+                          headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text)
 
 
 def get_can_drawcash(cookies):
     "获取余额"
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '2'
 
-    body = dict(hand='0',v='1',ver='1')
+    body = dict(hand='0', v='1', ver='1')
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
-                      headers=headers)
+    try:
+        r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
+                          headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text)
 
 
 def get_income_info(cookies):
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '1'
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    r = requests.get('https://red.xunlei.com/?r=usr/getinfo&v=1', verify=False, cookies=cookies,
-                     headers=headers)
+    try:
+        r = requests.get('https://red.xunlei.com/?r=usr/getinfo&v=1', verify=False, cookies=cookies,
+                         headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text)
 
 
 def get_mine_info(cookies):
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '1'
     body = dict(hand='0', v='2', ver='1')
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    r = requests.post('https://red.xunlei.com/?r=mine/info', data=body, verify=False, cookies=cookies,
-                      headers=headers)
+    try:
+        r = requests.post('https://red.xunlei.com/?r=mine/info', data=body, verify=False, cookies=cookies,
+                          headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text)
 
 
 def get_speed_stat(s_type, cookies):
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '1'
     body = dict(type=s_type, hand='0', v='0', ver='1')
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies,
-                      headers=headers)
+    try:
+        r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies,
+                          headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text).get('sds')
 
 
 def get_privilege(cookies):
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '1'
     body = dict(hand='0', v='0', ver='1')
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    r = requests.post('https://red.xunlei.com/?r=usr/privilege', data=body, verify=False, cookies=cookies,
-                      headers=headers)
+    try:
+        r = requests.post('https://red.xunlei.com/?r=usr/privilege', data=body, verify=False, cookies=cookies,
+                          headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text)
 
 
 def get_device_stat(s_type, cookies):
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '1'
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
@@ -159,20 +192,70 @@ def get_device_stat(s_type, cookies):
     this_cookies = cookies.copy()
     if len(this_cookies.get('sessionid')) != 128:
         this_cookies['origin'] = "2"
-    r = requests.post(url=url, verify=False, cookies=this_cookies,
-                      headers=headers)
-
+    try:
+        r = requests.post(url=url, verify=False, cookies=this_cookies,
+                          headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text)
 
 
 def collect(cookies):
     if len(cookies.get('sessionid')) == 128:
-        if cookies.get('origin') is not None:
-            del cookies['origin']
+        cookies['origin'] = '4'
     else:
         cookies['origin'] = '1'
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies,
-                     headers=headers)
+    try:
+        r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies,
+                         headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
     return json.loads(r.text)
 
+
+def get_device_info(user_id):
+    url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s' % user_id
+    try:
+        r = requests.get(url, verify=False, timeout=10)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
+    if r.status_code != 200:
+        return __handle_exception(rd=r.reason)
+    return json.loads(r.text)
+
+
+def is_api_error(r):
+    if r.get('r') == -12345:
+        return True
+    return False
+
+
+def __handle_exception(e=None, rd='接口故障', r=-12345):
+    if e is None:
+        print(rd)
+    else:
+        print(e)
+
+    b_err_count = r_session.get('api_error_count')
+    if b_err_count is None:
+        r_session.set('api_error_count', '1')
+        r_session.expire('api_error_count',60)
+        return dict(r=r, rd=rd)
+
+    err_count = int(b_err_count.decode('utf-8')) + 1
+
+    if err_count>100:
+        r_session.set('api_error_info','迅雷矿场API故障中,攻城狮正在赶往事故现场,请耐心等待.')
+        r_session.expire('api_error_info',60)
+
+    err_count_ttl = r_session.ttl('api_error_count')
+    if err_count_ttl is None:
+        err_count_ttl = 30
+    r_session.set('api_error_count', str(err_count))
+    r_session.expire('api_error_count', err_count_ttl + 1)
+    return dict(r=r, rd=rd)
