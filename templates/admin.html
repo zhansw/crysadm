@@ -1,120 +1,119 @@
 {% extends "base.html" %}
 {% block content %}
+    <div class="row">
+        <div class="col-lg-12">
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            管理工具
-        </div>
-        <!-- /.panel-heading -->
-        <div class="panel-body">
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs" style=" border-bottom-width: 0px; ">
-                <li class="active"><a href="#user" data-toggle="tab">用户管理</a>
-                </li>
-                <li><a href="#inv_code" data-toggle="tab">邀请码管理</a>
-                </li>
-            </ul>
+            <!-- /.panel-heading -->
+            <div class="tabs-container">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" style=" border-bottom-width: 0px; ">
+                    <li class="active"><a href="#user" data-toggle="tab">用户管理</a>
+                    </li>
+                    <li><a href="#inv_code" data-toggle="tab">邀请码管理</a>
+                    </li>
+                </ul>
 
-            <!-- Tab panes -->
-            <div class="tab-content">
-                <div class="tab-pane fade in active" id="user">
-                    <div class="table-responsive table-bordered">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>用户名</th>
-                                <th>邮箱</th>
-                                <th>创建时间</th>
-                                <th>管理权限</th>
-                                <th>刷新时间</th>
-                                <th>启用</th>
-                                <th>最大账户</th>
-                                <th>操作</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for row in users %}
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="user">
+                        <div class="panel-body">
 
-                                <tr>
-                                    <td>{{ loop.index }}</td>
-                                    <td>{{ row.username|e }}</td>
-                                    <td>{{ row.email|e }}</td>
-                                    <td>{{ row.created_time|e }}</td>
-                                    <td>
-                                        {% if row.is_admin  %}
-                                            O
-                                        {% else %}
-                                            X
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ row.refresh_interval|e }}</td>
-                                    <td>
-                                        {% if row.active  %}
-                                            O
-                                        {% else %}
-                                            X
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ row.max_account_no|e }}</td>
-                                    <td>
-                                        <div style="display: inline-block">
-                                            <a href="/admin_user/{{ row.username|e }}" class="btn btn-outline btn-default btn-xs">编辑</a>
-                                        </div>
-                                        <form style="display: inline-block" role="form" action="/admin/login_as/{{ row.username|e }}" method="post">
-                                            <button type="submit" class="btn btn-default btn-xs">登陆</button>
-                                        </form>
-                                    </td>
-                                </tr>
+                            <div class="table-responsive table-bordered">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>用户名</th>
+                                        <th>邮箱</th>
+                                        <th>创建时间</th>
+                                        <th>管理权限</th>
+                                        <th>刷新时间</th>
+                                        <th>启用</th>
+                                        <th>最大账户</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for row in users %}
 
-                            {% endfor %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ row.username|e }}</td>
+                                            <td>{{ row.email|e }}</td>
+                                            <td>{{ row.created_time|e }}</td>
+                                            <td>
+                                                {% if row.is_admin  %}
+                                                    O
+                                                {% else %}
+                                                    X
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ row.refresh_interval|e }}</td>
+                                            <td>
+                                                {% if row.active  %}
+                                                    O
+                                                {% else %}
+                                                    X
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ row.max_account_no|e }}</td>
+                                            <td>
+                                                <div style="display: inline-block">
+                                                    <a href="/admin_user/{{ row.username|e }}" class="btn btn-outline btn-default btn-xs">编辑</a>
+                                                </div>
+                                                <form style="display: inline-block" role="form" action="/admin/login_as/{{ row.username|e }}" method="post">
+                                                    <button type="submit" class="btn btn-default btn-xs">登陆</button>
+                                                </form>
+                                            </td>
+                                        </tr>
 
-                            </tbody>
-                        </table>
+                                    {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
                     </div>
-                    <!-- /.table-responsive -->
-                </div>
-                <div class="tab-pane fade" id="inv_code">
-                    <div class="table-responsive table-bordered">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>邀请码</th>
-                                <th>链接</th>
+                    <div class="tab-pane fade" id="inv_code">
+                        <div class="panel-body">
+                            <div class="table-responsive table-bordered">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>邀请链接</th>
 
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for code in inv_codes %}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for code in inv_codes %}
 
-                                <tr>
-                                    <td>{{ loop.index }}</td>
-                                    <td>{{ code.decode('utf-8')|e }}</td>
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>
+                                                {{ request.url_root }}register?inv_code={{ code.decode('utf-8')|e }}
+                                            </td>
+                                        </tr>
 
-                                    <td>
-                                        {{ request.url_root }}register?inv_code={{ code.decode('utf-8')|e }}
-                                    </td>
-                                </tr>
+                                    {% endfor %}
 
-                            {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
 
-                            </tbody>
-                        </table>
+                            <form role="form" action="/generate/inv_code" method="post">
+                                <button type="submit" style="border-radius: 0;" class="btn btn-success">生成邀请码</button>
+                            </form>
+                        </div>
                     </div>
-                    <!-- /.table-responsive -->
-
-                    <form role="form" action="/generate/inv_code" method="post">
-
-                        <button type="submit" style="border-radius: 0;" class="btn btn-success">生成邀请码</button>
-
-                    </form>
                 </div>
             </div>
-        </div>
-        <!-- /.panel-body -->
-    </div>
+            <!-- /.panel-body -->
 
+        </div>
+    </div>
 {% endblock %}
 
 {% block navibar %}
