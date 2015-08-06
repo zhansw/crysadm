@@ -159,9 +159,11 @@ def get_speed_stat(s_type, cookies):
         r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies,
                           headers=headers, timeout=10)
     except requests.exceptions.RequestException as e:
-        return __handle_exception(e=e)
+        __handle_exception(e=e)
+        return [0]*24
     if r.status_code != 200:
-        return __handle_exception(rd=r.reason)
+        __handle_exception(rd=r.reason)
+        return [0]*24
     return json.loads(r.text).get('sds')
 
 
