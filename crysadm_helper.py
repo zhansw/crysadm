@@ -216,37 +216,8 @@ def start_rotate():
 
 
 if __name__ == '__main__':
+    #get_data_thread = threading.Thread(target=get_crystal_data, name='get_data_thread')
+    #service_thread = threading.Thread(target=get_crystal_data, name='service_thread')
+    #while True:
+    #    pass
     start_rotate()
-
-"""
-拾取日志
-POST https://red.xunlei.com/?r=usr/assetio HTTP/1.1
-Host: red.xunlei.com
-Proxy-Connection: keep-alive
-Accept: */*
-Accept-Encoding: gzip, deflate
-Content-Length: 14
-Content-Type: application/x-www-form-urlencoded
-Accept-Language: zh-Hans;q=1, en;q=0.9
-Cookie: lgname=powergx@gmail.com; origin=2; sessionid=05650B3F48D9667A1E25720B62B7910F; userid=266244981; username=powergx
-Connection: keep-alive
-User-Agent: RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)
-
-p=0&ps=20&tp=0
-
-
-POST https://red.xunlei.com/?r=usr/asset HTTP/1.1
-Host: red.xunlei.com
-Proxy-Connection: keep-alive
-Accept: */*
-Accept-Encoding: gzip, deflate
-Content-Length: 16
-Content-Type: application/x-www-form-urlencoded
-Accept-Language: zh-Hans;q=1, en;q=0.9
-Cookie: lgname=powergx@gmail.com; origin=2; sessionid=05650B3F48D9667A1E25720B62B7910F; userid=266244981; username=powergx
-Connection: keep-alive
-User-Agent: RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)
-
-hand=0&v=2&ver=1
-
-"""
