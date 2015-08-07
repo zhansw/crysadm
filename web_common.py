@@ -202,8 +202,7 @@ def dashboard():
     speed_comparison_data = __get_speed_comparison_data(today_data.get('history_speed'), today_data.get('speed_stat'),
                                                         today_data.get('updated_time'))
 
-    return render_template('dashboard.html', refresh_interval=user.get('refresh_interval'),
-                           today_data=today_data, speed_comparison_data=speed_comparison_data)
+    return render_template('dashboard.html', today_data=today_data, speed_comparison_data=speed_comparison_data)
 
 
 @app.route('/dashboard_data')
@@ -266,6 +265,20 @@ def dashboard_data():
     return Response(json.dumps(dict(today_data=today_data, speed_comparison_data=speed_comparison_data)), mimetype='application/json')
 
 
+@app.route('/handshake')
+def handshake():
+    user = session.get('user_info')
+    if user is None or user.get('username') is None:
+        Response(json.dumps(dict(status='failure')), mimetype='application/json')
+    username = user.get('username')
+    key = 'user:%s:is_online' % username
+
+    r_session.set(key, '1')
+    r_session.expire(key, 60)
+
+    return Response(json.dumps(dict(status='success')), mimetype='application/json')
+
+
 @app.route('/analyzer')
 @requires_auth
 def analyzer():
@@ -303,7 +316,7 @@ def install():
         password = ''.join(random.sample(_chars, 6))
 
         user = dict(username=username, password=hash_password(password), id=str(uuid.uuid1()),
-                    active=True, is_admin=True, max_account_no=2, refresh_interval=30,
+                    active=True, is_admin=True, max_account_no=2,
                     created_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         r_session.set('%s:%s' % ('user', username), json.dumps(user))
         r_session.sadd('users', username)

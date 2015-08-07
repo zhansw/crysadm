@@ -79,13 +79,6 @@
                         </form>
                         <form role="form" action="/admin/change_user_info/{{ user.username|e }}" method="post">
                             <div class="form-group input-group">
-                                            <span class="input-group-addon"><i style="width: 16px;" class="fa fa-rotate-right"></i>
-                                            </span>
-                                <input type="text" class="form-control" name="refresh_interval" placeholder="30" value="{{ user.refresh_interval|default('10') }}" >
-                                            <span class="input-group-addon"><span style="text-align:left; width: 90px; display: inline-block;">刷新时间</span>
-                                            </span>
-                            </div>
-                            <div class="form-group input-group">
                                             <span class="input-group-addon"><i style="width: 16px;" class="fa fa-group"></i>
                                             </span>
                                 <input type="text" class="form-control" name="max_account_no" placeholder="2" value="{{ user.max_account_no|default('2') }}" >
