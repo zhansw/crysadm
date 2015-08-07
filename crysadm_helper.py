@@ -182,7 +182,7 @@ def start_rotate():
         return
 
     users = r_session.smembers('users')
-
+    print('pao')
     for user in users:
         username = user.decode('utf-8')
         if username != debugger_username and debugger:
@@ -218,5 +218,6 @@ if __name__ == '__main__':
     if debugger:
         start_rotate()
     else:
-        timer = threading.Timer(3, start_rotate)
-        timer.start()
+        while True:
+            start_rotate()
+            time.sleep(3)
