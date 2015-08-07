@@ -22,7 +22,7 @@ pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis
 r_session = redis.Redis(connection_pool=pool)
 
 debugger = False
-debugger_username = '15637303109@wo.cn'
+debugger_username = 'powergx'
 
 from api import *
 
