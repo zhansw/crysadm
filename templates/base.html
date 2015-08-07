@@ -37,18 +37,7 @@
             }
         }
     </style>
-    <script>
-        setInterval(function (){
-            $.getJSON( "/handshake", function( data ) {
-                console.log( "success" );
-            }).done(function() {
-                console.log( "second success" );
-            }).fail(function() {
-                console.log( "error" );
-            });
 
-        },10000);
-    </script>
 </head>
 
 <body>

@@ -265,20 +265,6 @@ def dashboard_data():
     return Response(json.dumps(dict(today_data=today_data, speed_comparison_data=speed_comparison_data)), mimetype='application/json')
 
 
-@app.route('/handshake')
-def handshake():
-    user = session.get('user_info')
-    if user is None or user.get('username') is None:
-        Response(json.dumps(dict(status='failure')), mimetype='application/json')
-    username = user.get('username')
-    key = 'user:%s:is_online' % username
-
-    r_session.set(key, '1')
-    r_session.expire(key, 60)
-
-    return Response(json.dumps(dict(status='success')), mimetype='application/json')
-
-
 @app.route('/analyzer')
 @requires_auth
 def analyzer():
