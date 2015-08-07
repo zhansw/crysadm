@@ -26,6 +26,10 @@ def user_login():
         session['error_message'] = '密码错误'
         return redirect(url_for('login'))
 
+    if not user.get('active'):
+        session['error_message'] = '您的账号已被禁用.'
+        return redirect(url_for('login'))
+
     session['user_info'] = user
 
     return redirect(url_for('dashboard'))

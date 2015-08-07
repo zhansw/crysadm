@@ -182,7 +182,6 @@ def start_rotate():
         return
 
     users = r_session.smembers('users')
-    print('pao')
     for user in users:
         username = user.decode('utf-8')
         if username != debugger_username and debugger:
@@ -192,7 +191,7 @@ def start_rotate():
         if not user_info.get('active'):
             continue
 
-        if datetime.now().strftime('%H:%M') in ['23:59', '00:00'] and not debugger:
+        if datetime.now().strftime('%H:%M') in ['23:59', '00:00'] or debugger:
             every_day_night(user_info, username)
 
         if not r_session.exists('user:%s:is_online' % username) and not debugger:
@@ -215,9 +214,6 @@ def every_day_night(user_info, username):
 
 
 if __name__ == '__main__':
-    if debugger:
-        start_rotate()
-    else:
         while True:
             start_rotate()
             time.sleep(3)
