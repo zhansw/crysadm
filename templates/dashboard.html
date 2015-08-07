@@ -225,10 +225,7 @@
         }
         var last_upd_hour = new Date().getHours();
         function reload_chart(data){
-            if (last_upd_hour == new Date().getHours()){
-                return;
-            }
-            last_upd_hour = new Date().getHours();
+
             $('#seven-day-chart').highcharts({
                 chart: {
 
@@ -339,23 +336,31 @@
         var reload_data = function(){
 
             $.getJSON( "/dashboard_data", function( data ) {
-                $('#last_speed').html(convert_speed(data.today_data.last_speed));
-                $('#pdc').html(convert_to_yuan(data.today_data.pdc));
-                $('#w_pdc').html(convert_to_yuan(data.today_data.w_pdc));
-                $('#m_pdc').html(convert_to_yuan(data.today_data.m_pdc));
+                if($('#last_speed').html() != convert_speed(data.today_data.last_speed)){
+                    $('#last_speed').html(convert_speed(data.today_data.last_speed));
 
-                flash_element($('#last_speed'));
-                flash_element($('#pdc'));
-                flash_element($('#w_pdc'));
-                flash_element($('#m_pdc'));
-
-                if(data.today_data.last_speed > 1024){
-                    $('#speed_unit').html('M')
-                }else{
-                    $('#speed_unit').html('K')
+                    if(data.today_data.last_speed > 1024){
+                        $('#speed_unit').html('M')
+                    }else{
+                        $('#speed_unit').html('K')
+                    }
+                    flash_element($('#last_speed'));
                 }
-                reload_chart(data)
-
+                if($('#pdc').html() != convert_to_yuan(data.today_data.pdc)) {
+                    $('#pdc').html(convert_to_yuan(data.today_data.pdc));
+                }
+                if($('#w_pdc').html() != convert_to_yuan(data.today_data.w_pdc)) {
+                    $('#w_pdc').html(convert_to_yuan(data.today_data.w_pdc));
+                    flash_element($('#w_pdc'));
+                }
+                if($('#m_pdc').html() != convert_to_yuan(data.today_data.m_pdc)) {
+                    $('#m_pdc').html(convert_to_yuan(data.today_data.m_pdc));
+                    flash_element($('#m_pdc'));
+                }
+                if (last_upd_hour != new Date().getHours()){
+                    last_upd_hour = new Date().getHours();
+                    reload_chart(data)
+                }
             })
         }
 

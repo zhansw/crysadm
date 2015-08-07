@@ -7,7 +7,6 @@ import json
 from login import login
 from datetime import datetime, timedelta
 
-
 requests.packages.urllib3.disable_warnings()
 
 conf = None
@@ -21,6 +20,9 @@ else:
 redis_conf = conf.REDIS_CONF
 pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis_conf.db)
 r_session = redis.Redis(connection_pool=pool)
+
+debugger = False
+debugger_username = '15637303109@wo.cn'
 
 from api import *
 
@@ -46,7 +48,7 @@ def get_data(username, auto_collect):
         if mine_info.get('r') != 0:
 
             success, account_info = __relogin(account_info.get('account_name'), account_info.get('password'),
-                                            account_info, account_key)
+                                              account_info, account_key)
             if not success:
                 continue
             session_id = account_info.get('session_id')
@@ -134,16 +136,20 @@ def save_history(username):
     today_data['speed_stat'] = list()
 
     for user_id in r_session.smembers('accounts:%s' % username):
-        #获取账号所有数据
+        # 获取账号所有数据
         account_data_key = 'account:%s:%s:data' % (username, user_id.decode('utf-8'))
         b_data = r_session.get(account_data_key)
         if b_data is None:
             continue
         data = json.loads(b_data.decode('utf-8'))
 
+        if datetime.strptime(data.get('updated_time'),'%Y-%m-%d %H:%M:%S') +timedelta(minutes=1) < datetime.now():
+            continue
         today_data.get('speed_stat').append(dict(mid=data.get('privilege').get('mid'),
-                                                 dev_speed=data.get('zqb_speed_stat'),
-                                                 pc_speed=data.get('old_speed_stat')))
+                                                 dev_speed=data.get('zqb_speed_stat') if data.get(
+                                                     'zqb_speed_stat') is not None else [0] * 24,
+                                                 pc_speed=data.get('old_speed_stat') if data.get(
+                                                     'old_speed_stat') is not None else [0] * 24))
         today_data['pdc'] += data.get('mine_info').get('dev_m').get('pdc') + \
                              data.get('mine_info').get('dev_pc').get('pdc')
 
@@ -179,20 +185,20 @@ def start_rotate():
 
     for user in users:
         username = user.decode('utf-8')
-        #if name != 'powergx':
-        #    continue
+        if username != debugger_username and debugger:
+            continue
         user_key = '%s:%s' % ('user', username)
         user_info = json.loads(r_session.get(user_key).decode('utf-8'))
         if not user_info.get('active'):
             continue
 
-        if datetime.now().strftime('%H:%M') in ['23:59', '00:00']:
+        if datetime.now().strftime('%H:%M') in ['23:59', '00:00'] and not debugger:
             every_day_night(user_info, username)
 
-        if not r_session.exists('user:%s:is_online' % username):
+        if not r_session.exists('user:%s:is_online' % username) and not debugger:
             continue
 
-        if r_session.exists('user:%s:is_querying' % username):
+        if r_session.exists('user:%s:is_querying' % username) and not debugger:
             continue
 
         r_session.set('user:%s:is_querying' % username, '1')
@@ -200,7 +206,8 @@ def start_rotate():
 
         threading.Thread(target=get_data, args=(username, False), name=username).start()
 
-def every_day_night(user_info,username):
+
+def every_day_night(user_info, username):
     auto_collect = user_info.get('auto_collect') if user_info.get('auto_collect') is not None else False
     r_session.set('user:%s:is_querying' % username, '1')
     r_session.expire('user:%s:is_querying' % username, 30)
@@ -208,7 +215,8 @@ def every_day_night(user_info,username):
 
 
 if __name__ == '__main__':
-    timer = threading.Timer(3, start_rotate)
-    timer.start()
-
-
+    if debugger:
+        start_rotate()
+    else:
+        timer = threading.Timer(3, start_rotate)
+        timer.start()
