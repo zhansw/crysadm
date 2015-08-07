@@ -164,6 +164,10 @@ def dashboard():
                 'category': [],
                 'value': []
             },
+            'seven_days_chart': {
+                'category': [],
+                'value': []
+            },
             'updated_time': '2015-01-01 00:00:00',
             'm_pdc': 0,
             'last_speed': 0,
