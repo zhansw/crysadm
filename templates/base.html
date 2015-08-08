@@ -59,12 +59,20 @@
 
 <div id="wrapper">
     {% if api_error_info is defined %}
-    <header id="sys_error_box" class="navbar" style="background-color: #1ab394;margin: 0px;height: 20px;">
-        <div class="col-lg-12" style="font-size:28px;color: #fff;font-weight: bold;text-align: center">
-            {{ api_error_info }}
-        </div>
-    </header>
-{% endif %}
+        <header id="sys_error_box" class="navbar" style="background-color: #1ab394;margin: 0px;min-height: 30px;">
+            <div class="col-lg-12" style="font-size:28px;color: #fff;font-weight: bold;text-align: center">
+                {{ api_error_info }}
+            </div>
+        </header>
+    {% endif %}
+    {% if session.admin_user_info is defined %}
+        <header id="sys_error_box" class="navbar" style="background-color: #F8AC59;margin: 0px;min-height: 30px !important;">
+            <div class="col-lg-12" style="font-size:24px;color: #fff;font-weight: bold;text-align: center;">
+                 伟大的管理员,您正在登陆 {{ session.user_info.username }} 的账户
+            </div>
+        </header>
+    {% endif %}
+
     <nav class="navbar-default navbar-static-side" role="navigation">
         <div class="sidebar-collapse">
             <ul class="nav" id="side-menu">
