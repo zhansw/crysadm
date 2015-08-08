@@ -18,7 +18,7 @@ else:
     conf = config.TestingConfig
 
 redis_conf = conf.REDIS_CONF
-pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis_conf.db)
+pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis_conf.db, password=redis_conf.password)
 r_session = redis.Redis(connection_pool=pool)
 
 debugger = False

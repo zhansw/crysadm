@@ -12,7 +12,7 @@ else:
     app.config.from_object(config.TestingConfig)
 
 redis_conf = app.config.get('REDIS_CONF')
-pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis_conf.db)
+pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis_conf.db, password=redis_conf.password)
 r_session = redis.Redis(connection_pool=pool)
 
 from admin import *
