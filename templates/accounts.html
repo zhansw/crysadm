@@ -92,7 +92,7 @@
                                     <td>{{ row.createdtime|e }}</td>
                                     <td>
                                         <form style="float:left;margin-right: 10px;" role="form" action="/account/del/{{ row.user_id|e }}" method="post">
-                                            <button type="submit" class="btn btn-outline btn-danger btn-xs">删除</button>
+                                            <button type="submit" onclick="javascript:return confirm('确认要删除此账号?')"  class="btn btn-outline btn-danger btn-xs">删除</button>
                                         </form>
 
                                         {% if row.active  %}

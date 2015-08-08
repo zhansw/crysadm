@@ -37,16 +37,20 @@
             }
         }
     </style>
+
 </head>
 
 <body>
 
 
 {% set navigation_bar = [
-    ('dashboard','/dashboard', '<i class="fa fa-fw fa-dashboard"></i>', '监控中心'),
-    ('analyzer','/analyzer', '<i class="fa fa-fw fa-bar-chart-o"></i>', '数据分析'),
-    ('excavators','/excavators', '<i class="fa fa-fw fa-sitemap"></i>', '我的矿机'),
-    ('accounts','/accounts', '<i class="fa fa-fw fa-user-md"></i>', '账号管理')
+    ('dashboard','/dashboard', '<i class="fa fa-fw fa-dashboard"></i>', '监控中心',[]),
+    ('analyzer','/analyzer', '<i class="fa fa-fw fa-bar-chart-o"></i>', '数据分析',[]),
+    ('excavators','/excavators', '<i class="fa fa-fw fa-sitemap"></i>', '我的矿机',[]),
+    ('accounts','/#', '<i class="fa fa-fw fa-user-md"></i>', '账号管理',
+        [('accounts','/accounts', '迅雷账号管理'),
+        ('profile','/user/profile', '我的个人信息')]),
+
 ] -%}
 {% set navigation_admin_bar = [
     ('admin','/admin', '<i class="fa fa-fw fa-gear"></i>', '系统管理')
@@ -70,28 +74,26 @@
                         <h1><b>Crysadm+</b></h1>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="clear"> <span class="block m-t-xs">
-                                <strong class="font-bold">{{ session.user_info.username }}</strong><b class="caret"></b>
+                                <strong class="font-bold">{{ session.user_info.username }}</strong></b>
                              </span> </span> </a>
 
-                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
-
-                            <li><a href="/messagebox"><i class="fa fa-envelope fa-fw"></i> 通知中心</a>
-                            </li>
-                            <li><a href="/user/profile"><i class="fa fa-user fa-fw"></i> 我的信息</a>
-                            </li>
-                            <li class="divider"></li>
-                            <li>
-                                <a href="/user/logout"><i class="fa fa-sign-out fa-fw"></i> 登出</a>
-                            </li>
-                        </ul>
                     </div>
                     <div class="logo-element">
                         CA+
                     </div>
                 </li>
-                {% for id, href, icon, caption in navigation_bar %}
+                {% for id, href, icon, caption,sub_navigation_bar in navigation_bar %}
                     <li{% if id == active_page %} class="active"{% endif %}>
-                        <a href="{{ href|e }}">{{ icon|safe }} <span class="nav-label">{{ caption|e }}</span></a>
+                        <a href="{{ href|e }}">{{ icon|safe }} <span class="nav-label">{{ caption|e }}</span>
+                            {% if sub_navigation_bar|length > 0 %}<span class="fa arrow"></span>{% endif %}
+                        </a>
+                    {% if sub_navigation_bar|length > 0 %}
+                        <ul style="" class="nav nav-second-level collapse">
+                        {% for id, href, caption in sub_navigation_bar  %}
+                             <li><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
                     </li>
                 {% endfor %}
                 {% if session.user_info.is_admin %}
@@ -197,7 +199,7 @@
 
 <!-- Custom and plugin javascript -->
 <script src="../static/js/inspinia.js"></script>
-<script src="../static/js/plugins/pace/pace.min.js"></script>
+<!--<script src="../static/js/plugins/pace/pace.min.js"></script>-->
 
 {% block js_logic %}{% endblock %}
 

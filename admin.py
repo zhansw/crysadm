@@ -105,20 +105,11 @@ def admin_change_property(field, value, username):
 @requires_admin
 def admin_change_user_info(username):
     max_account_no = request.values.get('max_account_no')
-    refresh_interval = request.values.get('refresh_interval')
 
     r = r"^[1-9]\d*$"
 
-    if re.match(r, refresh_interval) is None:
-        session['error_message'] = '刷新时间必须为整数.'
-        return redirect(url_for(endpoint='admin_user', username=username))
-
     if re.match(r, max_account_no) is None:
         session['error_message'] = '迅雷账号限制必须为整数.'
-        return redirect(url_for(endpoint='admin_user', username=username))
-
-    if not 4 < int(refresh_interval) < 61:
-        session['error_message'] = '迅雷账号限制必须为 5~60 秒.'
         return redirect(url_for(endpoint='admin_user', username=username))
 
     if not 0 < int(max_account_no) < 21:
@@ -129,7 +120,6 @@ def admin_change_user_info(username):
     user_info = json.loads(r_session.get(user_key).decode('utf-8'))
 
     user_info['max_account_no'] = int(max_account_no)
-    user_info['refresh_interval'] = int(refresh_interval)
 
     r_session.set(user_key, json.dumps(user_info))
 

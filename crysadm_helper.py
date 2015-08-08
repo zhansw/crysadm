@@ -7,7 +7,6 @@ import json
 from login import login
 from datetime import datetime, timedelta
 
-
 requests.packages.urllib3.disable_warnings()
 
 conf = None
@@ -22,14 +21,14 @@ redis_conf = conf.REDIS_CONF
 pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis_conf.db)
 r_session = redis.Redis(connection_pool=pool)
 
+debugger = False
+debugger_username = 'powergx'
+
 from api import *
 
 
 def get_data(username, auto_collect):
-    if r_session.exists('api_error_info'):
-        return
-
-    user_data = dict()
+    start_time = datetime.now()
     for user_id in r_session.smembers('accounts:%s' % username):
         account_key = 'account:%s:%s' % (username, user_id.decode('utf-8'))
 
@@ -48,8 +47,8 @@ def get_data(username, auto_collect):
             return
         if mine_info.get('r') != 0:
 
-            success, account_info = relogin(account_info.get('account_name'), account_info.get('password'),
-                                            account_info, account_key)
+            success, account_info = __relogin(account_info.get('account_name'), account_info.get('password'),
+                                              account_info, account_key)
             if not success:
                 continue
             session_id = account_info.get('session_id')
@@ -61,7 +60,7 @@ def get_data(username, auto_collect):
             mine_info = get_mine_info(cookies)
 
         # 自动收取
-        if datetime.now().strftime('%H:%M') in ['23:59', '00:00'] and auto_collect:
+        if auto_collect:
             collect(cookies)
         # 自动收取
 
@@ -92,13 +91,12 @@ def get_data(username, auto_collect):
 
         account_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         account_data['mine_info'] = mine_info
-        account_data['device_info'] = merge_device_data(red_zqb, blue_device_info)
+        account_data['device_info'] = __merge_device_data(red_zqb, blue_device_info)
         account_data['income'] = get_income_info(cookies)
 
         if is_api_error(account_data.get('income')):
             return
 
-        user_data[user_id] = account_data
         r_session.set(account_data_key, json.dumps(account_data))
 
         if not r_session.exists('can_drawcash'):
@@ -107,11 +105,11 @@ def get_data(username, auto_collect):
                 r_session.set('can_drawcash', r.get('is_tm'))
                 r_session.expire('can_drawcash', 60)
 
+    if start_time.day == datetime.now().day:
+        save_history(username)
 
-    save_history(username, user_data)
 
-
-def merge_device_data(red_zqb, blue_device_info):
+def __merge_device_data(red_zqb, blue_device_info):
     for blue_info in blue_device_info.get('DEVICE_INFO'):
         for red_info in red_zqb.get('info'):
             if red_info.get('dv_id') == blue_info.get('DCDNID'):
@@ -121,9 +119,7 @@ def merge_device_data(red_zqb, blue_device_info):
     return blue_device_info.get('DEVICE_INFO')
 
 
-def save_history(username, user_data):
-    if datetime.now().strftime('%H:%M') in ['23:59', '00:00']:
-        return
+def save_history(username):
     str_today = datetime.now().strftime('%Y-%m-%d')
     key = 'user_data:%s:%s' % (username, str_today)
     b_today_data = r_session.get(key)
@@ -138,10 +134,22 @@ def save_history(username, user_data):
     today_data['balance'] = 0
     today_data['income'] = 0
     today_data['speed_stat'] = list()
-    for data in user_data.values():
+
+    for user_id in r_session.smembers('accounts:%s' % username):
+        # 获取账号所有数据
+        account_data_key = 'account:%s:%s:data' % (username, user_id.decode('utf-8'))
+        b_data = r_session.get(account_data_key)
+        if b_data is None:
+            continue
+        data = json.loads(b_data.decode('utf-8'))
+
+        if datetime.strptime(data.get('updated_time'),'%Y-%m-%d %H:%M:%S') +timedelta(minutes=1) < datetime.now():
+            continue
         today_data.get('speed_stat').append(dict(mid=data.get('privilege').get('mid'),
-                                                 dev_speed=data.get('zqb_speed_stat'),
-                                                 pc_speed=data.get('old_speed_stat')))
+                                                 dev_speed=data.get('zqb_speed_stat') if data.get(
+                                                     'zqb_speed_stat') is not None else [0] * 24,
+                                                 pc_speed=data.get('old_speed_stat') if data.get(
+                                                     'old_speed_stat') is not None else [0] * 24))
         today_data['pdc'] += data.get('mine_info').get('dev_m').get('pdc') + \
                              data.get('mine_info').get('dev_pc').get('pdc')
 
@@ -154,7 +162,7 @@ def save_history(username, user_data):
     r_session.expire(key, 3600 * 24 * 35)
 
 
-def relogin(username, password, account_info, account_key):
+def __relogin(username, password, account_info, account_key):
     login_result = login(username, password, conf.ENCRYPT_PWD_URL)
 
     if login_result.get('errorCode') != 0:
@@ -169,84 +177,43 @@ def relogin(username, password, account_info, account_key):
     return True, account_info
 
 
-def get_crystal_data(username):
-    while True:
+def start_rotate():
+    if r_session.exists('api_error_info'):
+        return
+
+    users = r_session.smembers('users')
+    for user in users:
+        username = user.decode('utf-8')
+        if username != debugger_username and debugger:
+            continue
         user_key = '%s:%s' % ('user', username)
         user_info = json.loads(r_session.get(user_key).decode('utf-8'))
-        refresh_interval = 30 if user_info.get('refresh_interval') is None else user_info.get('refresh_interval')
         if not user_info.get('active'):
-            break
+            continue
 
-        auto_collect = False
-        if user_info.get('auto_collect') is not None:
-            auto_collect = user_info.get('auto_collect')
+        if datetime.now().strftime('%H:%M') in ['23:59', '00:00'] or debugger:
+            every_day_night(user_info, username)
 
-        threading.Thread(target=get_data, args=(username, auto_collect), name=username).start()
-        time.sleep(refresh_interval)
+        if not r_session.exists('user:%s:is_online' % username) and not debugger:
+            continue
 
-        #time.sleep(9999)
+        if r_session.exists('user:%s:is_querying' % username) and not debugger:
+            continue
+
+        r_session.set('user:%s:is_querying' % username, '1')
+        r_session.expire('user:%s:is_querying' % username, 5)
+
+        threading.Thread(target=get_data, args=(username, False), name=username).start()
 
 
-def start_rotate():
-    thread_list = list()
-    while True:
-        users = r_session.smembers('users')
-        for i, thread in enumerate(thread_list):
-            if not thread.is_alive():
-                thread_list.pop(i)
-                continue
-            b_name = bytes(thread.name, 'utf-8')
-            if b_name in users:
-                users.remove(b_name)
-
-        for user in users:
-            name = user.decode('utf-8')
-            #if name != 'powergx':
-            #    continue
-            user_key = '%s:%s' % ('user', name)
-            user_info = json.loads(r_session.get(user_key).decode('utf-8'))
-            if not user_info.get('active'):
-                continue
-
-            t = threading.Thread(target=get_crystal_data, args=(name,), name=name)
-            thread_list.append(t)
-            t.start()
-
-        time.sleep(30)
+def every_day_night(user_info, username):
+    auto_collect = user_info.get('auto_collect') if user_info.get('auto_collect') is not None else False
+    r_session.set('user:%s:is_querying' % username, '1')
+    r_session.expire('user:%s:is_querying' % username, 30)
+    threading.Thread(target=get_data, args=(username, auto_collect), name=username).start()
 
 
 if __name__ == '__main__':
-    start_rotate()
-
-"""
-拾取日志
-POST https://red.xunlei.com/?r=usr/assetio HTTP/1.1
-Host: red.xunlei.com
-Proxy-Connection: keep-alive
-Accept: */*
-Accept-Encoding: gzip, deflate
-Content-Length: 14
-Content-Type: application/x-www-form-urlencoded
-Accept-Language: zh-Hans;q=1, en;q=0.9
-Cookie: lgname=powergx@gmail.com; origin=2; sessionid=05650B3F48D9667A1E25720B62B7910F; userid=266244981; username=powergx
-Connection: keep-alive
-User-Agent: RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)
-
-p=0&ps=20&tp=0
-
-
-POST https://red.xunlei.com/?r=usr/asset HTTP/1.1
-Host: red.xunlei.com
-Proxy-Connection: keep-alive
-Accept: */*
-Accept-Encoding: gzip, deflate
-Content-Length: 16
-Content-Type: application/x-www-form-urlencoded
-Accept-Language: zh-Hans;q=1, en;q=0.9
-Cookie: lgname=powergx@gmail.com; origin=2; sessionid=05650B3F48D9667A1E25720B62B7910F; userid=266244981; username=powergx
-Connection: keep-alive
-User-Agent: RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)
-
-hand=0&v=2&ver=1
-
-"""
+        while True:
+            start_rotate()
+            time.sleep(3)

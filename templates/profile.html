@@ -50,13 +50,7 @@
                                             <span class="input-group-addon"><span style="text-align:left; width: 90px; display: inline-block;">管理员</span>
                                             </span>
                             </div>
-                            <div class="form-group input-group">
-                                            <span class="input-group-addon"><i style="width: 16px;" class="fa fa-rotate-right"></i>
-                                            </span>
-                                <input type="text" class="form-control" value="{{ user_info.refresh_interval|default('10') }}" disabled>
-                                            <span class="input-group-addon"><span style="text-align:left; width: 90px; display: inline-block;">刷新时间</span>
-                                            </span>
-                            </div>
+
                             <div class="form-group input-group">
                                             <span class="input-group-addon"><i style="width: 16px;" class="fa fa-group"></i>
                                             </span>
@@ -143,3 +137,4 @@
         </ol>
     </div>
 {% endblock %}
+{% set active_page = "accounts" %}

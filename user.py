@@ -26,6 +26,10 @@ def user_login():
         session['error_message'] = '密码错误'
         return redirect(url_for('login'))
 
+    if not user.get('active'):
+        session['error_message'] = '您的账号已被禁用.'
+        return redirect(url_for('login'))
+
     session['user_info'] = user
 
     return redirect(url_for('dashboard'))
@@ -199,7 +203,7 @@ def user_register():
 
     r_session.srem('invitation_codes', invitation_code)
     user = dict(username=username, password=hash_password(password), id=str(uuid.uuid1()),
-                active=True, is_admin=False, max_account_no=2, refresh_interval=30,
+                active=True, is_admin=False, max_account_no=2,
                 created_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     r_session.set('%s:%s' % ('user', username), json.dumps(user))
     r_session.sadd('users', username)

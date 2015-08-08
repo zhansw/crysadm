@@ -21,7 +21,7 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title" style="height:42px;">
-                    账号信息
+                    今日统计
                 </div>
                 <div class="ibox-content">
                     <div class="table-responsive">
@@ -31,13 +31,14 @@
 
                                 <th class="col-md-1">矿主ID</th>
                                 <th class="col-md-1">赚钱宝</th>
-                                <th class="col-md-1">老式矿机</th>
-                                <th class="col-md-1">雇佣矿机</th>
-                                <th class="col-md-1">宝箱</th>
-                                <th class="col-md-1">未收取</th>
+                                <th class="col-md-1 hidden-xs">老式矿机</th>
+                                <th class="col-md-1 hidden-xs">雇佣矿机</th>
+                                <th class="col-md-1 hidden-xs">宝箱</th>
+                                <th class="col-md-1 hidden-xs">未收取</th>
                                 <th class="col-md-1">余额</th>
+                                <th class="col-md-1">总收入</th>
                                 <th class="col-md-2">更新时间</th>
-                                <th class="col-md-2" style="text-align: right;padding-right: 30px;">操作</th>
+                                <th class="col-md-1" style="text-align: right;padding-right: 30px;">操作</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -46,20 +47,22 @@
                                     <tr>
                                         <td>{{ row.data.privilege.mid |e }}</td>
                                         <td>{{ row.data.mine_info.dev_m.pdc |default('0') }}</td>
-                                        <td>{{ row.data.mine_info.dev_pc.pdc |e }}</td>
-                                        <td>{{ row.data.mine_info.td_cm_pdc |e }}</td>
-                                        <td>{{ row.data.mine_info.td_box_pdc |e }}/{{ row.data.mine_info.td_box_pdc |e }}</td>
-                                        <td>{{ row.data.mine_info.td_not_in_a |e }}</td>
+                                        <td class="hidden-xs">{{ row.data.mine_info.dev_pc.pdc |e }}</td>
+                                        <td class="hidden-xs">{{ row.data.mine_info.td_cm_pdc |e }}</td>
+                                        <td class="hidden-xs">{{ row.data.mine_info.td_box_pdc |e }}/{{ row.data.mine_info.td_box_pdc |e }}</td>
+                                        <td class="hidden-xs">{{ row.data.mine_info.td_not_in_a |e }}</td>
                                         <td>{{ convert_to_yuan(row.data.income.r_can_use | default(0)) |e }}</td>
-                                        <td>{{ row.data.updated_time| e }}</td>
+                                        <td>{{ convert_to_yuan(row.data.income.r_h_a | default(0))| e }}</td>
+                                        <td class="hidden-xs">{{ row.data.updated_time }}</td>
+                                        <td class="visible-xs">{{ row.data.updated_time.split(' ')[1] }}</td>
                                         <td>
                                             {% if show_drawcash %}
                                                 <form role="form" style="margin-left: 10px;float:right;" action="/drawcash/{{ row.user_id|e }}" method="post">
-                                                    <button type="submit" class="btn btn-info btn-xs">提现</button>
+                                                    <button type="submit" onclick="javascript:return confirm('确认要提现?')" class="btn btn-info btn-xs">提现</button>
                                                 </form>
                                             {% endif %}
                                             <form role="form" style="float:right;" action="/collect/{{ row.user_id|e }}" method="post">
-                                                <button type="submit" class="btn btn-info btn-xs">收取</button>
+                                                <button type="submit" onclick="javascript:return confirm('确认要收取水晶?')" class="btn btn-info btn-xs">收取</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -89,13 +92,13 @@
                                     <thead>
                                     <tr>
 
-                                        <th class="col-md-2" style="min-width: 120px;">矿机名</th>
+                                        <th class="col-md-2 hidden-xs" style="min-width: 120px;">矿机名</th>
                                         <th class="col-md-1" style="min-width: 60px;">类型</th>
                                         <th class="col-md-2" style="min-width: 120px;">上传/最快 KB/s</th>
                                         <th class="col-md-1" style="min-width: 80px;">下载 KB/s</th>
-                                        <th class="col-md-1" style="min-width: 70px;">缓存 GB</th>
+                                        <th class="col-md-1 hidden-xs" style="min-width: 70px;">缓存 GB</th>
                                         <th class="col-md-1" style="min-width: 120px;">状态</th>
-                                        <th class="col-md-1">IP</th>
+                                        <th class="col-md-1 hidden-xs">IP</th>
                                         <th class="col-md-1" style="text-align: right;">操作</th>
                                     </tr>
                                     </thead>
@@ -104,14 +107,14 @@
                                         {% for dev in row.data.device_info %}
                                                 <tr>
                                                     {% if dev.red_info is defined %}
-                                                    <td>{{ dev.red_info.hn|default(dev.HOST_NAME) }}</td>
+                                                    <td class="hidden-xs">{{ dev.red_info.hn|default(dev.HOST_NAME) }}</td>
                                                     {% else %}
-                                                    <td>{{ dev.HOST_NAME |e }}</td>
+                                                    <td class="hidden-xs">{{ dev.HOST_NAME |e }}</td>
                                                     {% endif %}
                                                     <td>{{ get_device_type(dev.PRODUCT_ID) |e }}</td>
                                                     <td>{{ (dev.CUR_UPLOAD_SPEED/1024)|int |default('') }}/{{ (dev.MAX_UPLOAD_SPEED/1024)|int }}</td>
                                                     <td>{{ (dev.CUR_DEPLOY_SPEED/1024)|int }}</td>
-                                                    <td>{{ (dev.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
+                                                    <td class="hidden-xs">{{ (dev.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
                                                     <td>
 
                                                         {% if dev.ON_OFF_STATE == 1 %}
@@ -129,12 +132,12 @@
                                                                 </span>
                                                         {% endif %}
                                                     </td>
-                                                    <td>{{ int2ip(dev.EXTERNAL_IP) | e }}</td>
+                                                    <td class="hidden-xs">{{ int2ip(dev.EXTERNAL_IP) | e }}</td>
                                                     <td>
                                                         {% if dev.red_info is defined %}
                                                         <form style="float:right;" role="form" action="/reboot_device/{{ row.session_id |e }}" method="post">
                                                             <input type="hidden" name="url" value="{{ dev.red_info.url }}" />
-                                                            <button type="submit" style="float: right;" class="btn btn-info btn-xs">重启</button>
+                                                            <button type="submit" style="float: right;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
                                                         </form>
                                                         {% endif %}
                                                     </td>
