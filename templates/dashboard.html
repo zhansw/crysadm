@@ -84,7 +84,17 @@
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
                         <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日产量
-
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
                     </div>
                     <!-- /.panel-heading -->
                     <div class="ibox-content">
@@ -105,7 +115,17 @@
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
                         <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日速度
-
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
                     </div>
                     <!-- /.panel-heading -->
                     <div class="ibox-content">
@@ -224,6 +244,7 @@
             return speed;
         }
         var last_upd_hour = new Date().getHours();
+        var load_chart_count = 0;
         function reload_chart(data){
 
             $('#seven-day-chart').highcharts({
@@ -357,9 +378,15 @@
                     $('#m_pdc').html(convert_to_yuan(data.today_data.m_pdc));
                     flash_element($('#m_pdc'));
                 }
-                if (last_upd_hour != new Date().getHours()){
-                    last_upd_hour = new Date().getHours();
-                    reload_chart(data)
+                if (last_upd_hour != new Date().getHours()) {
+                    if (load_chart_count < 3) {
+                        load_chart_count++;
+                        reload_chart(data);
+                    }
+                    else{
+                        load_chart_count = 0;
+                        last_upd_hour = new Date().getHours();
+                    }
                 }
             })
         }
