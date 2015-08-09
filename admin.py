@@ -9,9 +9,9 @@ import re
 import random
 
 
-@app.route('/admin')
+@app.route('/admin/user')
 @requires_admin
-def admin():
+def admin_user():
     users = list()
 
     for username in sorted(r_session.smembers('users')):
@@ -20,8 +20,27 @@ def admin():
             continue
         users.append(json.loads(b_user.decode('utf-8')))
 
+    return render_template('admin_user.html', users=users)
 
-    return render_template('admin.html', users=users,inv_codes=r_session.smembers('invitation_codes'))
+
+@app.route('/admin/message')
+@requires_admin
+def admin_message():
+    users = list()
+
+    for username in sorted(r_session.smembers('users')):
+        b_user = r_session.get('user:%s' % username.decode('utf-8'))
+        if b_user is None:
+            continue
+        users.append(json.loads(b_user.decode('utf-8')))
+
+    return render_template('admin_message.html', users=users,inv_codes=r_session.smembers('invitation_codes'))
+
+
+@app.route('/admin/invitation')
+@requires_admin
+def admin_invitation():
+    return render_template('admin_invitation.html', inv_codes=r_session.smembers('invitation_codes'))
 
 
 @app.route('/generate/inv_code', methods=['POST'])
@@ -51,7 +70,7 @@ def generate_login_as(username):
 
 @app.route('/admin_user/<username>')
 @requires_admin
-def admin_user(username):
+def admin_user_management(username):
     err_msg = None
     if session.get('error_message') is not None:
         err_msg = session.get('error_message')
