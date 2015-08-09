@@ -54,7 +54,7 @@ def logout():
     if session.get('admin_user_info') is not None:
         session['user_info'] = session.get('admin_user_info')
         del session['admin_user_info']
-        return redirect(url_for('admin'))
+        return redirect(url_for('admin_user'))
 
     session.clear()
     return redirect(url_for('login'))

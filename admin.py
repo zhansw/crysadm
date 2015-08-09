@@ -52,7 +52,7 @@ def generate_inv_code():
     for i in range(0, 20 - r_session.scard('invitation_codes')):
         r_session.sadd('invitation_codes',''.join(random.sample(_chars, 10)))
 
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin_user'))
 
 
 @app.route('/admin/login_as/<username>', methods=['POST'])
@@ -164,4 +164,4 @@ def admin_del_user(username):
     for key in r_session.keys('user_data:%s:*' % username):
         r_session.delete(key.decode('utf-8'))
 
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin_user'))
