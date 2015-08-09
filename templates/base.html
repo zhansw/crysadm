@@ -50,7 +50,7 @@
     ('dashboard','/dashboard', '<i class="fa fa-fw fa-dashboard"></i>', '监控中心',[]),
     ('analyzer','/analyzer', '<i class="fa fa-fw fa-bar-chart-o"></i>', '数据分析',[]),
     ('excavators','/excavators', '<i class="fa fa-fw fa-sitemap"></i>', '我的矿机',[]),
-    ('accounts','/#', '<i class="fa fa-fw fa-user-md"></i>', '账号管理',
+    ('accounts','/#', '<i class="fa fa-fw fa-user"></i>', '账号管理',
         [('accounts','/accounts', '迅雷账号管理'),
         ('profile','/user/profile', '我的个人信息')]),
 
@@ -58,6 +58,7 @@
 {% set navigation_admin_bar = [
     ('admin','/#', '<i class="fa fa-fw fa-gear"></i>', '系统管理',[
         ('admin_user','/admin/user', '用户管理'),
+        ('admin_message','/admin/message', '通知管理'),
         ('admin_invitation','/admin/invitation', '邀请管理')
     ])
 ] -%}

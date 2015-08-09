@@ -32,13 +32,13 @@
             <div class="mail-body">
                 <form class="form-horizontal" method="get">
                     <div class="form-group"><label class="col-sm-2 control-label">发送至:</label>
-                        <div class="col-sm-10"><input class="form-control" value="" placeholder="crystal@xunlei.com , mikey , all" type="text"></div>
+                        <div class="col-sm-10"><input class="form-control" value="{{ session.user_info.username }}" placeholder="crystal@xunlei.com , mikey , all" type="text"></div>
                     </div>
                     <div class="form-group"><label class="col-sm-2 control-label">主题:</label>
-                        <div class="col-sm-10"><input class="form-control" value="" type="text"></div>
+                        <div class="col-sm-10"><input placeholder="新通知,明天放假." class="form-control" value="" type="text"></div>
                     </div>
                     <div class="form-group"><label class="col-sm-2 control-label">简介:</label>
-                        <div class="col-sm-10"><input class="form-control" value="" type="text"></div>
+                        <div class="col-sm-10"><input placeholder="晴到多云转阴,有时有雨,可能雷电暴雨龙卷风." class="form-control" value="" type="text"></div>
                     </div>
                 </form>
 
@@ -51,7 +51,7 @@
             <div class="mail-body text-right tooltip-demo">
                 <a data-original-title="Send" href="mailbox.html" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title=""><i class="fa fa-reply"></i> Send</a>
                 <a data-original-title="Discard email" href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title=""><i class="fa fa-times"></i> Discard</a>
-                <a data-original-title="Move to draft folder" href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title=""><i class="fa fa-pencil"></i> Draft</a>
+
             </div>
             <div class="clearfix"></div>
 
@@ -72,7 +72,7 @@
                 Admin
             </li>
             <li class="active">
-                <strong>message</strong>
+                <strong>Message</strong>
             </li>
         </ol>
     </div>
@@ -82,9 +82,26 @@
 
 {% block js_logic %}
     <script src="../static/js/plugins/summernote/summernote.min.js"></script>
+    <script src="../static/js/plugins/summernote/summernote-zh-CN.js"></script>
     <script>
         $(document).ready(function() {
-            $('.summernote').summernote();
+            $('.summernote').summernote({
+                disableDragAndDrop: true,
+                toolbar : [
+                    ['style', ['style']],
+
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['fontsize', ['fontsize']],
+                    ['font', ['fontname']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['Insert', ['link','table']],
+                    ['Misc', ['codeview','undo','redo','help']]
+                ],
+                lang: 'zh-CN'
+            });
+
         });
     </script>
 {% endblock %}
