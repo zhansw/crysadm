@@ -78,10 +78,32 @@ def add_msg():
     i =0
     for b_username in r_session.smembers('users'):
         i += 1
-        if i >5:
+        if i >10000:
             break
-        send_msg('powergx', '有新功能啦！', '监控中心已支持自动刷新，普通用户30秒刷新一次数据', expire=3600*24)
+        send_msg(b_username.decode('utf-8'), '新域名通知 crysadm.com！', '最好看的矿场监工有新的访问姿势:crysadm.com           <br /> <br />'
+                                                  '''<table class="table table-bordered">
+                                                      <tbody>
+                                                      <tr>
+
+                                                        <td>国内用户</td>
+                                 <td><a href="https://crysadm.com">crysadm.com</a></td>
+                                                                          </tr>
+                                                                          <tr>
+                                                                              <td>海外用户</td>
+                                                                              <td><a href="https://os.crysadm.com">os.crysadm.com</a></td>
+                                                                          </tr>
+                                                                          </tbody>
+                                                                      </table>
+                                                                      ''', expire=3600*24)
     return '发送成功'
+
+
+@app.route('/delall_msg')
+@requires_admin
+def del_all_msg():
+    for k in r_session.keys('user_messages:*'):
+        r_session.delete(k.decode('utf-8'))
+    return '删除成功'
 
 
 def send_msg(username, subject, content, expire=3600 * 24 * 7):

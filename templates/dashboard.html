@@ -88,7 +88,9 @@
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
                             </a>
-
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
                             <a class="close-link">
                                 <i class="fa fa-times"></i>
                             </a>
@@ -117,7 +119,9 @@
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
                             </a>
-
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
                             <a class="close-link">
                                 <i class="fa fa-times"></i>
                             </a>
@@ -380,9 +384,9 @@
                         reload_chart(data);
                     }
                     else{
-                        load_chart_count = 0;
                         last_upd_hour = new Date().getHours();
                     }
+
                 }
             })
         }

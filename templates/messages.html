@@ -27,7 +27,7 @@
                                 <input name="msg,{{ row.id }}" type="checkbox" class="i-checks">
                             </td>
                             <td class="mail-ontact">{{ row.subject }}</td>
-                            <td class="mail-subject">{{ row.content }}</td>
+                            <td class="mail-subject">{{ row.content |safe }}</td>
 
                             <td class="text-right mail-date"><em>{{ row.time }}</em></td>
                         </tr>
