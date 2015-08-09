@@ -58,7 +58,6 @@
 {% set navigation_admin_bar = [
     ('admin','/#', '<i class="fa fa-fw fa-gear"></i>', '系统管理',[
         ('admin_user','/admin/user', '用户管理'),
-        ('admin_message','/admin/message', '通知管理'),
         ('admin_invitation','/admin/invitation', '邀请管理')
     ])
 ] -%}
@@ -98,14 +97,14 @@
                     </div>
                 </li>
                 {% for id, href, icon, caption,sub_navigation_bar in navigation_bar %}
-                    <li{% if id == active_page %} class="active"{% endif %}>
+                    <li{% if id == active_page or active_page in sub_navigation_bar|map(attribute='0') %} class="active"{% endif %}>
                         <a href="{{ href|e }}">{{ icon|safe }} <span class="nav-label">{{ caption|e }}</span>
                             {% if sub_navigation_bar|length > 0 %}<span class="fa arrow"></span>{% endif %}
                         </a>
                         {% if sub_navigation_bar|length > 0 %}
                             <ul style="" class="nav nav-second-level collapse">
                                 {% for id, href, caption in sub_navigation_bar  %}
-                                    <li><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                                    <li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
                                 {% endfor %}
                             </ul>
                         {% endif %}
@@ -113,14 +112,14 @@
                 {% endfor %}
                 {% if session.user_info.is_admin %}
                     {% for id, href, icon, caption,sub_navigation_bar in navigation_admin_bar %}
-                        <li{% if id == active_page %} class="active"{% endif %}>
+                        <li{% if id == active_page or active_page in sub_navigation_bar|map(attribute='0') %} class="active"{% endif %}>
                             <a href="{{ href|e }}">{{ icon|safe }} <span class="nav-label">{{ caption|e }}</span>
                                 {% if sub_navigation_bar |length > 0 %}<span class="fa arrow"></span>{% endif %}
                             </a>
                             {% if sub_navigation_bar |length > 0 %}
                                 <ul style="" class="nav nav-second-level collapse">
                                     {% for id, href, caption in sub_navigation_bar  %}
-                                        <li><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                                        <li {% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
                                     {% endfor %}
                                 </ul>
                             {% endif %}
