@@ -52,7 +52,7 @@ def generate_inv_code():
     for i in range(0, 20 - r_session.scard('invitation_codes')):
         r_session.sadd('invitation_codes',''.join(random.sample(_chars, 10)))
 
-    return redirect(url_for('admin_user'))
+    return redirect(url_for('admin_invitation'))
 
 
 @app.route('/admin/login_as/<username>', methods=['POST'])

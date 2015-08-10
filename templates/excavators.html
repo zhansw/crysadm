@@ -113,7 +113,7 @@
                                                     {{ dev.HOST_NAME[-4:] | e }}
                                                 {% endif %}
 
-                                                {% if row.data.double_device and dev.ON_OFF_STATE == 1%}
+                                                {% if dev.PRODUCT_ID == 321 and row.data.double_device and dev.ON_OFF_STATE == 1%}
                                                     {% if dev.red_info is defined %}
                                                          <span style="margin-top: 1px; line-height: 12px;" data-original-title="已使用双矿机" data-toggle="tooltip" data-placement="top" class="label label-warning pull-right">Master</span>
                                                     {% else %}
