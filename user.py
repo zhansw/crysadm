@@ -131,10 +131,8 @@ def user_change_password():
         session['error_message'] = '新密码输入不一致.'
         return redirect(url_for('user_profile'))
 
-    r = r"(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{6,15})$"
-
-    if re.match(r, n_password) is None:
-        session['error_message'] = '密码太弱了(6~15位数字加字母).'
+    if len(n_password) < 8:
+        session['error_message'] = '密码必须8位及以上.'
         return redirect(url_for('user_profile'))
 
     user_key = '%s:%s' % ('user', user.get('username'))
@@ -195,10 +193,8 @@ def user_register():
         session['error_message'] = '新密码输入不一致.'
         return redirect(url_for('register'))
 
-    r = r"(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{6,15})$"
-
-    if re.match(r, password) is None:
-        session['error_message'] = '密码太弱了(6~15位数字加字母).'
+    if len(password) < 8:
+        session['error_message'] = '密码必须8位及以上.'
         return redirect(url_for('register'))
 
     r_session.srem('invitation_codes', invitation_code)
