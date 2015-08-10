@@ -104,45 +104,55 @@
                                     </thead>
                                     <tbody>
 
-                                        {% for dev in row.data.device_info %}
-                                                <tr>
-                                                    {% if dev.red_info is defined %}
-                                                    <td class="hidden-xs">{{ dev.red_info.hn|default(dev.HOST_NAME) }}</td>
-                                                    {% else %}
-                                                    <td class="hidden-xs">{{ dev.HOST_NAME |e }}</td>
-                                                    {% endif %}
-                                                    <td>{{ get_device_type(dev.PRODUCT_ID) |e }}</td>
-                                                    <td>{{ (dev.CUR_UPLOAD_SPEED/1024)|int |default('') }}/{{ (dev.MAX_UPLOAD_SPEED/1024)|int }}</td>
-                                                    <td>{{ (dev.CUR_DEPLOY_SPEED/1024)|int }}</td>
-                                                    <td class="hidden-xs">{{ (dev.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
-                                                    <td>
+                                    {% for dev in row.data.device_info | sort(attribute='DCDNID') %}
+                                        <tr>
+                                            <td class="hidden-xs tooltip-demo">
+                                                {% if dev.red_info is defined %}
+                                                    {{ dev.red_info.hn|default(dev.HOST_NAME) }}
+                                                {% else %}
+                                                    {{ dev.HOST_NAME[-4:] | e }}
+                                                {% endif %}
 
-                                                        {% if dev.ON_OFF_STATE == 1 %}
-                                                            <span type="button" class="btn btn-info disabled btn-xs">
+                                                {% if row.data.double_device and dev.ON_OFF_STATE == 1%}
+                                                    {% if dev.red_info is defined %}
+                                                         <span style="margin-top: 1px; line-height: 12px;" data-original-title="已使用双矿机" data-toggle="tooltip" data-placement="top" class="label label-warning pull-right">Master</span>
+                                                    {% else %}
+                                                        <span style="margin-top: 1px; line-height: 12px;" data-original-title="分身矿机" data-toggle="tooltip" data-placement="top" class="label label-warning pull-right">Shadow</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ get_device_type(dev.PRODUCT_ID) |e }}
+                                            </td>
+                                            <td>{{ (dev.CUR_UPLOAD_SPEED/1024)|int |default('') }}/{{ (dev.MAX_UPLOAD_SPEED/1024)|int }}</td>
+                                            <td>{{ (dev.CUR_DEPLOY_SPEED/1024)|int }}</td>
+                                            <td class="hidden-xs">{{ (dev.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
+                                            <td>
+                                                {% if dev.ON_OFF_STATE == 1 %}
+                                                    <span class="label label-info">
                                                                 工作
                                                                 </span>
-                                                        {% elif dev.ON_OFF_STATE == 2 %}
-                                                            <span type="button" class="btn btn-warning disabled btn-xs">
+                                                {% elif dev.ON_OFF_STATE == 2 %}
+                                                    <span class="label label-warning">
                                                                 断网
                                                                 </span>
-                                                        {% endif %}
-                                                        {% if dev.red_info is defined and dev.red_info.upgrade %}
-                                                            <span type="button" class="btn btn-danger disabled btn-xs">
+                                                {% endif %}
+                                                {% if dev.red_info is defined and dev.red_info.upgrade %}
+                                                    <span class="label label-danger">
                                                                 有升级
                                                                 </span>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td class="hidden-xs">{{ int2ip(dev.EXTERNAL_IP) | e }}</td>
-                                                    <td>
-                                                        {% if dev.red_info is defined %}
-                                                        <form style="float:right;" role="form" action="/reboot_device/{{ row.session_id |e }}" method="post">
-                                                            <input type="hidden" name="url" value="{{ dev.red_info.url }}" />
-                                                            <button type="submit" style="float: right;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
-                                                        </form>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                        {% endfor %}
+                                                {% endif %}
+                                            </td>
+                                            <td class="hidden-xs">{{ int2ip(dev.EXTERNAL_IP) | e }}</td>
+                                            <td>
+                                                {% if dev.red_info is defined %}
+                                                    <form style="float:right;" role="form" action="/reboot_device/{{ row.session_id |e }}" method="post">
+                                                        <input type="hidden" name="url" value="{{ dev.red_info.url }}" />
+                                                        <button type="submit" style="float: right;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
+                                                    </form>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>

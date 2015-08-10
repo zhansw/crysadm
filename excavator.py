@@ -33,6 +33,12 @@ def excavators():
         account_info = json.loads(r_session.get(account_key).decode("utf-8"))
         if account_data_value is not None:
             account_info['data'] = json.loads(account_data_value.decode("utf-8"))
+            account_info.get('data')['double_device'] = False
+            for dev in account_info.get('data').get('device_info'):
+                if dev.get('CACHE_DIR')[-13:] == 'dcdn_client_1':
+                    account_info.get('data')['double_device'] = True
+                    break
+
         accounts.append(account_info)
 
     show_drawcash = not(r_session.get('can_drawcash') is None or
