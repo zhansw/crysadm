@@ -165,3 +165,35 @@ def admin_del_user(username):
         r_session.delete(key.decode('utf-8'))
 
     return redirect(url_for('admin_user'))
+
+
+@app.route('/admin/message/send', methods=['POST'])
+@requires_admin
+def admin_message_send():
+    to = request.values.get('to')
+    subject = request.values.get('subject')
+    summary = request.values.get('summary')
+    content = request.values.get('content')
+
+    return '功能已关闭'
+    i =0
+    for b_username in r_session.smembers('users'):
+        i += 1
+        if i >10000:
+            break
+        send_msg(b_username.decode('utf-8'), '新域名通知 crysadm.com！', '最好看的矿场监工有新的访问姿势:crysadm.com           <br /> <br />'
+                                                  '''<table class="table table-bordered">
+                                                      <tbody>
+                                                      <tr>
+
+                                                        <td>国内用户</td>
+                                 <td><a href="https://crysadm.com">crysadm.com</a></td>
+                                                                          </tr>
+                                                                          <tr>
+                                                                              <td>海外用户</td>
+                                                                              <td><a href="https://os.crysadm.com">os.crysadm.com</a></td>
+                                                                          </tr>
+                                                                          </tbody>
+                                                                      </table>
+                                                                      ''', expire=3600*24)
+    return '发送成功'
