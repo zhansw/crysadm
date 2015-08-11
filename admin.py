@@ -86,10 +86,8 @@ def admin_user_management(username):
 def admin_change_password(username):
     n_password = request.values.get('new_password')
 
-    r = r"(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{6,15})$"
-
-    if re.match(r, n_password) is None:
-        session['error_message'] = '密码太弱了(6~15位数字加字母).'
+    if len(n_password) < 8:
+        session['error_message'] = '密码必须8位以上.'
         return redirect(url_for(endpoint='admin_user', username=username))
 
     user_key = '%s:%s' % ('user', username)
@@ -174,6 +172,20 @@ def admin_message_send():
     subject = request.values.get('subject')
     summary = request.values.get('summary')
     content = request.values.get('content')
+
+    if subject == '':
+        session['error_message'] = '标题为必填。'
+        return redirect(url_for('admin_message'))
+
+    if to == '':
+        session['error_message'] = '收件方必填。'
+        return redirect(url_for('admin_message'))
+
+    if summary == '':
+        session['error_message'] = '简介必填'
+        return redirect(url_for('admin_message'))
+
+
 
     return '功能已关闭'
     i =0
