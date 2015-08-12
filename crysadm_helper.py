@@ -1,9 +1,9 @@
 __author__ = 'powergx'
 import config, socket, redis
-import threading
+from multiprocessing import Process
 import time
 import requests
-import json
+import gevent
 from login import login
 from datetime import datetime, timedelta
 
@@ -28,6 +28,7 @@ from api import *
 
 
 def get_data(username, auto_collect):
+    print(username,'start')
     start_time = datetime.now()
     for user_id in r_session.smembers('accounts:%s' % username):
         account_key = 'account:%s:%s' % (username, user_id.decode('utf-8'))
@@ -107,7 +108,7 @@ def get_data(username, auto_collect):
 
     if start_time.day == datetime.now().day:
         save_history(username)
-
+    print(username,'end')
 
 def __merge_device_data(red_zqb, blue_device_info):
     for blue_info in blue_device_info.get('DEVICE_INFO'):
@@ -182,6 +183,7 @@ def start_rotate():
         return
 
     users = r_session.smembers('users')
+    g_list = []
     for user in users:
         username = user.decode('utf-8')
         if username != debugger_username and debugger:
@@ -202,18 +204,23 @@ def start_rotate():
 
         r_session.set('user:%s:is_querying' % username, '1')
         r_session.expire('user:%s:is_querying' % username, 5)
-
-        threading.Thread(target=get_data, args=(username, False), name=username).start()
+        g_list.append(gevent.spawn(get_data, username, False))
+    if len(g_list) > 0:
+        gevent.joinall(g_list)
 
 
 def every_day_night(user_info, username):
     auto_collect = user_info.get('auto_collect') if user_info.get('auto_collect') is not None else False
     r_session.set('user:%s:is_querying' % username, '1')
     r_session.expire('user:%s:is_querying' % username, 30)
-    threading.Thread(target=get_data, args=(username, auto_collect), name=username).start()
+    gevent.spawn(get_data, username, auto_collect).join()
 
 
 if __name__ == '__main__':
-        while True:
-            start_rotate()
-            time.sleep(3)
+    from gevent import monkey
+    monkey.patch_socket()
+    monkey.patch_ssl()
+    while True:
+        Process(target=start_rotate).start()
+
+        time.sleep(4)
