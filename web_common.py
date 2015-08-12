@@ -359,9 +359,10 @@ def message_box():
         if msg.get('is_read'):
             continue
 
-        if len(msg.get('content')) > 35:
-            msg['content'] = msg.get('content')[:35]+'...'
-
+        if len(msg.get('content')) > 41:
+            msg['content'] = msg.get('content')[:30]+'...'
+        else:
+            msg['content'] = msg.get('content')[:30]
         msg_count += 1
         if not len(msg_box) > 3:
             msg_box.append(msg)

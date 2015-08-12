@@ -7,7 +7,7 @@ from util import hash_password
 import uuid
 import re
 import random
-
+from message import send_msg
 
 @app.route('/admin/user')
 @requires_admin
@@ -230,27 +230,13 @@ def admin_message_send():
         session['error_message'] = '简介必填'
         return redirect(url_for('admin_message'))
 
+    send_content = '{:<30}'.format(summary)+content
+    if to == 'ALL':
+        for b_username in r_session.smembers('users'):
+            send_msg(b_username.decode('utf-8'), subject, send_content, 3600*24)
 
+    else:
+        send_msg(to,subject,send_content,3600*24)
 
-    return '功能已关闭'
-    i =0
-    for b_username in r_session.smembers('users'):
-        i += 1
-        if i >10000:
-            break
-        send_msg(b_username.decode('utf-8'), '新域名通知 crysadm.com！', '最好看的矿场监工有新的访问姿势:crysadm.com           <br /> <br />'
-                                                  '''<table class="table table-bordered">
-                                                      <tbody>
-                                                      <tr>
+    return redirect(url_for(endpoint='admin_message'))
 
-                                                        <td>国内用户</td>
-                                 <td><a href="https://crysadm.com">crysadm.com</a></td>
-                                                                          </tr>
-                                                                          <tr>
-                                                                              <td>海外用户</td>
-                                                                              <td><a href="https://os.crysadm.com">os.crysadm.com</a></td>
-                                                                          </tr>
-                                                                          </tbody>
-                                                                      </table>
-                                                                      ''', expire=3600*24)
-    return '发送成功'
