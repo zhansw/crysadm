@@ -315,29 +315,6 @@ def install():
     return redirect(url_for('login'))
 
 
-@app.route('/none_user')
-@requires_admin
-def none_user():
-    none_xlAcct = list()
-    none_active_xlAcct = list()
-    for b_user in r_session.smembers('users'):
-        username = b_user.decode('utf-8')
-
-        if r_session.smembers('accounts:' + username) is None or len(r_session.smembers('accounts:' + username)) == 0:
-            none_xlAcct.append(username)
-        has_active_account = False
-        for b_xl_account in r_session.smembers('accounts:' + username):
-            xl_account = b_xl_account.decode('utf-8')
-            account = json.loads(r_session.get('account:%s:%s' % (username, xl_account)).decode('utf-8'))
-            if account.get('active'):
-                has_active_account = True
-                break
-        if not has_active_account:
-            none_active_xlAcct.append(username)
-
-    return json.dumps(dict(none_xlAcct=none_xlAcct, none_active_xlAcct=none_active_xlAcct))
-
-
 @app.context_processor
 def add_function():
     def convert_to_yuan(crystal_values):
