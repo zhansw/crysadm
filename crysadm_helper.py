@@ -22,7 +22,7 @@ pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis
 r_session = redis.Redis(connection_pool=pool)
 
 debugger = False
-debugger_username = 'powergx'
+debugger_username = '15305017096'
 
 from api import *
 
@@ -60,6 +60,8 @@ def get_data(username, auto_collect):
 
             mine_info = get_mine_info(cookies)
 
+        if mine_info.get('r') != 0:
+            continue
         # 自动收取
         if auto_collect:
             collect(cookies)
@@ -222,5 +224,6 @@ if __name__ == '__main__':
     monkey.patch_ssl()
     while True:
         Process(target=start_rotate).start()
-
+        if debugger:
+            time.sleep(400)
         time.sleep(4)
