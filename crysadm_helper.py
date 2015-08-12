@@ -22,93 +22,97 @@ pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis
 r_session = redis.Redis(connection_pool=pool)
 
 debugger = False
-debugger_username = '15305017096'
+debugger_username = '406788323@qq.com'
 
 from api import *
 
 
 def get_data(username, auto_collect):
     start_time = datetime.now()
-    for user_id in r_session.smembers('accounts:%s' % username):
-        account_key = 'account:%s:%s' % (username, user_id.decode('utf-8'))
+    try:
+        for user_id in r_session.smembers('accounts:%s' % username):
+            account_key = 'account:%s:%s' % (username, user_id.decode('utf-8'))
 
-        account_info = json.loads(r_session.get(account_key).decode('utf-8'))
+            account_info = json.loads(r_session.get(account_key).decode('utf-8'))
 
-        if not account_info.get('active'):
-            continue
-        session_id = account_info.get('session_id')
-        user_id = account_info.get('user_id')
-
-        cookies = dict(sessionid=session_id, userid=str(user_id))
-
-        mine_info = get_mine_info(cookies)
-
-        if is_api_error(mine_info):
-            return
-        if mine_info.get('r') != 0:
-
-            success, account_info = __relogin(account_info.get('account_name'), account_info.get('password'),
-                                              account_info, account_key)
-            if not success:
+            if not account_info.get('active'):
                 continue
             session_id = account_info.get('session_id')
             user_id = account_info.get('user_id')
+
             cookies = dict(sessionid=session_id, userid=str(user_id))
-            if len(session_id) == 128:
-                cookies['origin'] = '1'
 
             mine_info = get_mine_info(cookies)
 
-        if mine_info.get('r') != 0:
-            continue
-        # 自动收取
-        if auto_collect:
-            collect(cookies)
-        # 自动收取
+            if is_api_error(mine_info):
+                return
+            if mine_info.get('r') != 0:
+
+                success, account_info = __relogin(account_info.get('account_name'), account_info.get('password'),
+                                                  account_info, account_key)
+                if not success:
+                    continue
+                session_id = account_info.get('session_id')
+                user_id = account_info.get('user_id')
+                cookies = dict(sessionid=session_id, userid=str(user_id))
+                if len(session_id) == 128:
+                    cookies['origin'] = '1'
+
+                mine_info = get_mine_info(cookies)
+
+            if mine_info.get('r') != 0:
+                continue
+            # 自动收取
+            if auto_collect:
+                collect(cookies)
+            # 自动收取
 
 
-        red_zqb = get_device_stat('1', cookies)
-        # red_old = get_device_stat('0', cookies)
-        blue_device_info = get_device_info(user_id)
+            red_zqb = get_device_stat('1', cookies)
+            # red_old = get_device_stat('0', cookies)
+            blue_device_info = get_device_info(user_id)
 
-        if is_api_error(red_zqb) or is_api_error(blue_device_info):
-            return
+            if is_api_error(red_zqb) or is_api_error(blue_device_info):
+                return
 
-        account_data_key = account_key + ':data'
-        exist_account_data = r_session.get(account_data_key)
-        if exist_account_data is None:
-            account_data = dict()
-            account_data['privilege'] = get_privilege(cookies)
-        else:
-            account_data = json.loads(exist_account_data.decode('utf-8'))
+            account_data_key = account_key + ':data'
+            exist_account_data = r_session.get(account_data_key)
+            if exist_account_data is None:
+                account_data = dict()
+                account_data['privilege'] = get_privilege(cookies)
+            else:
+                account_data = json.loads(exist_account_data.decode('utf-8'))
 
-        if account_data.get('updated_time') is not None:
-            last_updated_time = datetime.strptime(account_data.get('updated_time'), '%Y-%m-%d %H:%M:%S')
-            if last_updated_time.hour != datetime.now().hour:
+            if account_data.get('updated_time') is not None:
+                last_updated_time = datetime.strptime(account_data.get('updated_time'), '%Y-%m-%d %H:%M:%S')
+                if last_updated_time.hour != datetime.now().hour:
+                    account_data['zqb_speed_stat'] = get_speed_stat('1', cookies)
+                    account_data['old_speed_stat'] = get_speed_stat('0', cookies)
+            else:
                 account_data['zqb_speed_stat'] = get_speed_stat('1', cookies)
                 account_data['old_speed_stat'] = get_speed_stat('0', cookies)
-        else:
-            account_data['zqb_speed_stat'] = get_speed_stat('1', cookies)
-            account_data['old_speed_stat'] = get_speed_stat('0', cookies)
 
-        account_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        account_data['mine_info'] = mine_info
-        account_data['device_info'] = __merge_device_data(red_zqb, blue_device_info)
-        account_data['income'] = get_income_info(cookies)
+            account_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            account_data['mine_info'] = mine_info
+            account_data['device_info'] = __merge_device_data(red_zqb, blue_device_info)
+            account_data['income'] = get_income_info(cookies)
 
-        if is_api_error(account_data.get('income')):
-            return
+            if is_api_error(account_data.get('income')):
+                return
 
-        r_session.set(account_data_key, json.dumps(account_data))
+            r_session.set(account_data_key, json.dumps(account_data))
 
-        if not r_session.exists('can_drawcash'):
-            r = get_can_drawcash(cookies=cookies)
-            if r.get('r') == 0:
-                r_session.set('can_drawcash', r.get('is_tm'))
-                r_session.expire('can_drawcash', 60)
+            if not r_session.exists('can_drawcash'):
+                r = get_can_drawcash(cookies=cookies)
+                if r.get('r') == 0:
+                    r_session.set('can_drawcash', r.get('is_tm'))
+                    r_session.expire('can_drawcash', 60)
 
-    if start_time.day == datetime.now().day:
-        save_history(username)
+        if start_time.day == datetime.now().day:
+            save_history(username)
+
+    except Exception as ex:
+        print(ex)
 
 
 def __merge_device_data(red_zqb, blue_device_info):
