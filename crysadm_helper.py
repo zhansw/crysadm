@@ -28,7 +28,6 @@ from api import *
 
 
 def get_data(username, auto_collect):
-    print(username,'start')
     start_time = datetime.now()
     for user_id in r_session.smembers('accounts:%s' % username):
         account_key = 'account:%s:%s' % (username, user_id.decode('utf-8'))
@@ -110,7 +109,7 @@ def get_data(username, auto_collect):
 
     if start_time.day == datetime.now().day:
         save_history(username)
-    print(username,'end')
+
 
 def __merge_device_data(red_zqb, blue_device_info):
     for blue_info in blue_device_info.get('DEVICE_INFO'):
