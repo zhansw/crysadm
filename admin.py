@@ -9,6 +9,7 @@ import re
 import random
 from message import send_msg
 
+
 @app.route('/admin/user')
 @requires_admin
 def admin_user():
@@ -25,13 +26,15 @@ def admin_user():
                 recent_login_users.append(user)
         users.append(user)
 
-    return render_template('admin_user.html', recent_login_users=recent_login_users, users=users)
+    return render_template('admin_user.html',
+                           recent_login_users=sorted(recent_login_users, key=lambda k: k['login_as_time'],
+                                                     reverse=True),
+                           users=users)
 
 
 @app.route('/admin/message')
 @requires_admin
 def admin_message():
-
     return render_template('admin_message.html')
 
 
@@ -48,7 +51,7 @@ def generate_inv_code():
     r_session.smembers('invitation_codes')
 
     for i in range(0, 20 - r_session.scard('invitation_codes')):
-        r_session.sadd('invitation_codes',''.join(random.sample(_chars, 10)))
+        r_session.sadd('invitation_codes', ''.join(random.sample(_chars, 10)))
 
     return redirect(url_for('admin_invitation'))
 
@@ -111,7 +114,6 @@ def admin_change_property(field, value, username):
         user_info['active'] = True if value == '1' else False
     elif field == 'auto_collect':
         user_info['auto_collect'] = True if value == '1' else False
-
 
     r_session.set(user_key, json.dumps(user_info))
 
@@ -207,7 +209,7 @@ def del_none_user():
         if not has_active_account:
             none_active_xlAcct.append(username)
 
-    return json.dumps(dict( none_active_xlAcct=none_active_xlAcct))
+    return json.dumps(dict(none_active_xlAcct=none_active_xlAcct))
 
 
 @app.route('/admin/message/send', methods=['POST'])
@@ -230,13 +232,12 @@ def admin_message_send():
         session['error_message'] = '简介必填'
         return redirect(url_for('admin_message'))
 
-    send_content = '{:<30}'.format(summary)+content
+    send_content = '{:<30}'.format(summary) + content
     if to == 'ALL':
         for b_username in r_session.smembers('users'):
-            send_msg(b_username.decode('utf-8'), subject, send_content, 3600*24)
+            send_msg(b_username.decode('utf-8'), subject, send_content, 3600 * 24)
 
     else:
-        send_msg(to,subject,send_content,3600*24)
+        send_msg(to, subject, send_content, 3600 * 24)
 
     return redirect(url_for(endpoint='admin_message'))
-
