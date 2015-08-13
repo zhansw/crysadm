@@ -194,7 +194,7 @@ def dashboard():
     if today_data.get('history_speed') is None:
         today_data['history_speed'] = __get_history_speed_data(username)
         need_save = True
-
+    print(today_data.get('history_speed'))
     if today_data.get('seven_days_chart') is None:
         category, value = __seven_day_pdc(username, today_data.get('history_speed'))
         today_data['seven_days_chart'] = dict(category=category, value=value)
