@@ -7463,9 +7463,7 @@ body.skin-3 {
     padding-top: 10px;
     min-height: 100px;
   }
-  .nav.navbar-top-links li.dropdown {
-    display: none;
-  }
+
   .ibox-tools {
     float: none;
     text-align: left;
