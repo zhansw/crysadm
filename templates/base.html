@@ -149,7 +149,12 @@
 
                     </li>
                     {% if msg_box|length > 0 %}
-                        <li class="dropdown">
+                        <li class="visible-xs-inline-block">
+                            <a class="count-info" href="/messagebox">
+                                <i class="fa fa-envelope"></i>  <span class="label label-warning">{{ msg_count }}</span>
+                            </a>
+                        </li>
+                        <li class="dropdown hidden-xs">
                             <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
                                 <i class="fa fa-envelope"></i>  <span class="label label-warning">{{ msg_count }}</span>
                             </a>
