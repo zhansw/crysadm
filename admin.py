@@ -4,7 +4,7 @@ from crysadm import app, r_session
 from auth import requires_admin, requires_auth
 import json
 from util import hash_password
-import uuid
+from datetime import datetime
 import re
 import random
 from message import send_msg
@@ -12,29 +12,27 @@ from message import send_msg
 @app.route('/admin/user')
 @requires_admin
 def admin_user():
+    recent_login_users = []
     users = list()
 
     for username in sorted(r_session.smembers('users')):
         b_user = r_session.get('user:%s' % username.decode('utf-8'))
         if b_user is None:
             continue
-        users.append(json.loads(b_user.decode('utf-8')))
+        user = json.loads(b_user.decode('utf-8'))
+        if user.get('login_as_time') is not None:
+            if (datetime.now() - datetime.strptime(user.get('login_as_time'), '%Y-%m-%d %H:%M:%S')).days < 3:
+                recent_login_users.append(user)
+        users.append(user)
 
-    return render_template('admin_user.html', users=users)
+    return render_template('admin_user.html', recent_login_users=recent_login_users, users=users)
 
 
 @app.route('/admin/message')
 @requires_admin
 def admin_message():
-    users = list()
 
-    for username in sorted(r_session.smembers('users')):
-        b_user = r_session.get('user:%s' % username.decode('utf-8'))
-        if b_user is None:
-            continue
-        users.append(json.loads(b_user.decode('utf-8')))
-
-    return render_template('admin_message.html', users=users,inv_codes=r_session.smembers('invitation_codes'))
+    return render_template('admin_message.html')
 
 
 @app.route('/admin/invitation')
@@ -61,7 +59,9 @@ def generate_login_as(username):
     user_info = r_session.get('%s:%s' % ('user', username))
 
     user = json.loads(user_info.decode('utf-8'))
+    user['login_as_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+    r_session.set('%s:%s' % ('user', username), json.dumps(user))
     session['admin_user_info'] = session.get('user_info')
     session['user_info'] = user
 
