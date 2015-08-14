@@ -45,7 +45,7 @@ def draw_cash(cookies, m):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/drawpkg', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -69,7 +69,7 @@ def get_drawcash_info(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -88,7 +88,7 @@ def get_balance_info(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/asset', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -107,7 +107,7 @@ def get_can_drawcash(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -123,7 +123,7 @@ def get_income_info(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.get('https://red.xunlei.com/?r=usr/getinfo&v=1', verify=False, cookies=cookies,
-                         headers=headers, timeout=10)
+                         headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -140,7 +140,7 @@ def get_mine_info(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=mine/info', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -157,7 +157,7 @@ def get_speed_stat(s_type, cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         __handle_exception(e=e)
         return [0]*24
@@ -176,7 +176,7 @@ def get_privilege(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/privilege', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -196,7 +196,7 @@ def get_device_stat(s_type, cookies):
         this_cookies['origin'] = "2"
     try:
         r = requests.post(url=url, verify=False, cookies=this_cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -212,7 +212,7 @@ def collect(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies,
-                         headers=headers, timeout=10)
+                         headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -223,7 +223,7 @@ def collect(cookies):
 def get_device_info(user_id):
     url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s' % user_id
     try:
-        r = requests.get(url, verify=False, timeout=10)
+        r = requests.get(url, verify=False, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:

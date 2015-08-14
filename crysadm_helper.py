@@ -198,7 +198,7 @@ def start_rotate():
         if not user_info.get('active'):
             continue
 
-        if datetime.now().strftime('%H:%M') in ['23:59', '00:00'] or debugger:
+        if datetime.now().strftime('%H:%M') in ['23:56','23:57','23:58','23:59', '00:00'] or debugger:
             every_day_night(user_info, username)
 
         if not r_session.exists('user:%s:is_online' % username) and not debugger:
@@ -217,7 +217,11 @@ def start_rotate():
 def every_day_night(user_info, username):
     auto_collect = user_info.get('auto_collect') if user_info.get('auto_collect') is not None else False
     r_session.set('user:%s:is_querying' % username, '1')
-    r_session.expire('user:%s:is_querying' % username, 30)
+
+    if not r_session.exists('user:%s:is_online' % username):
+        r_session.expire('user:%s:is_querying' % username, 30)
+    else:
+        r_session.expire('user:%s:is_querying' % username, 5)
     gevent.spawn(get_data, username, auto_collect).join()
 
 
