@@ -6,6 +6,9 @@ import requests
 import gevent
 from login import login
 from datetime import datetime, timedelta
+from gevent import monkey
+monkey.patch_socket()
+monkey.patch_ssl()
 
 requests.packages.urllib3.disable_warnings()
 
@@ -111,6 +114,8 @@ def get_data(username, auto_collect):
         if start_time.day == datetime.now().day:
             save_history(username)
 
+        print(username,'succ')
+
     except Exception as ex:
         print(ex)
 
@@ -198,7 +203,7 @@ def start_rotate():
         if not user_info.get('active'):
             continue
 
-        if datetime.now().strftime('%H:%M') in ['23:58','23:59', '00:00'] or debugger:
+        if datetime.now().strftime('%H:%M') in ['23:56','23:57','23:58','23:59', '00:00'] or debugger:
             every_day_night(user_info, username)
 
         if not r_session.exists('user:%s:is_online' % username) and not debugger:
@@ -226,9 +231,7 @@ def every_day_night(user_info, username):
 
 
 if __name__ == '__main__':
-    from gevent import monkey
-    monkey.patch_socket()
-    monkey.patch_ssl()
+
     while True:
         Process(target=start_rotate).start()
         if debugger:
