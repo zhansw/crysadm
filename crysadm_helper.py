@@ -5,7 +5,7 @@ import time
 import requests
 from login import login
 from datetime import datetime, timedelta
-
+from multiprocessing import Process
 
 requests.packages.urllib3.disable_warnings()
 
@@ -28,7 +28,6 @@ from api import *
 
 
 def get_data(username, auto_collect):
-
     start_time = datetime.now()
     try:
         for user_id in r_session.smembers('accounts:%s' % username):
@@ -38,7 +37,7 @@ def get_data(username, auto_collect):
 
             if not account_info.get('active'):
                 continue
-            print(user_id,'start')
+
             session_id = account_info.get('session_id')
             user_id = account_info.get('user_id')
 
@@ -47,14 +46,14 @@ def get_data(username, auto_collect):
             mine_info = get_mine_info(cookies)
 
             if is_api_error(mine_info):
-                print(user_id,mine_info,'error')
+                print(user_id, mine_info, 'error')
                 return
             if mine_info.get('r') != 0:
 
                 success, account_info = __relogin(account_info.get('account_name'), account_info.get('password'),
                                                   account_info, account_key)
                 if not success:
-                    print(user_id,'relogin failed')
+                    print(user_id, 'relogin failed')
                     continue
                 session_id = account_info.get('session_id')
                 user_id = account_info.get('user_id')
@@ -65,7 +64,7 @@ def get_data(username, auto_collect):
                 mine_info = get_mine_info(cookies)
 
             if mine_info.get('r') != 0:
-                print(user_id,mine_info,'error')
+                print(user_id, mine_info, 'error')
                 continue
             # 自动收取
             if auto_collect:
@@ -77,7 +76,7 @@ def get_data(username, auto_collect):
             blue_device_info = get_device_info(user_id)
 
             if is_api_error(red_zqb) or is_api_error(blue_device_info):
-                print(user_id,'red_zqb','error')
+                print(user_id, 'red_zqb', 'error')
                 return
 
             account_data_key = account_key + ':data'
@@ -103,7 +102,7 @@ def get_data(username, auto_collect):
             account_data['income'] = get_income_info(cookies)
 
             if is_api_error(account_data.get('income')):
-                print(user_id,'income','error')
+                print(user_id, 'income', 'error')
                 return
 
             r_session.set(account_data_key, json.dumps(account_data))
@@ -114,12 +113,11 @@ def get_data(username, auto_collect):
                     r_session.set('can_drawcash', r.get('is_tm'))
                     r_session.expire('can_drawcash', 60)
 
-            print(user_id,'succ')
-
         if start_time.day == datetime.now().day:
             save_history(username)
-
+        print(username, 'succ')
     except Exception as ex:
+        print(username, 'failed')
         print(ex)
 
 
@@ -157,7 +155,7 @@ def save_history(username):
             continue
         data = json.loads(b_data.decode('utf-8'))
 
-        if datetime.strptime(data.get('updated_time'),'%Y-%m-%d %H:%M:%S') +timedelta(minutes=1) < datetime.now():
+        if datetime.strptime(data.get('updated_time'), '%Y-%m-%d %H:%M:%S') + timedelta(minutes=1) < datetime.now():
             continue
         today_data.get('speed_stat').append(dict(mid=data.get('privilege').get('mid'),
                                                  dev_speed=data.get('zqb_speed_stat') if data.get(
@@ -195,9 +193,7 @@ def start_rotate():
     if r_session.exists('api_error_info'):
         return
 
-    users = r_session.smembers('users')
-
-    for user in users:
+    for user in r_session.smembers('users'):
         username = user.decode('utf-8')
         if username != debugger_username and debugger:
             continue
@@ -206,21 +202,23 @@ def start_rotate():
         if not user_info.get('active'):
             continue
 
-        if r_session.exists('user:%s:is_querying' % username) and not debugger:
-            continue
-
-        if datetime.now().strftime('%H:%M') in ['23:58', '23:59', '00:00'] or debugger:
+        if datetime.now().strftime('%H:%M') in ['23:58', '23:59', '00:00']:
+            if r_session.exists('user:%s:is_querying' % username):
+                continue
             every_day_night(user_info, username)
             continue
 
         if not r_session.exists('user:%s:is_online' % username) and not debugger:
             continue
 
+        if r_session.exists('user:%s:is_querying' % username) and not debugger:
+            continue
+
         r_session.set('user:%s:is_querying' % username, '1')
         r_session.expire('user:%s:is_querying' % username, 5)
 
-        Thread(target=get_data,args=(username,False)).start()
-        #gevent.spawn(get_data, username, False)
+        Process(target=get_data, args=(username, False)).start()
+        # gevent.spawn(get_data, username, False)
 
 
 def every_day_night(user_info, username):
@@ -231,12 +229,12 @@ def every_day_night(user_info, username):
         r_session.expire('user:%s:is_querying' % username, 5)
     else:
         r_session.expire('user:%s:is_querying' % username, 30)
-    Thread(get_data, args=(username, auto_collect))
+    Process(target=get_data, args=(username, auto_collect)).start()
 
 
 if __name__ == '__main__':
     while True:
-        Thread(target=start_rotate).start()
+        Process(target=start_rotate).start()
         if debugger:
             time.sleep(10000)
-        time.sleep(4)
+        time.sleep(5)
