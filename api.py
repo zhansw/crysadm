@@ -2,6 +2,7 @@ __author__ = 'powergx'
 import json
 import requests
 from crysadm_helper import r_session
+from requests.adapters import HTTPAdapter
 
 
 requests.packages.urllib3.disable_warnings()
@@ -140,7 +141,7 @@ def get_mine_info(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=mine/info', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=60)
+                          headers=headers, timeout=10)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -190,13 +191,15 @@ def get_device_stat(s_type, cookies):
     else:
         cookies['origin'] = '1'
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    url = 'https://red.xunlei.com/?r=mine/devices_stat&hand=0&type=%s&v=2&ver=1' % s_type
+    url = 'https://red.xunlei.com/?r=mine/devices_stat'
+
+    body = dict(type=s_type, hand='0', v='2', ver='1')
     this_cookies = cookies.copy()
     if len(this_cookies.get('sessionid')) != 128:
         this_cookies['origin'] = "2"
     try:
-        r = requests.post(url=url, verify=False, cookies=this_cookies,
-                          headers=headers, timeout=60)
+        r = requests.post(url=url, verify=False, data=body, cookies=this_cookies,
+                          headers=headers, timeout=10)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -223,7 +226,9 @@ def collect(cookies):
 def get_device_info(user_id):
     url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s' % user_id
     try:
-        r = requests.get(url, verify=False, timeout=60)
+        s = requests.Session()
+        s.mount('http://', HTTPAdapter(max_retries=5))
+        r = s.get(url, verify=False, timeout=10)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -251,7 +256,7 @@ def __handle_exception(e=None, rd='接口故障', r=-12345):
 
     err_count = int(b_err_count.decode('utf-8')) + 1
 
-    if err_count>100:
+    if err_count>200:
         r_session.set('api_error_info','迅雷矿场API故障中,攻城狮正在赶往事故现场,请耐心等待.')
         r_session.expire('api_error_info',60)
 

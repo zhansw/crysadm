@@ -1,14 +1,11 @@
 __author__ = 'powergx'
 import config, socket, redis
-from multiprocessing import Process
+from threading import Thread
 import time
 import requests
-import gevent
 from login import login
 from datetime import datetime, timedelta
-from gevent import monkey
-monkey.patch_socket()
-monkey.patch_ssl()
+
 
 requests.packages.urllib3.disable_warnings()
 
@@ -25,12 +22,13 @@ pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis
 r_session = redis.Redis(connection_pool=pool)
 
 debugger = False
-debugger_username = '406788323@qq.com'
+debugger_username = 'powergx'
 
 from api import *
 
 
 def get_data(username, auto_collect):
+
     start_time = datetime.now()
     try:
         for user_id in r_session.smembers('accounts:%s' % username):
@@ -40,6 +38,7 @@ def get_data(username, auto_collect):
 
             if not account_info.get('active'):
                 continue
+            print(user_id,'start')
             session_id = account_info.get('session_id')
             user_id = account_info.get('user_id')
 
@@ -48,12 +47,14 @@ def get_data(username, auto_collect):
             mine_info = get_mine_info(cookies)
 
             if is_api_error(mine_info):
+                print(user_id,mine_info,'error')
                 return
             if mine_info.get('r') != 0:
 
                 success, account_info = __relogin(account_info.get('account_name'), account_info.get('password'),
                                                   account_info, account_key)
                 if not success:
+                    print(user_id,'relogin failed')
                     continue
                 session_id = account_info.get('session_id')
                 user_id = account_info.get('user_id')
@@ -64,18 +65,19 @@ def get_data(username, auto_collect):
                 mine_info = get_mine_info(cookies)
 
             if mine_info.get('r') != 0:
+                print(user_id,mine_info,'error')
                 continue
             # 自动收取
             if auto_collect:
                 collect(cookies)
             # 自动收取
 
-
             red_zqb = get_device_stat('1', cookies)
             # red_old = get_device_stat('0', cookies)
             blue_device_info = get_device_info(user_id)
 
             if is_api_error(red_zqb) or is_api_error(blue_device_info):
+                print(user_id,'red_zqb','error')
                 return
 
             account_data_key = account_key + ':data'
@@ -101,6 +103,7 @@ def get_data(username, auto_collect):
             account_data['income'] = get_income_info(cookies)
 
             if is_api_error(account_data.get('income')):
+                print(user_id,'income','error')
                 return
 
             r_session.set(account_data_key, json.dumps(account_data))
@@ -111,10 +114,10 @@ def get_data(username, auto_collect):
                     r_session.set('can_drawcash', r.get('is_tm'))
                     r_session.expire('can_drawcash', 60)
 
+            print(user_id,'succ')
+
         if start_time.day == datetime.now().day:
             save_history(username)
-
-        print(username,'succ')
 
     except Exception as ex:
         print(ex)
@@ -193,7 +196,7 @@ def start_rotate():
         return
 
     users = r_session.smembers('users')
-    g_list = []
+
     for user in users:
         username = user.decode('utf-8')
         if username != debugger_username and debugger:
@@ -203,37 +206,37 @@ def start_rotate():
         if not user_info.get('active'):
             continue
 
-        if datetime.now().strftime('%H:%M') in ['23:56','23:57','23:58','23:59', '00:00'] or debugger:
+        if r_session.exists('user:%s:is_querying' % username) and not debugger:
+            continue
+
+        if datetime.now().strftime('%H:%M') in ['23:58', '23:59', '00:00'] or debugger:
             every_day_night(user_info, username)
+            continue
 
         if not r_session.exists('user:%s:is_online' % username) and not debugger:
             continue
 
-        if r_session.exists('user:%s:is_querying' % username) and not debugger:
-            continue
-
         r_session.set('user:%s:is_querying' % username, '1')
         r_session.expire('user:%s:is_querying' % username, 5)
-        g_list.append(gevent.spawn(get_data, username, False))
-    if len(g_list) > 0:
-        gevent.joinall(g_list)
+
+        Thread(target=get_data,args=(username,False)).start()
+        #gevent.spawn(get_data, username, False)
 
 
 def every_day_night(user_info, username):
     auto_collect = user_info.get('auto_collect') if user_info.get('auto_collect') is not None else False
     r_session.set('user:%s:is_querying' % username, '1')
 
-    if not r_session.exists('user:%s:is_online' % username):
-        r_session.expire('user:%s:is_querying' % username, 30)
-    else:
+    if r_session.exists('user:%s:is_online' % username):
         r_session.expire('user:%s:is_querying' % username, 5)
-    gevent.spawn(get_data, username, auto_collect).join()
+    else:
+        r_session.expire('user:%s:is_querying' % username, 30)
+    Thread(get_data, args=(username, auto_collect))
 
 
 if __name__ == '__main__':
-
     while True:
-        Process(target=start_rotate).start()
+        Thread(target=start_rotate).start()
         if debugger:
-            time.sleep(400)
+            time.sleep(10000)
         time.sleep(4)
