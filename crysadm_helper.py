@@ -1,13 +1,10 @@
 __author__ = 'powergx'
 import config, socket, redis
-from threading import Thread
 import time
-import requests
 from login import login
 from datetime import datetime, timedelta
 from multiprocessing import Process
 
-requests.packages.urllib3.disable_warnings()
 
 conf = None
 if socket.gethostname() == 'GXMBP.local':
@@ -155,7 +152,8 @@ def save_history(username):
             continue
         data = json.loads(b_data.decode('utf-8'))
 
-        if datetime.strptime(data.get('updated_time'), '%Y-%m-%d %H:%M:%S') + timedelta(minutes=1) < datetime.now():
+        if datetime.strptime(data.get('updated_time'), '%Y-%m-%d %H:%M:%S') + timedelta(minutes=1) < datetime.now() or \
+                        datetime.strptime(data.get('updated_time'), '%Y-%m-%d %H:%M:%S').day != datetime.now().day:
             continue
         today_data.get('speed_stat').append(dict(mid=data.get('privilege').get('mid'),
                                                  dev_speed=data.get('zqb_speed_stat') if data.get(
@@ -202,7 +200,7 @@ def start_rotate():
         if not user_info.get('active'):
             continue
 
-        if datetime.now().strftime('%H:%M') in ['23:58', '23:59', '00:01', '00:02']:
+        if datetime.now().strftime('%H:%M') in ['23:58', '23:59', '00:00', '00:01']:
             if r_session.exists('user:%s:is_querying' % username):
                 continue
             every_day_night(user_info, username)
