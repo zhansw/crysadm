@@ -202,7 +202,7 @@ def start_rotate():
         if not user_info.get('active'):
             continue
 
-        if datetime.now().strftime('%H:%M') in ['23:58', '23:59', '00:00']:
+        if datetime.now().strftime('%H:%M') in ['23:58', '23:59', '00:01', '00:02']:
             if r_session.exists('user:%s:is_querying' % username):
                 continue
             every_day_night(user_info, username)

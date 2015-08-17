@@ -194,7 +194,6 @@ def dashboard():
     if today_data.get('history_speed') is None:
         today_data['history_speed'] = __get_history_speed_data(username)
         need_save = True
-    print(today_data.get('history_speed'))
     if today_data.get('seven_days_chart') is None:
         category, value = __seven_day_pdc(username, today_data.get('history_speed'))
         today_data['seven_days_chart'] = dict(category=category, value=value)
@@ -288,6 +287,22 @@ def analyzer():
     speed_stat_chart = __get_speed_stat_chart_data(today_data.get('speed_stat'))
 
     return render_template('analyzer.html', speed_stat_chart=speed_stat_chart)
+
+
+
+@app.route('/top')
+@requires_admin
+def top():
+    for k in  r_session.keys('user_data:*:2015-08-15'):
+
+        print(k.decode('utf-8'))
+        data = json.loads(r_session.get(k.decode('utf-8')).decode('utf-8'))
+        if data.get('w_pdc') is None:
+            continue
+        if data.get('w_pdc') < 710000:
+            continue
+        return k.decode('utf-8')
+
 
 
 @app.route('/')
