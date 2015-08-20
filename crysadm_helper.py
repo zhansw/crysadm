@@ -191,12 +191,14 @@ def start_rotate():
     if r_session.exists('api_error_info'):
         return
 
-    for user in r_session.smembers('users'):
-        username = user.decode('utf-8')
+    for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in r_session.smembers('users')]):
+
+        user_info = json.loads(b_user.decode('utf-8'))
+
+        username = user_info.get('username')
         if username != debugger_username and debugger:
             continue
-        user_key = '%s:%s' % ('user', username)
-        user_info = json.loads(r_session.get(user_key).decode('utf-8'))
+
         if not user_info.get('active'):
             continue
 

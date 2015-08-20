@@ -16,8 +16,7 @@ def admin_user():
     recent_login_users = []
     users = list()
 
-    for username in sorted(r_session.smembers('users')):
-        b_user = r_session.get('user:%s' % username.decode('utf-8'))
+    for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in sorted(r_session.smembers('users'))]):
         if b_user is None:
             continue
         user = json.loads(b_user.decode('utf-8'))

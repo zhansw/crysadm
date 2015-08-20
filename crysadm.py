@@ -21,6 +21,7 @@ from web_common import *
 from account import *
 from excavator import *
 from message import *
+from analyzer import *
 
 if __name__ == '__main__':
     app.run(host=app.config.get('SERVER_IP'), port=app.config.get('SERVER_PORT'))
