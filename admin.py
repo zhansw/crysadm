@@ -234,7 +234,7 @@ def admin_message_send():
     send_content = '{:<30}'.format(summary) + content
     if to == 'ALL':
         for b_username in r_session.smembers('users'):
-            send_msg(b_username.decode('utf-8'), subject, send_content, 3600 * 24)
+            send_msg(b_username.decode('utf-8'), subject, send_content, 3600 * 24 * 7)
 
     else:
         send_msg(to, subject, send_content, 3600 * 24)
