@@ -44,8 +44,9 @@
                             <tbody>
                             {% for row in accounts %}
                                 {% if row.data is defined and row.data.mine_info.r == 0 %}
-                                    <tr>
-                                        <td>{{ row.data.privilege.mid |e }}</td>
+
+                                    <tr class="tooltip-demo">
+                                        <td data-original-title="{% if row.session_id|length == 128 %}Advanced{% else %}Standard{% endif %}" data-toggle="tooltip" data-placement="top" >{{ row.data.privilege.mid |e }}</td>
                                         <td>{{ row.data.mine_info.dev_m.pdc |default('0') }}</td>
                                         <td class="hidden-xs">{{ row.data.mine_info.dev_pc.pdc |e }}</td>
                                         <td class="hidden-xs">{{ row.data.mine_info.td_cm_pdc |e }}</td>
