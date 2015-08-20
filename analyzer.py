@@ -41,7 +41,7 @@ def __get_last_30_day(username):
 
         value.append([int(time.mktime(update_date.timetuple())*1000), data.get('pdc')])
 
-    return dict(series=dict(type='area',name='产量', data=value))
+    return dict(series=dict(type='areaspline',name='产量', data=value))
 
 @app.route('/analyzer')
 @requires_auth
