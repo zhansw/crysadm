@@ -21,11 +21,35 @@
         <!-- /.col-lg-12 -->
     </div>
     <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> 历史产量
+
+                </div>
+                <!-- /.panel-heading -->
+                <div class="ibox-content">
+                    <div id="last-30-day-chart"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
 {% endblock %}
 
 {% block js_logic %}
     <script src="../static/js/highcharts.js"></script>
     <script>
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        });
         $('#speed-stat-chart').highcharts({
             chart: {
                 type: 'areaspline'
@@ -70,6 +94,58 @@
             },
             series: {{ speed_stat_chart.value | safe }}
         });
+        $('#last-30-day-chart').highcharts({
+            chart: {
+                type: 'column',
+                zoomType: 'x'
+            },
+            title: {
+                text: '',
+                x: -20 //center
+            },
+            legend: {
+                enabled:false
+            },
+            credits: {
+                enabled: false
+            },
+            yAxis: [{
+                title: {
+                    text: '产量'
+                }
+            }],
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: {
+                            x1: 0,
+                            y1: 0,
+                            x2: 0,
+                            y2: 1
+                        },
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    marker: {
+                        radius: 2
+                    },
+                    lineWidth: 1,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+            xAxis: {
+                type: 'datetime'
+            },
+            series: [{{ last_30_day_chart.series | safe }}]
+        });
+
 
     </script>
 {% endblock %}
