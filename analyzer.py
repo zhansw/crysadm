@@ -1,5 +1,5 @@
 __author__ = 'powergx'
-from flask import render_template, session
+from flask import render_template, session, Response
 from crysadm import app, r_session
 from auth import requires_auth
 from datetime import datetime, timedelta
@@ -27,7 +27,12 @@ def __get_speed_stat_chart_data(speed_stat_data):
     return dict(category=speed_stat_category, value=speed_stat_value)
 
 
-def __get_last_30_day(username):
+@app.route('/analyzer/last_30_day')
+@requires_auth
+def analyzer_last_30_day():
+    user = session.get('user_info')
+    username = user.get('username')
+
     value = []
     today = datetime.today()
     for b_data in r_session.mget(
@@ -37,11 +42,10 @@ def __get_last_30_day(username):
         data = json.loads(b_data.decode('utf-8'))
         update_date = datetime.strptime(data.get('updated_time')[0:10], '%Y-%m-%d')
 
-
-
         value.append([int(time.mktime(update_date.timetuple())*1000), data.get('pdc')])
 
-    return dict(series=dict(type='areaspline',name='产量', data=value))
+    return Response(json.dumps(dict(value=value)), mimetype='application/json')
+
 
 @app.route('/analyzer')
 @requires_auth
@@ -58,10 +62,9 @@ def analyzer():
         return render_template('analyzer.html', speed_stat_chart=dict(category=[], value=[]))
 
     today_data = json.loads(b_data.decode('utf-8'))
-    print(today_data)
+
     speed_stat_chart = __get_speed_stat_chart_data(today_data.get('speed_stat'))
 
     return render_template('analyzer.html',
-                           speed_stat_chart=speed_stat_chart,
-                           last_30_day_chart=__get_last_30_day(username))
+                           speed_stat_chart=speed_stat_chart)
 

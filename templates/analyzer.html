@@ -94,61 +94,40 @@
             },
             series: {{ speed_stat_chart.value | safe }}
         });
-        $('#last-30-day-chart').highcharts({
-            chart: {
-                zoomType: 'x'
-            },
-            title: {
-                text: '',
-                x: -20 //center
-            },
-            legend: {
-                enabled:false
-            },
-            credits: {
-                enabled: false
-            },
-            yAxis: [{
+        $.getJSON('/analyzer/last_30_day',function(data){
+            $('#last-30-day-chart').highcharts({
+                chart: {
+                    type: 'column',
+                    zoomType: 'x'
+                },
                 title: {
-                    text: '产量'
-                }
-            }],
-            plotOptions: {
-                areaspline: {
-                    fillColor: {
-                        linearGradient: {
-                            x1: 0,
-                            y1: 0,
-                            x2: 0,
-                            y2: 1
-                        },
-                        stops: [
-                            [0, Highcharts.getOptions().colors[0]],
-                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                        ]
-                    },
-                    marker: {
-                        radius: 2
-                    },
-                    lineWidth: 1,
-                    states: {
-                        hover: {
-                            lineWidth: 1
-                        }
-                    },
-                    threshold: null
-                }
-            },
-            xAxis: {
-                type: 'datetime'
-            },
-            series: [{{ last_30_day_chart.series | safe }}]
+                    text: '',
+                    x: -20 //center
+                },
+                legend: {
+                    enabled:false
+                },
+                credits: {
+                    enabled: false
+                },
+                yAxis: [{
+                    title: {
+                        text: '产量'
+                    }
+                }],
+                xAxis: {
+                    type: 'datetime'
+                },
+                series: [{
+                    name: '水晶产量',
+                    data: data.value
+                }]
+            });
         });
 
 
     </script>
 {% endblock %}
-
 
 
 {% block navibar %}
