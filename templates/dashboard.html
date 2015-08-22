@@ -358,6 +358,7 @@
 
                 if($('#pdc').html() != convert_to_yuan(data.today_data.pdc)) {
                     $('#pdc').html(convert_to_yuan(data.today_data.pdc));
+                    flash_element($('#w_pdc'));
                 }
                 if($('#w_pdc').html() != convert_to_yuan(data.today_data.w_pdc)) {
                     $('#w_pdc').html(convert_to_yuan(data.today_data.w_pdc));
