@@ -36,7 +36,8 @@ def __get_yesterday_pdc(username):
     return yesterday_m_pdc, yesterday_w_pdc
 
 
-def __seven_day_pdc(username, history_speed):
+def __seven_day_pdc(username):
+    history_speed = __get_history_speed_data(username)
     today = datetime.now().date() + timedelta(days=-1)
     begin_date = today + timedelta(days=-7)
 
@@ -98,6 +99,26 @@ def __get_history_speed_data(username):
     return value
 
 
+def __get_speed_stat_chart_data(speed_stat_data):
+    now = datetime.now()
+    speed_stat_category = list()
+    speed_stat_value = list()
+    for i in range(-24, 0):
+        speed_stat_category.append('%d:00' % (now + timedelta(hours=i + 1)).hour)
+
+    for speed_data in speed_stat_data:
+        this_data = dict(name='矿主ID:' + str(speed_data.get('mid')), data=list())
+        speed_stat_value.append(this_data)
+
+        dev_speed = speed_data.get('dev_speed')
+        pc_speed = speed_data.get('pc_speed')
+
+        for i in range(0, 24):
+            this_data.get('data').append((dev_speed[i] + pc_speed[i]) / 8)
+
+    return dict(category=speed_stat_category, value=speed_stat_value)
+
+
 def __get_speed_comparison_data(history_data, today_data, str_updated_time):
     category = list()
 
@@ -125,67 +146,7 @@ def __get_speed_comparison_data(history_data, today_data, str_updated_time):
 @app.route('/dashboard')
 @requires_auth
 def dashboard():
-    user = session.get('user_info')
-    username = user.get('username')
-
-    user_key = 'user:%s' % username
-    user = json.loads(r_session.get(user_key).decode('utf-8'))
-    str_today = datetime.now().strftime('%Y-%m-%d')
-    key = 'user_data:%s:%s' % (username, str_today)
-
-    b_data = r_session.get(key)
-    if b_data is None:
-        empty_data = {
-            'speed_stat_chart': {
-                'category': [],
-                'value': []
-            },
-            'history_speed': {
-                'category': [],
-                'value': []
-            },
-            'seven_days_chart': {
-                'category': [],
-                'value': []
-            },
-            'updated_time': '2015-01-01 00:00:00',
-            'm_pdc': 0,
-            'last_speed': 0,
-            'w_pdc': 0,
-            'yesterday_m_pdc': 0,
-            'speed_stat': [],
-            'yesterday_w_pdc': 0,
-            'pdc': 0,
-            'balance': 0
-        }
-        return render_template('dashboard.html', today_data=empty_data)
-
-    today_data = json.loads(b_data.decode('utf-8'))
-    need_save = False
-    if today_data.get('yesterday_m_pdc') is None or today_data.get('yesterday_w_pdc') is None:
-        yesterday_m_pdc, yesterday_w_pdc = __get_yesterday_pdc(username)
-        today_data['yesterday_m_pdc'] = yesterday_m_pdc
-        today_data['yesterday_w_pdc'] = yesterday_w_pdc
-        need_save = True
-
-    today_data['m_pdc'] = today_data.get('yesterday_m_pdc') + today_data.get('pdc')
-    today_data['w_pdc'] = today_data.get('yesterday_w_pdc') + today_data.get('pdc')
-
-    if today_data.get('history_speed') is None:
-        today_data['history_speed'] = __get_history_speed_data(username)
-        need_save = True
-    if today_data.get('seven_days_chart') is None:
-        category, value = __seven_day_pdc(username, today_data.get('history_speed'))
-        today_data['seven_days_chart'] = dict(category=category, value=value)
-        need_save = True
-
-    if need_save:
-        r_session.set(key, json.dumps(today_data))
-
-    speed_comparison_data = __get_speed_comparison_data(today_data.get('history_speed'), today_data.get('speed_stat'),
-                                                        today_data.get('updated_time'))
-
-    return render_template('dashboard.html', today_data=today_data, speed_comparison_data=speed_comparison_data)
+    return render_template('dashboard.html')
 
 
 @app.route('/dashboard_data')
@@ -199,14 +160,6 @@ def dashboard_data():
     b_data = r_session.get(key)
     if b_data is None:
         empty_data = {
-            'speed_stat_chart': {
-                'category': [],
-                'value': []
-            },
-            'history_speed': {
-                'category': [],
-                'value': []
-            },
             'updated_time': '2015-01-01 00:00:00',
             'm_pdc': 0,
             'last_speed': 0,
@@ -230,22 +183,11 @@ def dashboard_data():
     today_data['m_pdc'] = today_data.get('yesterday_m_pdc') + today_data.get('pdc')
     today_data['w_pdc'] = today_data.get('yesterday_w_pdc') + today_data.get('pdc')
 
-    if today_data.get('history_speed') is None:
-        today_data['history_speed'] = __get_history_speed_data(username)
-        need_save = True
-
-    if today_data.get('seven_days_chart') is None:
-        category, value = __seven_day_pdc(username, today_data.get('history_speed'))
-        today_data['seven_days_chart'] = dict(category=category, value=value)
-        need_save = True
 
     if need_save:
         r_session.set(key, json.dumps(today_data))
 
-    speed_comparison_data = __get_speed_comparison_data(today_data.get('history_speed'), today_data.get('speed_stat'),
-                                                        today_data.get('updated_time'))
-
-    return Response(json.dumps(dict(today_data=today_data, speed_comparison_data=speed_comparison_data)), mimetype='application/json')
+    return Response(json.dumps(dict(today_data=today_data)), mimetype='application/json')
 
 
 @app.route('/top')

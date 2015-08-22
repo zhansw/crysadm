@@ -50,49 +50,51 @@
                 useUTC: false
             }
         });
-        $('#speed-stat-chart').highcharts({
-            chart: {
-                type: 'areaspline'
+        $.getJSON('/analyzer/speed_stat_chart',function(data){
+            $('#speed-stat-chart').highcharts({
+                chart: {
+                    type: 'areaspline'
 
-            },
-            title: {
-                text: '',
-                x: -20 //center
-            },
-            credits: {
-                enabled: false
-            },
-            yAxis: {
+                },
                 title: {
-                    text: 'Speed (KByte/s)'
-                },min: 0,
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            tooltip: {
-                shared: true,
-                valueSuffix: ' KBytes/s'
-            },
-            plotOptions: {
-                areaspline: {
-                    stacking: 'normal',
-                    lineColor: '#666666',
-                    lineWidth: 1,
-                    marker: {
-                        lineWidth: 1,
+                    text: '',
+                    x: -20 //center
+                },
+                credits: {
+                    enabled: false
+                },
+                yAxis: {
+                    title: {
+                        text: 'Speed (KByte/s)'
+                    },min: 0,
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    shared: true,
+                    valueSuffix: ' KBytes/s'
+                },
+                plotOptions: {
+                    areaspline: {
+                        stacking: 'normal',
                         lineColor: '#666666',
-                        enabled: false
+                        lineWidth: 1,
+                        marker: {
+                            lineWidth: 1,
+                            lineColor: '#666666',
+                            enabled: false
+                        }
                     }
-                }
-            },
+                },
 
-            xAxis: {
-                categories: {{ speed_stat_chart.category | safe }}
-            },
-            series: {{ speed_stat_chart.value | safe }}
+                xAxis: {
+                    categories: data.category
+                },
+                series: data.value
+            });
         });
         $.getJSON('/analyzer/last_30_day',function(data){
             $('#last-30-day-chart').highcharts({

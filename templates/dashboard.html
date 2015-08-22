@@ -16,8 +16,8 @@
                                             <i class="fa fa-arrow-circle-up fa-4x"></i>
                                         </div>
                                         <div class="col-xs-9 text-right" style="padding-left: 5px;">
-                                            <h1 class="no-margins" style=" font-weight: bold;" id="last_speed">{{ today_data.last_speed if today_data.last_speed<1024 else (today_data.last_speed/1024*100)|int/100 }}</h1>
-                                            <small style=" font-weight: bold;"><span id="speed_unit">{% if today_data.last_speed<1024 %}K{% else %}M{% endif %}</span>Byte/s</small>
+                                            <h1 class="no-margins" style=" font-weight: bold;" id="last_speed"></h1>
+                                            <small style=" font-weight: bold;"><span id="speed_unit"></span>Byte/s</small>
                                         </div>
                                     </div>
                                 </div>
@@ -37,7 +37,7 @@
                                             <i class="fa fa-rmb fa-4x"></i>
                                         </div>
                                         <div class="col-xs-9 text-right" style="padding-left: 5px;">
-                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="pdc">{{ convert_to_yuan(today_data.pdc) }}</h1>
+                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="pdc"></h1>
                                         </div>
                                     </div>
                                 </div>
@@ -54,7 +54,7 @@
 
                                     <div class="row">
                                         <div class="col-xs-12 text-right" style="padding-left: 5px;">
-                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="w_pdc">{{ convert_to_yuan(today_data.w_pdc) }}</h1>
+                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="w_pdc"></h1>
                                         </div>
                                     </div>
                                 </div>
@@ -71,7 +71,7 @@
 
                                     <div class="row">
                                         <div class="col-xs-12 text-right" style="padding-left: 5px;">
-                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="m_pdc">{{ convert_to_yuan(today_data.m_pdc) }}</h1>
+                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="m_pdc"></h1>
                                         </div>
                                     </div>
                                 </div>
@@ -174,49 +174,50 @@
                 useUTC: false
             }
         });
-        $('#seven-day-chart').highcharts({
-            chart: {
+        $.getJSON('/analyzer/seven_days_chart',function(data) {
+            $('#seven-day-chart').highcharts({
+                chart: {
 
-            },
-            title: {
-                text: '',
-                x: -20 //center
-            },
-            legend: {
-                enabled:false
-            },
-            credits: {
-                enabled: false
-            },
-            yAxis: [{ // Secondary yAxis
-                title: {
-                    text: '平均速度 KBytes/s'
-                },min: 0,
-                labels: {
-                    format: '{value}'
                 },
-                opposite: true
-            },{
                 title: {
-                    text: '产量'
+                    text: '',
+                    x: -20 //center
                 },
-                plotLines: [{
-                    value: 0,
-                    width: 1
-                }]
-            }],
-            tooltip: {
-                shared: true,
-                valueSuffix: ''
-            },
+                legend: {
+                    enabled:false
+                },
+                credits: {
+                    enabled: false
+                },
+                yAxis: [{ // Secondary yAxis
+                    title: {
+                        text: '平均速度 KBytes/s'
+                    },min: 0,
+                    labels: {
+                        format: '{value}'
+                    },
+                    opposite: true
+                },{
+                    title: {
+                        text: '产量'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1
+                    }]
+                }],
+                tooltip: {
+                    shared: true,
+                    valueSuffix: ''
+                },
 
-            xAxis: {
-                categories: {{ today_data.seven_days_chart.category | safe }}
-            },
-            series: {{ today_data.seven_days_chart.value | safe }}
+                xAxis: {
+                    categories: data.category
+                },
+                series: data.series
+            });
         });
-
-        {% if speed_comparison_data is defined %}
+        $.getJSON('/analyzer/speed_comparison',function(data) {
             $('#speed-comparison').highcharts({
                 chart: {
                     type: 'spline'
@@ -232,7 +233,7 @@
                 yAxis: {
                     title: {
                         text: 'Speed (KByte/s)'
-                    },min: 0,
+                    }, min: 0,
                     plotLines: [{
                         value: 0,
                         width: 1,
@@ -254,11 +255,11 @@
                 },
 
                 xAxis: {
-                    categories: {{ speed_comparison_data.category | safe }}
+                    categories: data.category
                 },
-                series: {{ speed_comparison_data.value | safe }}
+                series: data.value
             });
-        {% endif %}
+        });
 
         $('#real_time_speed').highcharts({
             chart: {
@@ -331,108 +332,6 @@
             }
             return speed;
         }
-        var last_upd_hour = new Date().getHours();
-        var load_chart_count = 0;
-        function reload_chart(data){
-
-            $('#seven-day-chart').highcharts({
-                chart: {
-
-                },
-                title: {
-                    text: '',
-                    x: -20 //center
-                },
-                legend: {
-                    enabled:false
-                },
-                credits: {
-                    enabled: false
-                },
-                yAxis: [{ // Secondary yAxis
-                    title: {
-                        text: '平均速度 KBytes/s',
-                        style: {
-                            color: Highcharts.getOptions().colors[0]
-                        }
-                    },min: 0,
-                    labels: {
-                        format: '{value}',
-                        style: {
-                            color: Highcharts.getOptions().colors[0]
-                        }
-                    },
-                    opposite: true
-                },{
-                    title: {
-                        text: '产量'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                }],
-                plotOptions: {
-                    series: {
-                        animation: false
-                    }
-                },
-                tooltip: {
-                    shared: true,
-                    valueSuffix: ''
-                },
-                xAxis: {
-                    categories: data.today_data.seven_days_chart.category
-                },
-                series: data.today_data.seven_days_chart.value
-            });
-
-            if (data.speed_comparison_data != undefined) {
-                $('#speed-comparison').highcharts({
-                    chart: {
-                        type: 'spline'
-
-                    },
-                    title: {
-                        text: '',
-                        x: -20 //center
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Speed (KByte/s)'
-                        }, min: 0,
-                        plotLines: [{
-                            value: 0,
-                            width: 1,
-                            color: '#808080'
-                        }]
-                    },
-                    tooltip: {
-                        shared: true,
-                        valueSuffix: ' KByte/s'
-                    },
-                    plotOptions: {
-                        spline: {
-                            lineWidth: 1,
-                            marker: {
-                                lineWidth: 1,
-                                enabled: false
-                            },
-                            animation: false
-                        }
-                    },
-
-                    xAxis: {
-                        categories: data.speed_comparison_data.category
-                    },
-                    series: data.speed_comparison_data.value
-                });
-            }
-        }
 
         var flash_element = function(jquery_obj){
             jquery_obj.css('margin','0');
@@ -468,22 +367,12 @@
                     $('#m_pdc').html(convert_to_yuan(data.today_data.m_pdc));
                     flash_element($('#m_pdc'));
                 }
-                if (last_upd_hour != new Date().getHours()) {
-                    if (load_chart_count < 3) {
-                        load_chart_count++;
-                        reload_chart(data);
-                    }
-                    else{
-                        last_upd_hour = new Date().getHours();
-                    }
-
-                }
             })
         }
 
         $(document).ready(function(){
-            $('#real_time_speed').highcharts().series[0].addPoint([(new Date()).getTime(),{{ today_data.last_speed }}], true, true);
-
+            $('#real_time_speed').highcharts().series[0].addPoint([(new Date()).getTime(),0], true, true);
+            reload_data();
             setInterval(reload_data,5000);
         });
 
