@@ -256,8 +256,19 @@
                         size: '60%',
                         dataLabels: {
                             formatter: function () {
-                                return null;
-                            }
+                                var total = 0, percentage;
+                                $.each(this.series.data, function() {
+                                  total+=this.y;
+                                });
+
+                                percentage=((this.y/total)*100).toFixed(1);
+
+                                if (data.length > 3)
+                                    return percentage > 20 ? this.point.name : null;
+                                else
+                                    return percentage > 10 ? this.point.name : null;
+                            },
+                            distance: -5
                         }
                     }, {
                         name: '上传速度',
