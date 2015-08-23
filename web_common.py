@@ -100,6 +100,8 @@ def dashboard_speed_share():
         device_speed = []
 
         for device_info in account_info.get('device_info'):
+            if device_info.get('ON_OFF_STATE') != 1:
+                continue
             speed = int(device_info.get('CUR_UPLOAD_SPEED') / 1024)
             total_speed += speed
             if device_info.get('red_info') is None:

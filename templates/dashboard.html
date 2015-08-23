@@ -253,12 +253,30 @@
                     series: [{
                         name: '上传速度',
                         data: browserData,
-                        size: '60%'
+                        size: '60%',
+                        dataLabels: {
+                            formatter: function () {
+                                return null;
+                            }
+                        }
                     }, {
                         name: '上传速度',
                         data: versionsData,
                         size: '100%',
-                        innerSize: '55%'
+                        innerSize: '55%',
+                        dataLabels: {
+                            formatter: function () {
+                                var total = 0, percentage;
+                                $.each(this.series.data, function() {
+                                  total+=this.y;
+                                });
+
+                                percentage=((this.y/total)*100).toFixed(1);
+
+                                // display only if larger than 1
+                                return percentage > 1 ? '<b>' + this.point.name + ':</b> ' + this.y + ' KB/s' : null;
+                            }
+                        }
                     }]
                 });
             });
