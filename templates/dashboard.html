@@ -16,7 +16,7 @@
                                             <i class="fa fa-arrow-circle-up fa-4x"></i>
                                         </div>
                                         <div class="col-xs-9 text-right" style="padding-left: 5px;">
-                                            <h1 class="no-margins" style=" font-weight: bold;" id="last_speed"></h1>
+                                            <h1 class="no-margins" style=" font-weight: bold;" id="live_speed"></h1>
                                             <small style=" font-weight: bold;"><span id="speed_unit"></span>Byte/s</small>
                                         </div>
                                     </div>
@@ -81,31 +81,52 @@
 
 
         <!-- /.row -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <i class="fa fa-bar-chart-o fa-fw"></i> 当前速度
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="ibox-content">
-                        <div id="real_time_speed" style="height: 250px;"></div>
-                    </div>
-                    <!-- /.panel-body -->
-                </div>
-            </div>
-            <!-- /.col-lg-8 -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="ibox float-e-margins">
+                <!-- /.panel-heading -->
+                <div class="ibox-content">
+                    <div>
+                        <span class="pull-right text-right">
+                            <small>所有账号合计
+                                <strong></strong></small>
+                            <br>
 
-            <!-- /.col-lg-4 -->
+                        </span>
+                        <h3 class="font-bold no-margins">
+                            实时速度
+                        </h3>
+                        <small></small>
+                    </div>
+                    <div id="real_time_speed" style="height: 200px;"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
         </div>
+        <!-- /.col-lg-9 -->
+        <div class="col-lg-4">
+            <div class="ibox float-e-margins">
+                <!-- /.panel-heading -->
+                <div class="ibox-content">
+                    <div>
+                        <span class="pull-right text-right">
+                            <small>
+                                <strong></strong></small>
+                            <br>
+
+                        </span>
+                        <h3 class="font-bold no-margins">
+                            矿机速度
+                        </h3>
+                        <small></small>
+                    </div>
+                    <div id="speed-share" style="height: 200px;"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-4 -->
+    </div>
         <!-- /.row -->
 
         <!-- /.row -->
@@ -167,13 +188,83 @@
 {% endblock %}
 
 {% block js_logic %}
-    <script src="../static/js/highcharts.js"></script>
+    <script src="../static/js/plugins/highcharts/highcharts.js"></script>
     <script>
         Highcharts.setOptions({
             global: {
                 useUTC: false
             }
         });
+
+        var load_speed_share = function(){
+            $.getJSON('/dashboard/speed_share',function(r_data) {
+
+                var colors = Highcharts.getOptions().colors,
+                        data = r_data.data,
+                        browserData = [],
+                        versionsData = [];
+
+
+
+                // Build the data arrays
+                for (var i = 0; i < data.length; i += 1) {
+                    browserData.push({
+                        name: data[i].name,
+                        y: data[i].value,
+                        color: colors[i]
+                    });
+
+                    for (var j = 0; j < data[i].drilldown_data.length; j += 1) {
+                        var brightness = 0.2 - (j / data[i].drilldown_data.length) / 5;
+                        versionsData.push({
+                            name: data[i].drilldown_data[j].name,
+                            y: data[i].drilldown_data[j].value,
+                            color: Highcharts.Color(colors[i]).brighten(brightness).get()
+                        });
+                    }
+                }
+
+                $('#speed-share').highcharts({
+                    chart: {
+                        type: 'pie'
+                    },
+                    title: {
+                        text: ''
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Total percent market share'
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            shadow: false,
+                            center: ['50%', '50%'],
+                            dataLabels: {
+                                enabled: false
+                            },
+                            animation: false
+                        }
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        valueSuffix: ' KB/s'
+                    },
+                    series: [{
+                        name: '上传速度',
+                        data: browserData,
+                        size: '60%'
+                    }, {
+                        name: '上传速度',
+                        data: versionsData,
+                        size: '100%',
+                        innerSize: '55%'
+                    }]
+                });
+            });
+        }
         $.getJSON('/analyzer/seven_days_chart',function(data) {
             $('#seven-day-chart').highcharts({
                 chart: {
@@ -342,18 +433,18 @@
             }, 2000)
         }
         var reload_data = function(){
-
+            load_speed_share();
             $.getJSON( "/dashboard_data", function( data ) {
                 $('#real_time_speed').highcharts().series[0].addPoint([(new Date()).getTime(),data.today_data.last_speed], true, true);
-                if($('#last_speed').html() != convert_speed(data.today_data.last_speed)){
-                    $('#last_speed').html(convert_speed(data.today_data.last_speed));
+                if($('#live_speed').html() != convert_speed(data.today_data.last_speed)){
+                    $('#live_speed').html(convert_speed(data.today_data.last_speed));
 
                     if(data.today_data.last_speed > 1024){
                         $('#speed_unit').html('M')
                     }else{
                         $('#speed_unit').html('K')
                     }
-                    flash_element($('#last_speed'));
+                    flash_element($('#live_speed'));
                 }
 
                 if($('#pdc').html() != convert_to_yuan(data.today_data.pdc)) {

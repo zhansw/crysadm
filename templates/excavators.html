@@ -87,6 +87,7 @@
                 <div class="ibox-content">
                     {% for row in accounts %}
                         {% if row.data is defined  %}
+                            {{ row }}
                             <div class="table-responsive">
                                 <h5 style="text-align: right">矿主ID : {{ row.data.privilege.mid |e }}</h5>
                                 <table class="table table-hover">

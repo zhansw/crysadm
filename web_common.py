@@ -35,6 +35,7 @@ def __get_yesterday_pdc(username):
 
     return yesterday_m_pdc, yesterday_w_pdc
 
+
 @app.route('/dashboard')
 @requires_auth
 def dashboard():
@@ -75,26 +76,40 @@ def dashboard_data():
     today_data['m_pdc'] = today_data.get('yesterday_m_pdc') + today_data.get('pdc')
     today_data['w_pdc'] = today_data.get('yesterday_w_pdc') + today_data.get('pdc')
 
-
     if need_save:
         r_session.set(key, json.dumps(today_data))
 
     return Response(json.dumps(dict(today_data=today_data)), mimetype='application/json')
 
 
-@app.route('/top')
-@requires_admin
-def top():
-    for k in  r_session.keys('user_data:*:2015-08-15'):
+@app.route('/dashboard/speed_share')
+@requires_auth
+def dashboard_speed_share():
+    user = session.get('user_info')
+    username = user.get('username')
+    accounts_key = 'accounts:%s' % username
 
-        print(k.decode('utf-8'))
-        data = json.loads(r_session.get(k.decode('utf-8')).decode('utf-8'))
-        if data.get('w_pdc') is None:
-            continue
-        if data.get('w_pdc') < 710000:
-            continue
-        return k.decode('utf-8')
+    drilldown_data = []
+    for b_acct in r_session.mget(*['account:%s:%s:data' % (username, name.decode('utf-8'))
+                                   for name in sorted(r_session.smembers(accounts_key))]):
 
+        account_info = json.loads(b_acct.decode("utf-8"))
+        mid = str(account_info.get('privilege').get('mid'))
+
+        total_speed = 0
+        device_speed = []
+
+        for device_info in account_info.get('device_info'):
+            speed = int(device_info.get('CUR_UPLOAD_SPEED') / 1024)
+            total_speed += speed
+            if device_info.get('red_info') is None:
+                device_speed.append(dict(name=device_info.get('HOST_NAME'), value=speed))
+            else:
+                device_speed.append(dict(name=device_info.get('red_info').get('hn'), value=speed))
+
+        drilldown_data.append(dict(name='矿主ID:' + mid, value=total_speed, drilldown_data=device_speed))
+
+    return Response(json.dumps(dict(data=drilldown_data)), mimetype='application/json')
 
 
 @app.route('/')
@@ -130,11 +145,11 @@ def add_function():
         return str(crystal_values)
 
     def get_device_type(device_code):
-        if device_code==121:
+        if device_code == 121:
             return 'PC'
-        elif device_code==421:
+        elif device_code == 421:
             return '路由'
-        elif device_code ==321:
+        elif device_code == 321:
             return '赚钱宝'
 
         return '不知道'
@@ -142,7 +157,7 @@ def add_function():
     def int2ip(int_ip):
         return socket.inet_ntoa(struct.pack("I", int_ip))
 
-    return dict(convert_to_yuan=convert_to_yuan, get_device_type=get_device_type,int2ip=int2ip)
+    return dict(convert_to_yuan=convert_to_yuan, get_device_type=get_device_type, int2ip=int2ip)
 
 
 @app.context_processor
@@ -154,7 +169,7 @@ def message_box():
     msgs_key = 'user_messages:%s' % user.get('username')
 
     msg_box = list()
-    msg_count=0
+    msg_count = 0
     for b_msg_id in r_session.lrange(msgs_key, 0, -1):
         msg_key = 'user_message:%s' % b_msg_id.decode('utf-8')
         b_msg = r_session.get(msg_key)
@@ -167,14 +182,14 @@ def message_box():
             continue
 
         if len(msg.get('content')) > 41:
-            msg['content'] = msg.get('content')[:30]+'...'
+            msg['content'] = msg.get('content')[:30] + '...'
         else:
             msg['content'] = msg.get('content')[:30]
         msg_count += 1
         if not len(msg_box) > 3:
             msg_box.append(msg)
 
-    return dict(msg_box=msg_box,msg_count=msg_count)
+    return dict(msg_box=msg_box, msg_count=msg_count)
 
 
 @app.context_processor
