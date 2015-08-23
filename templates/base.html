@@ -49,10 +49,10 @@
 
 
 {% set navigation_bar = [
-    ('dashboard','/dashboard', '<i class="fa fa-fw fa-dashboard"></i>', '监控中心',[]),
-    ('analyzer','/analyzer', '<i class="fa fa-fw fa-bar-chart-o"></i>', '数据分析',[]),
-    ('excavators','/excavators', '<i class="fa fa-fw fa-sitemap"></i>', '我的矿机',[]),
-    ('accounts','/#', '<i class="fa fa-fw fa-user"></i>', '账号管理',
+    ('dashboard','/dashboard', '<i class="fa fa-fw fa-dashboard"></i>', '监控中心','<span class="label label-primary pull-right">NEW</span>',[]),
+    ('analyzer','/analyzer', '<i class="fa fa-fw fa-bar-chart-o"></i>', '数据分析','<span class="label label-warning pull-right">NEW</span>',[]),
+    ('excavators','/excavators', '<i class="fa fa-fw fa-sitemap"></i>', '我的矿机','',[]),
+    ('accounts','/#', '<i class="fa fa-fw fa-user"></i>', '账号管理','',
         [('accounts','/accounts', '迅雷账号管理'),
         ('profile','/user/profile', '我的个人信息')]),
 
@@ -99,10 +99,11 @@
                     </div>
 
                 </li>
-                {% for id, href, icon, caption,sub_navigation_bar in navigation_bar %}
+                {% for id, href, icon, caption, tip_icon, sub_navigation_bar in navigation_bar %}
                     <li{% if id == active_page or active_page in sub_navigation_bar|map(attribute='0') %} class="active"{% endif %}>
                         <a href="{{ href|e }}">{{ icon|safe }} <span class="nav-label">{{ caption|e }}</span>
                             {% if sub_navigation_bar|length > 0 %}<span class="fa arrow"></span>{% endif %}
+                            {{ tip_icon | safe }}
                         </a>
                         {% if sub_navigation_bar|length > 0 %}
                             <ul style="" class="nav nav-second-level collapse">
