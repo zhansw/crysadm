@@ -114,6 +114,29 @@ def dashboard_speed_share():
     return Response(json.dumps(dict(data=drilldown_data)), mimetype='application/json')
 
 
+@app.route('/dashboard/today_income_share')
+@requires_auth
+def dashboard_today_income_share():
+    user = session.get('user_info')
+    username = user.get('username')
+    accounts_key = 'accounts:%s' % username
+
+    pie_data = []
+    for b_acct in r_session.mget(*['account:%s:%s:data' % (username, name.decode('utf-8'))
+                                   for name in sorted(r_session.smembers(accounts_key))]):
+
+        account_info = json.loads(b_acct.decode("utf-8"))
+        mid = str(account_info.get('privilege').get('mid'))
+
+        total_value = 0
+        total_value += account_info.get('mine_info').get('dev_m').get('pdc')
+        total_value += account_info.get('mine_info').get('dev_pc').get('pdc')
+
+        pie_data.append(dict(name='矿主ID:' + mid, y=total_value))
+
+    return Response(json.dumps(dict(data=pie_data)), mimetype='application/json')
+
+
 @app.route('/')
 def index():
     return redirect(url_for('login'))

@@ -1,86 +1,86 @@
 {% extends "base.html" %}
 {% block content %}
 
-        <div class="row">
+    <div class="row">
 
-                        <div class="col-lg-3 col-md-6">
-                            <div class="ibox float-e-margins">
-                                <div class="ibox-title">
-                                    <span class="label label-success pull-right" style="padding-top: 5px;">实时</span>
-                                    <h5>上传速度</h5>
-                                </div>
-                                <div class="ibox-content">
+        <div class="col-lg-3 col-md-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right" style="padding-top: 5px;">实时</span>
+                    <h5>上传速度</h5>
+                </div>
+                <div class="ibox-content">
 
-                                    <div class="row">
-                                        <div class="col-xs-3">
-                                            <i class="fa fa-arrow-circle-up fa-4x"></i>
-                                        </div>
-                                        <div class="col-xs-9 text-right" style="padding-left: 5px;">
-                                            <h1 class="no-margins" style=" font-weight: bold;" id="live_speed"></h1>
-                                            <small style=" font-weight: bold;"><span id="speed_unit"></span>Byte/s</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-arrow-circle-up fa-4x"></i>
                         </div>
-
-                        <div class="col-lg-3 col-md-6">
-                            <div class="ibox float-e-margins">
-                                <div class="ibox-title">
-                                    <span class="label label-info pull-right" style="padding-top: 5px;">今日</span>
-                                    <h5>水晶产量</h5>
-                                </div>
-                                <div class="ibox-content">
-
-                                    <div class="row">
-                                        <div class="col-xs-3">
-                                            <i class="fa fa-rmb fa-4x"></i>
-                                        </div>
-                                        <div class="col-xs-9 text-right" style="padding-left: 5px;">
-                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="pdc"></h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-3 col-md-6">
-                            <div class="ibox float-e-margins">
-                                <div class="ibox-title">
-                                    <span class="label label-primary pull-right" style="padding-top: 5px;">本周</span>
-                                    <h5>水晶产量</h5>
-                                </div>
-                                <div class="ibox-content" style="height: 88px;">
-
-                                    <div class="row">
-                                        <div class="col-xs-12 text-right" style="padding-left: 5px;">
-                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="w_pdc"></h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-3 col-md-6">
-                            <div class="ibox float-e-margins">
-                                <div class="ibox-title">
-                                    <span class="label label-danger pull-right" style="padding-top: 5px;">本月</span>
-                                    <h5>水晶产量</h5>
-                                </div>
-                                <div class="ibox-content" style="height: 88px;">
-
-                                    <div class="row">
-                                        <div class="col-xs-12 text-right" style="padding-left: 5px;">
-                                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="m_pdc"></h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="col-xs-9 text-right" style="padding-left: 5px;">
+                            <h1 class="no-margins" style=" font-weight: bold;" id="live_speed"></h1>
+                            <small style=" font-weight: bold;"><span id="speed_unit"></span>Byte/s</small>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right" style="padding-top: 5px;">今日</span>
+                    <h5>水晶产量</h5>
+                </div>
+                <div class="ibox-content">
+
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-rmb fa-4x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right" style="padding-left: 5px;">
+                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="pdc"></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-primary pull-right" style="padding-top: 5px;">本周</span>
+                    <h5>水晶产量</h5>
+                </div>
+                <div class="ibox-content" style="height: 88px;">
+
+                    <div class="row">
+                        <div class="col-xs-12 text-right" style="padding-left: 5px;">
+                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="w_pdc"></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-danger pull-right" style="padding-top: 5px;">本月</span>
+                    <h5>水晶产量</h5>
+                </div>
+                <div class="ibox-content" style="height: 88px;">
+
+                    <div class="row">
+                        <div class="col-xs-12 text-right" style="padding-left: 5px;">
+                            <h1 style="font-size: 44px; font-weight: bold;" class="no-margins" id="m_pdc"></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
-        <!-- /.row -->
+    <!-- /.row -->
     <div class="row">
         <div class="col-lg-6">
             <div class="ibox float-e-margins">
@@ -103,88 +103,110 @@
                 <!-- /.panel-body -->
             </div>
         </div>
-        <!-- /.col-lg-4 -->
+        <!-- /.col-lg-6 -->
         <div class="col-lg-6">
             <div class="ibox float-e-margins">
                 <!-- /.panel-heading -->
                 <div class="ibox-content">
                     <div>
                         <span class="pull-right text-right">
-                            <small>所有账号合计
+                            <small>今日矿场产量
                                 <strong></strong></small>
                             <br>
 
                         </span>
                         <h3 class="font-bold no-margins">
-                            实时速度
+                            产量分析器
                         </h3>
                         <small></small>
                     </div>
-                    <div id="real_time_speed" style="height: 200px;"></div>
+                    <div id="today-income-share" style="height: 200px;min-width: 300px;"></div>
                 </div>
                 <!-- /.panel-body -->
             </div>
         </div>
-        <!-- /.col-lg-9 -->
-
+        <!-- /.col-lg-6 -->
     </div>
-        <!-- /.row -->
+    <!-- /.row -->
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <!-- /.panel-heading -->
+                <div class="ibox-content">
+                    <div>
+                        <span class="pull-right text-right">
+                            <small>实时速度
+                                <strong></strong></small>
+                            <br>
 
-        <!-- /.row -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日产量
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
-                        </div>
+                        </span>
+                        <h3 class="font-bold no-margins">
+
+                        </h3>
+                        <small></small>
                     </div>
-                    <!-- /.panel-heading -->
-                    <div class="ibox-content">
-                        <div id="seven-day-chart" style="height: 250px;"></div>
-                    </div>
-                    <!-- /.panel-body -->
+                    <div id="real_time_speed" style="height: 150px;"></div>
                 </div>
+                <!-- /.panel-body -->
             </div>
-            <!-- /.col-lg-8 -->
-
-            <!-- /.col-lg-4 -->
         </div>
-        <!-- /.row -->
-
-        <!-- /.row -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日速度
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
-                        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日产量
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
                     </div>
-                    <!-- /.panel-heading -->
-                    <div class="ibox-content">
-                        <div id="speed-comparison"></div>
-                    </div>
-                    <!-- /.panel-body -->
                 </div>
-                <!-- /.panel -->
-
+                <!-- /.panel-heading -->
+                <div class="ibox-content">
+                    <div id="seven-day-chart" style="height: 250px;"></div>
+                </div>
+                <!-- /.panel-body -->
             </div>
-            <!-- /.col-lg-12 -->
         </div>
-        <!-- /.row -->
+        <!-- /.col-lg-8 -->
+
+        <!-- /.col-lg-4 -->
+    </div>
+    <!-- /.row -->
+
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日速度
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="ibox-content">
+                    <div id="speed-comparison"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
 
 {% endblock %}
 
@@ -232,11 +254,6 @@
                     title: {
                         text: ''
                     },
-                    yAxis: {
-                        title: {
-                            text: 'Total percent market share'
-                        }
-                    },
                     plotOptions: {
                         pie: {
                             shadow: false,
@@ -258,7 +275,7 @@
                             formatter: function () {
                                 var total = 0, percentage;
                                 $.each(this.series.data, function() {
-                                  total+=this.y;
+                                    total+=this.y;
                                 });
 
                                 percentage=((this.y/total)*100).toFixed(1);
@@ -279,7 +296,7 @@
                             formatter: function () {
                                 var total = 0, percentage;
                                 $.each(this.series.data, function() {
-                                  total+=this.y;
+                                    total+=this.y;
                                 });
 
                                 percentage=((this.y/total)*100).toFixed(1);
@@ -292,113 +309,147 @@
                 });
             });
         }
-        $.getJSON('/analyzer/seven_days_chart',function(data) {
-            $('#seven-day-chart').highcharts({
-                chart: {
-
-                },
-                title: {
-                    text: '',
-                    x: -20 //center
-                },
-                legend: {
-                    enabled:false
-                },
-                credits: {
-                    enabled: false
-                },
-                yAxis: [{ // Secondary yAxis
-                    title: {
-                        text: '平均速度 KBytes/s'
-                    },min: 0,
-                    labels: {
-                        format: '{value}'
+        var load_today_income_share = function() {
+            $.getJSON('/dashboard/today_income_share', function (data) {
+                $('#today-income-share').highcharts({
+                    chart: {
+                        type: 'pie'
                     },
-                    opposite: true
-                },{
                     title: {
-                        text: '产量'
+                        text: ''
                     },
-                    plotLines: [{
-                        value: 0,
-                        width: 1
-                    }]
-                }],
-                tooltip: {
-                    shared: true,
-                    valueSuffix: ''
-                },
-
-                xAxis: {
-                    categories: data.category
-                },
-                series: data.series
-            });
-        });
-        $.getJSON('/analyzer/speed_comparison',function(data) {
-            $('#speed-comparison').highcharts({
-                chart: {
-                    type: 'spline'
-
-                },
-                title: {
-                    text: '',
-                    x: -20 //center
-                },
-                credits: {
-                    enabled: false
-                },
-                yAxis: {
-                    title: {
-                        text: 'Speed (KByte/s)'
-                    }, min: 0,
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    shared: true,
-                    valueSuffix: ' KByte/s'
-                },
-                plotOptions: {
-                    spline: {
-                        lineWidth: 1,
-                        marker: {
-                            lineWidth: 1,
-                            enabled: false
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.total}</b>'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                            },
+                            animation: false
                         }
-                    }
-                },
-
-                xAxis: {
-                    categories: data.category
-                },
-                series: data.value
+                    },
+                    series: [{
+                        name: "产量",
+                        colorByPoint: true,
+                        data: data.data
+                    }]
+                });
             });
-        });
+        }
+        var load_static_chart = function() {
+            $.getJSON('/analyzer/seven_days_chart', function (data) {
+                $('#seven-day-chart').highcharts({
+                    chart: {},
+                    title: {
+                        text: '',
+                        x: -20 //center
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    yAxis: [{ // Secondary yAxis
+                        title: {
+                            text: '平均速度 KBytes/s'
+                        }, min: 0,
+                        labels: {
+                            format: '{value}'
+                        },
+                        opposite: true
+                    }, {
+                        title: {
+                            text: '产量'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1
+                        }]
+                    }],
+                    tooltip: {
+                        shared: true,
+                        valueSuffix: ''
+                    },
 
+                    xAxis: {
+                        categories: data.category
+                    },
+                    series: data.series
+                });
+            });
+
+            $.getJSON('/analyzer/speed_comparison', function (data) {
+                $('#speed-comparison').highcharts({
+                    chart: {
+                        type: 'spline'
+
+                    },
+                    title: {
+                        text: '',
+                        x: -20 //center
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Speed (KByte/s)'
+                        }, min: 0,
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    },
+                    tooltip: {
+                        shared: true,
+                        valueSuffix: ' KByte/s'
+                    },
+                    plotOptions: {
+                        spline: {
+                            lineWidth: 1,
+                            marker: {
+                                lineWidth: 1,
+                                enabled: false
+                            }
+                        }
+                    },
+
+                    xAxis: {
+                        categories: data.category
+                    },
+                    series: data.value
+                });
+            });
+        }
         $('#real_time_speed').highcharts({
             chart: {
                 type: 'spline',
                 animation: Highcharts.svg, // don't animate in old IE
-                marginRight: 10
+                marginBottom: 30
 
             },credits: {
-                    enabled: false
-                },
-                title: {
-                    text: '',
-                    x: -20 //center
-                },
+                enabled: false
+            },
+            title: {
+                text: '',
+                x: -20 //center
+            },
             xAxis: {
                 type: 'datetime',
                 tickPixelInterval: 150
             },
             yAxis: {
                 title: {
-                    text: 'Speed (KByte/s)'
+                    text: ''
                 },
                 plotLines: [{
                     value: 0,
@@ -409,7 +460,7 @@
             tooltip: {
                 formatter: function () {
                     return Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                        Highcharts.numberFormat(this.y, 0)+' KByte/s';
+                            Highcharts.numberFormat(this.y, 0)+' KByte/s';
                 }
             },
             legend: {
@@ -423,8 +474,8 @@
                 data: (function () {
                     // generate an array of random data
                     var data = [],
-                        time = (new Date()).getTime(),
-                        i;
+                            time = (new Date()).getTime(),
+                            i;
 
                     for (i = -24; i <= 0; i += 1) {
                         data.push({
@@ -489,9 +540,15 @@
             })
         }
 
+        var reload_data_ten_minutes = function(){
+            load_today_income_share();
+            load_static_chart();
+        }
         $(document).ready(function(){
             $('#real_time_speed').highcharts().series[0].addPoint([(new Date()).getTime(),0], true, true);
             reload_data();
+            load_today_income_share();
+            setInterval(reload_data_ten_minutes,60*1000*10);
             setInterval(reload_data,5000);
         });
 
