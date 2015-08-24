@@ -105,7 +105,7 @@ def dashboard_speed_share():
             speed = int(device_info.get('CUR_UPLOAD_SPEED') / 1024)
             total_speed += speed
             if device_info.get('red_info') is None:
-                device_speed.append(dict(name=device_info.get('HOST_NAME'), value=speed))
+                device_speed.append(dict(name=device_info.get('HOST_NAME').replace('XL_MINER_', '矿机 '), value=speed))
             else:
                 device_speed.append(dict(name=device_info.get('red_info').get('hn'), value=speed))
 
