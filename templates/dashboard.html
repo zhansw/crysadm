@@ -229,7 +229,7 @@
         var hidden_id = getHiddenIdSetting();
 
         var load_speed_share = function(){
-            $.getJSON('/dashboard/speed_share',function(r_data) {
+            $.getJSON('/dashboard/speed_share?random='+Math.random(),function(r_data) {
 
                 var colors = Highcharts.getOptions().colors,
                         data = r_data.data,
@@ -329,7 +329,7 @@
             });
         }
         var load_today_income_share = function() {
-            $.getJSON('/dashboard/today_income_share', function (data) {
+            $.getJSON('/dashboard/today_income_share?random='+Math.random(), function (data) {
                 $('#today-income-share').highcharts({
                     chart: {
                         type: 'pie'
@@ -369,7 +369,7 @@
             });
         }
         var load_static_chart = function() {
-            $.getJSON('/analyzer/seven_days_chart', function (data) {
+            $.getJSON('/analyzer/seven_days_chart?random='+Math.random(), function (data) {
                 $('#seven-day-chart').highcharts({
                     chart: {},
                     title: {
@@ -411,7 +411,7 @@
                 });
             });
 
-            $.getJSON('/analyzer/speed_comparison', function (data) {
+            $.getJSON('/analyzer/speed_comparison?random='+Math.random(), function (data) {
                 $('#speed-comparison').highcharts({
                     chart: {
                         type: 'spline'
@@ -537,7 +537,7 @@
         }
         var reload_data = function(){
             load_speed_share();
-            $.getJSON( "/dashboard_data", function( data ) {
+            $.getJSON( "/dashboard_data?random="+Math.random(), function( data ) {
                 $('#real_time_speed').highcharts().series[0].addPoint([(new Date()).getTime(),data.today_data.last_speed], true, true);
                 if($('#live_speed').html() != convert_speed(data.today_data.last_speed)){
                     $('#live_speed').html(convert_speed(data.today_data.last_speed));

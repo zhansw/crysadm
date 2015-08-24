@@ -50,7 +50,7 @@
                 useUTC: false
             }
         });
-        $.getJSON('/analyzer/speed_stat_chart',function(data){
+        $.getJSON('/analyzer/speed_stat_chart?random='+Math.random(),function(data){
             $('#speed-stat-chart').highcharts({
                 chart: {
                     type: 'areaspline'
@@ -96,7 +96,7 @@
                 series: data.value
             });
         });
-        $.getJSON('/analyzer/last_30_day',function(data){
+        $.getJSON('/analyzer/last_30_day?random='+Math.random(),function(data){
             $('#last-30-day-chart').highcharts({
                 chart: {
                     type: 'column',
