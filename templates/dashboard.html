@@ -218,6 +218,15 @@
                 useUTC: false
             }
         });
+        var getHiddenIdSetting = function(){
+            hidden_id_cookie = $.cookie('hidden_id');
+            if (hidden_id_cookie  == undefined || hidden_id_cookie ==null){
+                return false;
+            }
+            return hidden_id_cookie;
+
+        }
+        var hidden_id = getHiddenIdSetting();
 
         var load_speed_share = function(){
             $.getJSON('/dashboard/speed_share',function(r_data) {
@@ -280,6 +289,12 @@
 
                                 percentage=((this.y/total)*100).toFixed(1);
 
+                                if (hidden_id){
+                                    if (data.length > 3)
+                                        return percentage > 20 ? '矿主ID:XXXXXXX' : null;
+                                    else
+                                        return percentage > 10 ? '矿主ID:XXXXXXX' : null;
+                                }
                                 if (data.length > 3)
                                     return percentage > 20 ? this.point.name : null;
                                 else
@@ -302,6 +317,10 @@
                                 percentage=((this.y/total)*100).toFixed(1);
 
                                 // display only if larger than 1
+                                if (hidden_id){
+                                    return percentage > 1 ? '<b>矿机:</b> ' + this.y + ' KB/s' : null;
+                                }
+
                                 return percentage > 1 ? '<b>' + this.point.name + ':</b> ' + this.y + ' KB/s' : null;
                             }
                         }
@@ -329,8 +348,14 @@
                             allowPointSelect: true,
                             cursor: 'pointer',
                             dataLabels: {
-                                enabled: true,
-                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                formatter: function () {
+
+                                    if (hidden_id){
+                                        return '<b>矿主ID:XXXXXXX</b>: '+parseInt(this.point.percentage*10)/10 +' %';
+                                    }
+
+                                    return '<b>'+this.point.name+'</b>: '+parseInt(this.point.percentage*10)/10 +' %';
+                                }
                             },
                             animation: false
                         }
@@ -551,6 +576,16 @@
             reload_data_ten_minutes();
             setInterval(reload_data_ten_minutes,60*1000*10);
             setInterval(reload_data,5000);
+
+        });
+
+        $(document).keydown(function(e){
+            if(e.which == 88 ||e.which ==16){
+                $.cookie('hidden_id',!hidden_id);
+                hidden_id=!hidden_id;
+            }
+            load_speed_share();
+            load_today_income_share();
         });
 
     </script>
