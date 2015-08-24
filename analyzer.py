@@ -87,8 +87,10 @@ def __seven_day_pdc(username):
 
     speed_column_value = list()
     category = list()
-    value = list()
+    income_value = dict(history_pdc=[])
+    i = 0
     while begin_date < today:
+
         begin_date = begin_date + timedelta(days=1)
         str_date = begin_date.strftime('%Y-%m-%d')
         key = 'user_data:%s:%s' % (username, str_date)
@@ -101,17 +103,39 @@ def __seven_day_pdc(username):
 
         b_data = r_session.get(key)
         if b_data is None:
-            value.append(0)
+            income_value.get('history_pdc').append(0)
             continue
 
         history_data = json.loads(b_data.decode('utf-8'))
-        value.append(history_data.get('pdc'))
 
-    series = [{'name': '产量', 'yAxis': 1, 'type': 'column', 'data': value},
-              {'name': '平均速度', 'yAxis': 0, 'type': 'spline', 'data': speed_column_value, 'tooltip': {
-                  'valueSuffix': ' KByte/s'
-              }}]
+        if history_data.get('pdc_detail') is not None:
+            for pdc_info in history_data.get('pdc_detail'):
+                mid = str(pdc_info.get('mid'))
+                if mid in income_value:
+                    income_value.get(mid).append(pdc_info.get('pdc'))
+                else:
+                    income_value[mid] = [0] * i + [pdc_info.get('pdc')]
+        else:
+            income_value.get('history_pdc').append(history_data.get('pdc'))
 
+        i += 1
+
+    series = []
+
+    for key in sorted(income_value, reverse=True):
+        value = income_value[key]
+        if len(value) < 7:
+            value += [0] * (7 - len(value))
+        name = ''
+        if key == 'history_pdc':
+            name = '产量'
+        else:
+            name = '矿主ID: ' + key
+        series.append(dict(name=name, yAxis=1, type='column', data=value))
+
+    series.append({'name': '平均速度', 'yAxis': 0, 'type': 'spline', 'data': speed_column_value, 'tooltip': {
+        'valueSuffix': ' KByte/s'
+    }})
     return dict(category=category, series=series)
 
 
