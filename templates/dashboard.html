@@ -219,11 +219,11 @@
             }
         });
         var getHiddenIdSetting = function(){
-            hidden_id_cookie = $.cookie('hidden_id');
+            var hidden_id_cookie = $.cookie('hidden_id');
             if (hidden_id_cookie  == undefined || hidden_id_cookie ==null){
                 return false;
             }
-            return hidden_id_cookie;
+            return hidden_id_cookie === 'true';
 
         }
         var hidden_id = getHiddenIdSetting();
