@@ -143,6 +143,7 @@ def save_history(username):
     today_data['balance'] = 0
     today_data['income'] = 0
     today_data['speed_stat'] = list()
+    today_data['pdc_detail'] = []
 
     for user_id in r_session.smembers('accounts:%s' % username):
         # 获取账号所有数据
@@ -160,8 +161,11 @@ def save_history(username):
                                                      'zqb_speed_stat') is not None else [0] * 24,
                                                  pc_speed=data.get('old_speed_stat') if data.get(
                                                      'old_speed_stat') is not None else [0] * 24))
-        today_data['pdc'] += data.get('mine_info').get('dev_m').get('pdc') + \
+        this_pdc = data.get('mine_info').get('dev_m').get('pdc') + \
                              data.get('mine_info').get('dev_pc').get('pdc')
+
+        today_data['pdc'] += this_pdc
+        today_data.get('pdc_detail').append(dict(mid=data.get('privilege').get('mid'),pdc=this_pdc))
 
         today_data['balance'] += data.get('income').get('r_can_use')
         today_data['income'] += data.get('income').get('r_h_a')
