@@ -405,7 +405,7 @@
                     },
                     yAxis: [{ // Secondary yAxis
                         title: {
-                            text: '平均速度 KBytes/s'
+                            text: '平均速度 KB/s'
                         },
                         min: 0,
                         labels: {
@@ -473,7 +473,7 @@
                     },
                     yAxis: {
                         title: {
-                            text: 'Speed (KByte/s)'
+                            text: 'Speed (KB/s)'
                         }, min: 0,
                         plotLines: [{
                             value: 0,
@@ -483,7 +483,7 @@
                     },
                     tooltip: {
                         shared: true,
-                        valueSuffix: ' KByte/s',
+                        valueSuffix: ' KB/s',
                         crosshairs: true
                     },
                     plotOptions: {
@@ -533,7 +533,7 @@
             tooltip: {
                 formatter: function () {
                     return Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                            Highcharts.numberFormat(this.y, 0)+' KByte/s';
+                            Highcharts.numberFormat(this.y, 0)+' KB/s';
                 }
             },
             legend: {

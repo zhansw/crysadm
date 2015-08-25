@@ -134,7 +134,7 @@ def __seven_day_pdc(username):
         series.append(dict(name=name, yAxis=1, type='column', data=value))
 
     series.append({'name': '平均速度', 'yAxis': 0, 'type': 'spline', 'data': speed_column_value, 'tooltip': {
-        'valueSuffix': ' KByte/s'
+        'valueSuffix': ' KB/s'
     }})
     return dict(category=category, series=series)
 
