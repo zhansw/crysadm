@@ -506,7 +506,8 @@
         $('#real_time_speed').highcharts({
             chart: {
                 type: 'spline',
-                animation: Highcharts.svg
+                animation: Highcharts.svg, // don't animate in old IE
+                marginBottom: 40
 
             },credits: {
                 enabled: false
