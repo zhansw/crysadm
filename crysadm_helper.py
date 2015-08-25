@@ -107,8 +107,7 @@ def get_data(username, auto_collect):
             if not r_session.exists('can_drawcash'):
                 r = get_can_drawcash(cookies=cookies)
                 if r.get('r') == 0:
-                    r_session.set('can_drawcash', r.get('is_tm'))
-                    r_session.expire('can_drawcash', 60)
+                    r_session.setex('can_drawcash', r.get('is_tm'),60)
 
         if start_time.day == datetime.now().day:
             save_history(username)
@@ -172,8 +171,7 @@ def save_history(username):
         for device in data.get('device_info'):
             today_data['last_speed'] += int(device.get('CUR_UPLOAD_SPEED') / 1024)
 
-    r_session.set(key, json.dumps(today_data))
-    r_session.expire(key, 3600 * 24 * 35)
+    r_session.set(key, json.dumps(today_data),3600 * 24 * 35)
 
 
 def __relogin(username, password, account_info, account_key):
@@ -218,8 +216,7 @@ def start_rotate():
         if r_session.exists('user:%s:is_querying' % username) and not debugger:
             continue
 
-        r_session.set('user:%s:is_querying' % username, '1')
-        r_session.expire('user:%s:is_querying' % username, 5)
+        r_session.set('user:%s:is_querying' % username, '1',5)
 
         Process(target=get_data, args=(username, False)).start()
         # gevent.spawn(get_data, username, False)

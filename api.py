@@ -4,7 +4,6 @@ import requests
 from crysadm_helper import r_session
 from requests.adapters import HTTPAdapter
 
-
 requests.packages.urllib3.disable_warnings()
 
 
@@ -161,10 +160,10 @@ def get_speed_stat(s_type, cookies):
                           headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         __handle_exception(e=e)
-        return [0]*24
+        return [0] * 24
     if r.status_code != 200:
         __handle_exception(rd=r.reason)
-        return [0]*24
+        return [0] * 24
     return json.loads(r.text).get('sds')
 
 
@@ -250,19 +249,16 @@ def __handle_exception(e=None, rd='接口故障', r=-12345):
 
     b_err_count = r_session.get('api_error_count')
     if b_err_count is None:
-        r_session.set('api_error_count', '1')
-        r_session.expire('api_error_count',60)
+        r_session.setex('api_error_count', '1', 60)
         return dict(r=r, rd=rd)
 
     err_count = int(b_err_count.decode('utf-8')) + 1
 
-    if err_count>200:
-        r_session.set('api_error_info','迅雷矿场API故障中,攻城狮正在赶往事故现场,请耐心等待.')
-        r_session.expire('api_error_info',60)
+    if err_count > 200:
+        r_session.setex('api_error_info', '迅雷矿场API故障中,攻城狮正在赶往事故现场,请耐心等待.', 60)
 
     err_count_ttl = r_session.ttl('api_error_count')
     if err_count_ttl is None:
         err_count_ttl = 30
-    r_session.set('api_error_count', str(err_count))
-    r_session.expire('api_error_count', err_count_ttl + 1)
+    r_session.setex('api_error_count', str(err_count), err_count_ttl + 1)
     return dict(r=r, rd=rd)

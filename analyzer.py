@@ -171,8 +171,7 @@ def analyzer_speed_comparison():
     b_history_speed = r_session.get(key)
     if b_history_speed is None:
         history_speed = __get_history_speed_data(username)
-        r_session.set(key, json.dumps(history_speed))
-        r_session.expire(key, 3600 * 25)
+        r_session.setex(key, json.dumps(history_speed), 3600 * 25)
     else:
         history_speed = json.loads(b_history_speed.decode('utf-8'))
 
@@ -201,8 +200,7 @@ def analyzer_seven_days_chart():
     b_seven_days_data = r_session.get(key)
     if b_seven_days_data is None:
         seven_days_data = __seven_day_pdc(username)
-        r_session.set(key, json.dumps(seven_days_data))
-        r_session.expire(key, 3600 * 25)
+        r_session.setex(key, json.dumps(seven_days_data), 3600 * 25)
     else:
         seven_days_data = json.loads(b_seven_days_data.decode('utf-8'))
 
