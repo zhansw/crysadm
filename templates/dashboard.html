@@ -423,7 +423,7 @@
                     }],
                     tooltip: {
                         formatter: function () {
-                            var s = '<b>' + this.x + '</b>';
+                            var s = '' + this.x + '';
                             var total = 0;
                             $.each(this.points, function (i, point) {
                                 if(point.y == 0){
@@ -431,14 +431,14 @@
                                 }
 
                                 if(this.series.name == '平均速度')
-                                    s += '<br/><b>' + this.series.name + ':</b> ' + point.y +' KB/s';
+                                    s += '<br/>' + this.series.name + ': <b>' + point.y +' KB/s</b>';
                                 else
-                                    s += '<br/><b>' + this.series.name + ':</b> ' + convert_to_yuan(point.y);
+                                    s += '<br/>' + this.series.name + ': <b>' + convert_to_yuan(point.y) + '</b>';
                                 if(this.series.name != '产量' && this.series.name != '平均速度')
                                     total += point.y
                             });
                             if(total>0){
-                                s += '<br/><b>总收入:</b> ' + convert_to_yuan(total);
+                                s += '<br/>总收入: <b>' + convert_to_yuan(total) + '</b>';
                             }
 
                             return s;
