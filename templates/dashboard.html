@@ -213,6 +213,27 @@
 {% block js_logic %}
     <script src="../static/js/plugins/highcharts/highcharts.js"></script>
     <script>
+        function convert_to_yuan(crystal_values) {
+            if (crystal_values >= 10000) {
+                return parseInt(crystal_values / 1000) / 10 + '元';
+            }
+            return crystal_values;
+        }
+        function convert_speed(speed) {
+            if (speed >= 1024) {
+                return parseInt(speed / 1024*100) / 100;
+            }
+            return speed;
+        }
+
+        var flash_element = function(jquery_obj){
+            jquery_obj.css('margin','0');
+            jquery_obj.addClass('animated');
+            jquery_obj.addClass('flash');
+            setTimeout(function() {
+                jquery_obj.removeAttr('class').attr('class', '');
+            }, 2000)
+        }
         Highcharts.setOptions({
             global: {
                 useUTC: false
@@ -371,7 +392,7 @@
         var load_static_chart = function() {
             $.getJSON('/analyzer/seven_days_chart?random='+Math.random(), function (data) {
                 $('#seven-day-chart').highcharts({
-                    chart: {},
+
                     title: {
                         text: '',
                         x: -20 //center
@@ -385,7 +406,8 @@
                     yAxis: [{ // Secondary yAxis
                         title: {
                             text: '平均速度 KBytes/s'
-                        }, min: 0,
+                        },
+                        min: 0,
                         labels: {
                             format: '{value}'
                         },
@@ -400,10 +422,31 @@
                         }]
                     }],
                     tooltip: {
-                        valueSuffix: ''
+                        formatter: function () {
+                            var s = '<b>' + this.x + '</b>';
+                            var total = 0;
+                            $.each(this.points, function (i, point) {
+                                if(point.y == 0){
+                                    return;
+                                }
+
+                                if(this.series.name == '平均速度')
+                                    s += '<br/><b>' + this.series.name + ':</b> ' + point.y +' KB/s';
+                                else
+                                    s += '<br/><b>' + this.series.name + ':</b> ' + convert_to_yuan(point.y);
+                                if(this.series.name != '产量' && this.series.name != '平均速度')
+                                    total += point.y
+                            });
+                            if(total>0){
+                                s += '<br/><b>总收入:</b> ' + convert_to_yuan(total);
+                            }
+
+                            return s;
+                        },
+                        shared: true
                     },
                     plotOptions: {
-                        series: {
+                        column: {
                             stacking: 'normal'
                         }
                     },
@@ -440,7 +483,8 @@
                     },
                     tooltip: {
                         shared: true,
-                        valueSuffix: ' KByte/s'
+                        valueSuffix: ' KByte/s',
+                        crosshairs: true
                     },
                     plotOptions: {
                         spline: {
@@ -518,27 +562,7 @@
         });
 
 
-        function convert_to_yuan(crystal_values) {
-            if (crystal_values >= 10000) {
-                return parseInt(crystal_values / 1000) / 10 + '元';
-            }
-            return crystal_values;
-        }
-        function convert_speed(speed) {
-            if (speed >= 1024) {
-                return parseInt(speed / 1024*100) / 100;
-            }
-            return speed;
-        }
 
-        var flash_element = function(jquery_obj){
-            jquery_obj.css('margin','0');
-            jquery_obj.addClass('animated');
-            jquery_obj.addClass('flash');
-            setTimeout(function() {
-                jquery_obj.removeAttr('class').attr('class', '');
-            }, 2000)
-        }
         var reload_data = function(){
             load_speed_share();
             $.getJSON( "/dashboard_data?random="+Math.random(), function( data ) {
