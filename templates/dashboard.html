@@ -176,35 +176,6 @@
         </div>
     </div>
 
-
-    <!-- /.row -->
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日速度
-                    <div class="ibox-tools">
-                        <a class="collapse-link">
-                            <i class="fa fa-chevron-up"></i>
-                        </a>
-                        <a class="close-link">
-                            <i class="fa fa-times"></i>
-                        </a>
-                    </div>
-                </div>
-                <!-- /.panel-heading -->
-                <div class="ibox-content">
-                    <div id="speed-comparison"></div>
-                </div>
-                <!-- /.panel-body -->
-            </div>
-            <!-- /.panel -->
-
-        </div>
-        <!-- /.col-lg-12 -->
-    </div>
-    <!-- /.row -->
-
 {% endblock %}
 
 {% block js_logic %}
@@ -426,50 +397,7 @@
             });
         }
         var load_static_chart = function() {
-            $.getJSON('/analyzer/speed_comparison?random='+Math.random(), function (data) {
-                $('#speed-comparison').highcharts({
-                    chart: {
-                        type: 'spline'
 
-                    },
-                    title: {
-                        text: '',
-                        x: -20 //center
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Speed (KB/s)'
-                        }, min: 0,
-                        plotLines: [{
-                            value: 0,
-                            width: 1,
-                            color: '#808080'
-                        }]
-                    },
-                    tooltip: {
-                        shared: true,
-                        valueSuffix: ' KB/s',
-                        crosshairs: true
-                    },
-                    plotOptions: {
-                        spline: {
-                            lineWidth: 1,
-                            marker: {
-                                lineWidth: 1,
-                                enabled: false
-                            }
-                        }
-                    },
-
-                    xAxis: {
-                        categories: data.category
-                    },
-                    series: data.value
-                });
-            });
         }
         $('#real_time_speed').highcharts({
             chart: {
