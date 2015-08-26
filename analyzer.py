@@ -198,7 +198,7 @@ def analyzer_seven_days_chart():
 
     seven_days_data = dict()
     b_seven_days_data = r_session.get(key)
-    if b_seven_days_data is None or True:
+    if b_seven_days_data is None:
         seven_days_data = __seven_day_pdc(username)
         r_session.setex(key, json.dumps(seven_days_data), 3600 * 25)
 
