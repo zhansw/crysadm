@@ -34,6 +34,12 @@ def excavators():
         if account_data_value is not None:
             account_info['data'] = json.loads(account_data_value.decode("utf-8"))
             account_info.get('data')['double_device'] = False
+
+            account_info.get('data')['device_info'] = \
+                sorted(account_info.get('data').get('device_info'), key=
+                lambda k: k.get('red_info').get('url')
+                if k.get('red_info') is not None else 'z')
+
             for dev in account_info.get('data').get('device_info'):
                 if dev.get('CACHE_DIR')[-13:] == 'dcdn_client_1':
                     account_info.get('data')['double_device'] = True
@@ -118,15 +124,16 @@ def reboot_device():
 
 @app.route('/set_device_name', methods=['POST'])
 @requires_auth
-def reboot_device():
+def set_device_name():
     setting_url = request.values.get('url')
-    device_name = request.values.get('device_name')
+    new_name = request.values.get('name')
     query_s = parse_qs(urlparse(setting_url).query, keep_blank_values=True)
 
     device_id = query_s['device_id'][0]
     session_id = query_s['session_id'][0]
     account_id = query_s['user_id'][0]
 
-    ubus_cd(session_id, account_id, 'set_device_name', ["server", "set_device_name", {"device_name":device_name,"device_id":device_id}])
+    ubus_cd(session_id, account_id, 'set_device_name',
+            ["server", "set_device_name", {"device_name": new_name, "device_id": device_id}])
 
-    return redirect(url_for('excavators'))
+    return json.dumps(dict(status='success'))
