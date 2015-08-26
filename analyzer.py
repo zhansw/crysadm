@@ -88,9 +88,9 @@ def __seven_day_pdc(username):
     speed_column_value = list()
     category = list()
     income_value = dict(history_pdc=[])
-    i = 0
+    i = -1
     while begin_date < today:
-
+        i += 1
         begin_date = begin_date + timedelta(days=1)
         str_date = begin_date.strftime('%Y-%m-%d')
         key = 'user_data:%s:%s' % (username, str_date)
@@ -118,7 +118,7 @@ def __seven_day_pdc(username):
         else:
             income_value.get('history_pdc').append(history_data.get('pdc'))
 
-        i += 1
+
 
     series = []
 
@@ -198,7 +198,7 @@ def analyzer_seven_days_chart():
 
     seven_days_data = dict()
     b_seven_days_data = r_session.get(key)
-    if b_seven_days_data is None:
+    if b_seven_days_data is None or True:
         seven_days_data = __seven_day_pdc(username)
         r_session.setex(key, json.dumps(seven_days_data), 3600 * 25)
 
