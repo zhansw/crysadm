@@ -114,6 +114,44 @@ def dashboard_speed_share():
     return Response(json.dumps(dict(data=drilldown_data)), mimetype='application/json')
 
 
+@app.route('/dashboard/speed_detail')
+@requires_auth
+def dashboard_speed_detail():
+    user = session.get('user_info')
+    username = user.get('username')
+    accounts_key = 'accounts:%s' % username
+
+    device_speed = []
+    for b_acct in r_session.mget(*['account:%s:%s:data' % (username, name.decode('utf-8'))
+                                   for name in sorted(r_session.smembers(accounts_key))]):
+
+        account_info = json.loads(b_acct.decode("utf-8"))
+
+        for device_info in account_info.get('device_info'):
+            if device_info.get('ON_OFF_STATE') != 1:
+                continue
+            upload_speed = int(device_info.get('CUR_UPLOAD_SPEED') / 1024)
+            deploy_speed = int(device_info.get('CUR_DEPLOY_SPEED') / 1024)
+            if device_info.get('red_info') is None:
+                device_speed.append(dict(name=device_info.get('HOST_NAME'), upload_speed=upload_speed,
+                                         deploy_speed=deploy_speed))
+            else:
+                device_speed.append(dict(name=device_info.get('red_info').get('hn'), upload_speed=upload_speed,
+                                         deploy_speed=deploy_speed))
+
+    device_speed = sorted(device_speed, key=lambda k: k.get('name'))
+    categories = []
+    upload_series = dict(name='上传速度', data=[], pointPadding=0.3, pointPlacement=-0.2)
+    deploy_series = dict(name='下载速度', data=[], pointPadding=0.4, pointPlacement=-0.2)
+    for d_s in device_speed:
+        categories.append(d_s.get('name'))
+        upload_series.get('data').append(d_s.get('upload_speed'))
+        deploy_series.get('data').append(d_s.get('deploy_speed'))
+
+    return Response(json.dumps(dict(categories=categories, series=[upload_series, deploy_series])),
+                    mimetype='application/json')
+
+
 @app.route('/dashboard/today_income_share')
 @requires_auth
 def dashboard_today_income_share():
@@ -124,7 +162,6 @@ def dashboard_today_income_share():
     pie_data = []
     for b_acct in r_session.mget(*['account:%s:%s:data' % (username, name.decode('utf-8'))
                                    for name in sorted(r_session.smembers(accounts_key))]):
-
         account_info = json.loads(b_acct.decode("utf-8"))
         mid = str(account_info.get('privilege').get('mid'))
 

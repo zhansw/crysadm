@@ -220,7 +220,7 @@ def analyzer_speed_stat_chart():
 
     b_data = r_session.get(key)
     if b_data is None:
-        return render_template('analyzer.html', speed_stat_chart=dict(category=[], value=[]))
+        return Response(json.dumps(dict(value=[], category=[])), mimetype='application/json')
 
     today_data = json.loads(b_data.decode('utf-8'))
 

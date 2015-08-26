@@ -128,7 +128,6 @@
         <!-- /.col-lg-6 -->
     </div>
     <!-- /.row -->
-    <!-- /.row -->
     <div class="row">
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
@@ -156,29 +155,27 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <i class="fa fa-bar-chart-o fa-fw"></i> 最近7日产量
-                    <div class="ibox-tools">
-                        <a class="collapse-link">
-                            <i class="fa fa-chevron-up"></i>
-                        </a>
-                        <a class="close-link">
-                            <i class="fa fa-times"></i>
-                        </a>
-                    </div>
-                </div>
                 <!-- /.panel-heading -->
                 <div class="ibox-content">
-                    <div id="seven-day-chart" style="height: 250px;"></div>
+                    <div>
+                        <span class="pull-right text-right">
+                            <small>矿机实时速度
+                                <strong></strong></small>
+                            <br>
+
+                        </span>
+                        <h3 class="font-bold no-margins">
+
+                        </h3>
+                        <small></small>
+                    </div>
+                    <div id="speed_detail" style="height: 300px;"></div>
                 </div>
                 <!-- /.panel-body -->
             </div>
         </div>
-        <!-- /.col-lg-8 -->
-
-        <!-- /.col-lg-4 -->
     </div>
-    <!-- /.row -->
+
 
     <!-- /.row -->
     <div class="row">
@@ -250,6 +247,45 @@
         var hidden_id = getHiddenIdSetting();
 
         var load_speed_share = function(){
+            $.getJSON('/dashboard/speed_detail?random='+Math.random(),function(r_data) {
+                $('#speed_detail').highcharts({
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: ''
+                    },
+                    xAxis: {
+                        categories: r_data.categories
+                    },
+                    yAxis: [{
+                        min: 0,
+                        title: {
+                            text: '速度KB/s'
+                        }
+                    }],
+                    credits: {
+                        enabled: false
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        shared: true,
+                        valueSuffix: ' KB/s'
+                    },
+                    plotOptions: {
+                        column: {
+                            grouping: false,
+                            shadow: false,
+                            borderWidth: 0,
+                            animation: false
+                        }
+                    },
+                    series: r_data.series
+                });
+
+            });
             $.getJSON('/dashboard/speed_share?random='+Math.random(),function(r_data) {
 
                 var colors = Highcharts.getOptions().colors,
@@ -390,74 +426,6 @@
             });
         }
         var load_static_chart = function() {
-            $.getJSON('/analyzer/seven_days_chart?random='+Math.random(), function (data) {
-                $('#seven-day-chart').highcharts({
-
-                    title: {
-                        text: '',
-                        x: -20 //center
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    yAxis: [{ // Secondary yAxis
-                        title: {
-                            text: '平均速度 KB/s'
-                        },
-                        min: 0,
-                        labels: {
-                            format: '{value}'
-                        },
-                        opposite: true
-                    }, {
-                        title: {
-                            text: '产量'
-                        },
-                        plotLines: [{
-                            value: 0,
-                            width: 1
-                        }]
-                    }],
-                    tooltip: {
-                        formatter: function () {
-                            var s = '' + this.x + '';
-                            var total = 0;
-                            $.each(this.points, function (i, point) {
-                                if(point.y == 0){
-                                    return;
-                                }
-
-                                if(this.series.name == '平均速度')
-                                    s += '<br/>' + this.series.name + ': <b>' + point.y +' KB/s</b>';
-                                else
-                                    s += '<br/>' + this.series.name + ': <b>' + convert_to_yuan(point.y) + '</b>';
-                                if(this.series.name != '产量' && this.series.name != '平均速度')
-                                    total += point.y
-                            });
-                            if(total>0){
-                                s += '<br/>总收入: <b>' + convert_to_yuan(total) + '</b>';
-                            }
-
-                            return s;
-                        },
-                        shared: true
-                    },
-                    plotOptions: {
-                        column: {
-                            stacking: 'normal'
-                        }
-                    },
-
-                    xAxis: {
-                        categories: data.category
-                    },
-                    series: data.series
-                });
-            });
-
             $.getJSON('/analyzer/speed_comparison?random='+Math.random(), function (data) {
                 $('#speed-comparison').highcharts({
                     chart: {
