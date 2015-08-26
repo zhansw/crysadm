@@ -4,9 +4,9 @@ from crysadm import app, r_session
 from auth import requires_admin, requires_auth
 import json
 import requests
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 import time
-from api import collect
+from api import collect, ubus_cd
 
 
 @app.route('/excavators')
@@ -28,7 +28,7 @@ def excavators():
 
     for acct in sorted(r_session.smembers(accounts_key)):
         account_key = 'account:%s:%s' % (user.get('username'), acct.decode("utf-8"))
-        account_data_key = account_key+':data'
+        account_data_key = account_key + ':data'
         account_data_value = r_session.get(account_data_key)
         account_info = json.loads(r_session.get(account_key).decode("utf-8"))
         if account_data_value is not None:
@@ -41,11 +41,12 @@ def excavators():
 
         accounts.append(account_info)
 
-    show_drawcash = not(r_session.get('can_drawcash') is None or
-                        r_session.get('can_drawcash').decode('utf-8') == '0')
+    show_drawcash = not (r_session.get('can_drawcash') is None or
+                         r_session.get('can_drawcash').decode('utf-8') == '0')
 
     return render_template('excavators.html', err_msg=err_msg, info_msg=info_msg, accounts=accounts,
                            show_drawcash=show_drawcash)
+
 
 @app.route('/collect/<user_id>', methods=['POST'])
 @requires_auth
@@ -64,7 +65,7 @@ def collect_all(user_id):
         return redirect(url_for('excavators'))
 
     session['info_message'] = '收取水晶成功.'
-    account_data_key = account_key+':data'
+    account_data_key = account_key + ':data'
     account_data_value = json.loads(r_session.get(account_data_key).decode("utf-8"))
     account_data_value.get('mine_info')['td_not_in_a'] = 0
     r_session.set(account_data_key, json.dumps(account_data_value))
@@ -84,13 +85,14 @@ def drawcash(user_id):
 
     cookies = dict(sessionid=session_id, userid=str(user_id))
     from api import exec_draw_cash
+
     r = exec_draw_cash(cookies)
     if r.get('r') != 0:
         session['error_message'] = r.get('rd')
         return redirect(url_for('excavators'))
     else:
         session['info_message'] = r.get('rd')
-    account_data_key = account_key+':data'
+    account_data_key = account_key + ':data'
     account_data_value = json.loads(r_session.get(account_data_key).decode("utf-8"))
     account_data_value.get('income')['r_can_use'] = 0
     r_session.set(account_data_key, json.dumps(account_data_value))
@@ -98,17 +100,33 @@ def drawcash(user_id):
     return redirect(url_for('excavators'))
 
 
-@app.route('/reboot_device/<session_id>', methods=['POST'])
+@app.route('/reboot_device', methods=['POST'])
 @requires_auth
-def reboot_device(session_id):
+def reboot_device():
     setting_url = request.values.get('url')
 
-    s_u = urlparse(setting_url)
+    query_s = parse_qs(urlparse(setting_url).query, keep_blank_values=True)
 
-    url = "http://kjapi.peiluyou.com:5171/ubus_cd?%s&action=reboot" % s_u.query.replace('user_id','account_id')
-    data={"jsonrpc":"2.0","id":1,"method":"call","params":["%s" % session_id,"mnt","reboot",{}]}
+    device_id = query_s['device_id'][0]
+    session_id = query_s['session_id'][0]
+    account_id = query_s['user_id'][0]
 
-    body = dict(data=json.dumps(data), action='onResponse%d' % int(time.time()*1000))
-    r = requests.post(url,data=body)
+    ubus_cd(session_id, account_id, 'reboot', ["mnt", "reboot", {}], '&device_id=%s' % device_id)
+
+    return redirect(url_for('excavators'))
+
+
+@app.route('/set_device_name', methods=['POST'])
+@requires_auth
+def reboot_device():
+    setting_url = request.values.get('url')
+    device_name = request.values.get('device_name')
+    query_s = parse_qs(urlparse(setting_url).query, keep_blank_values=True)
+
+    device_id = query_s['device_id'][0]
+    session_id = query_s['session_id'][0]
+    account_id = query_s['user_id'][0]
+
+    ubus_cd(session_id, account_id, 'set_device_name', ["server", "set_device_name", {"device_name":device_name,"device_id":device_id}])
 
     return redirect(url_for('excavators'))

@@ -89,10 +89,10 @@
                         {% if row.data is defined  %}
                             <div class="table-responsive">
                                 <h5 style="text-align: right">矿主ID : {{ row.data.privilege.mid |e }}</h5>
-                                <table class="table table-hover">
+                                <table class="table table-hover" name="miner_list">
                                     <thead>
                                     <tr>
-
+                                        <th >#</th>
                                         <th class="col-md-2 hidden-xs" style="min-width: 120px;">矿机名</th>
                                         <th class="col-md-1" style="min-width: 60px;">类型</th>
                                         <th class="col-md-2" style="min-width: 120px;">上传/最快 KB/s</th>
@@ -107,22 +107,27 @@
 
                                     {% for dev in row.data.device_info | sort(attribute='DCDNID') %}
                                         <tr>
-                                            <td class="hidden-xs tooltip-demo">
+                                            <td ></td>
+                                            <td class="hidden-xs"
+                                                    {% if dev.PRODUCT_ID == 321 and row.data.double_device and dev.ON_OFF_STATE == 1 and dev.red_info is not defined%}
+                                                        readonly="readonly"
+                                                    {% endif %}>
                                                 {% if dev.red_info is defined %}
                                                     {{ dev.red_info.hn|default(dev.HOST_NAME) }}
                                                 {% else %}
                                                     {{ dev.HOST_NAME[-4:] | e }}
                                                 {% endif %}
-
+                                            </td>
+                                            <td>
                                                 {% if dev.PRODUCT_ID == 321 and row.data.double_device and dev.ON_OFF_STATE == 1%}
                                                     {% if dev.red_info is defined %}
-                                                         <span style="margin-top: 1px; line-height: 12px;" data-original-title="已使用双矿机" data-toggle="tooltip" data-placement="top" class="label label-warning pull-right">Master</span>
+                                                         <span style="margin-top: 1px; line-height: 12px;" class="label label-success">{{ get_device_type(dev.PRODUCT_ID) |e }} I</span>
                                                     {% else %}
-                                                        <span style="margin-top: 1px; line-height: 12px;" data-original-title="分身矿机" data-toggle="tooltip" data-placement="top" class="label label-warning pull-right">Shadow</span>
+                                                        <span style="margin-top: 1px; line-height: 12px;" class="label label-info">{{ get_device_type(dev.PRODUCT_ID) |e }} II</span>
                                                     {% endif %}
+                                                {% else %}
+                                                    {{ get_device_type(dev.PRODUCT_ID) |e }}
                                                 {% endif %}
-                                            </td>
-                                            <td>{{ get_device_type(dev.PRODUCT_ID) |e }}
                                             </td>
                                             <td>{{ (dev.CUR_UPLOAD_SPEED/1024)|int |default('') }}/{{ (dev.MAX_UPLOAD_SPEED/1024)|int }}</td>
                                             <td>{{ (dev.CUR_DEPLOY_SPEED/1024)|int }}</td>
@@ -146,7 +151,7 @@
                                             <td class="hidden-xs">{{ int2ip(dev.EXTERNAL_IP) | e }}</td>
                                             <td>
                                                 {% if dev.red_info is defined %}
-                                                    <form style="float:right;" role="form" action="/reboot_device/{{ row.session_id |e }}" method="post">
+                                                    <form style="float:right;" role="form" action="/reboot_device" method="post">
                                                         <input type="hidden" name="url" value="{{ dev.red_info.url }}" />
                                                         <button type="submit" style="float: right;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
                                                     </form>
@@ -176,6 +181,24 @@
 
     </div>
 {% endblock %}
+{% block js_logic %}
+    <script src="../static/js/plugins/jquery-tabledit/jquery.tabledit.js"></script>
+    <script>
+        // Example #3
+        $('table[name="miner_list"]').Tabledit({
+            url: 'example.php',
+            editButton: false,
+            deleteButton: false,
+            hideIdentifier: true,
+            columns: {
+                identifier: [0, 'id'],
+                editable: [[1, 'name']]
+            }
+        });
+
+    </script>
+{% endblock %}
+
 
 {% block navibar %}
     <div class="col-lg-10">

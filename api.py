@@ -3,6 +3,7 @@ import json
 import requests
 from crysadm_helper import r_session
 from requests.adapters import HTTPAdapter
+import time
 
 requests.packages.urllib3.disable_warnings()
 
@@ -233,6 +234,21 @@ def get_device_info(user_id):
     if r.status_code != 200:
         return __handle_exception(rd=r.reason)
     return json.loads(r.text)
+
+
+def ubus_cd(session_id, account_id, action, out_params,url_param=None):
+    url = "http://kjapi.peiluyou.com:5171/ubus_cd?account_id=%s&session_id=%s&action=%s" % (
+        account_id, session_id, action)
+    if url_param is not None:
+        url+=url_param
+    params = ["%s" % session_id] + out_params
+
+    data = {"jsonrpc": "2.0", "id": 1, "method": "call", "params": params}
+
+    body = dict(data=json.dumps(data), action='onResponse%d' % int(time.time() * 1000))
+    r = requests.post(url, data=body)
+
+    return r.text
 
 
 def is_api_error(r):
