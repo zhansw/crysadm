@@ -115,7 +115,7 @@
                                                     {{ row.data.privilege.mid |e }}
                                                 {% endif %}
                                             </td>
-                                            <td{% if dev.PRODUCT_ID == 321 and row.data.double_device and dev.ON_OFF_STATE == 1 and dev.red_info is not defined%}
+                                            <td{% if row.data.double_device and dev.ON_OFF_STATE == 1 and dev.red_info is not defined or dev.PRODUCT_ID != 321%}
                                                 readonly="readonly"
                                             {% endif %}>
                                                 {%- if dev.red_info is defined -%}
