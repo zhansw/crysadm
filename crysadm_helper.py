@@ -4,7 +4,7 @@ import time
 from login import login
 from datetime import datetime, timedelta
 from multiprocessing import Process
-
+import threading
 
 conf = None
 if socket.gethostname() == 'GXMBP.local':
@@ -65,7 +65,9 @@ def get_data(username, auto_collect):
                 continue
             # 自动收取
             if auto_collect:
-                collect(cookies)
+                r_session.sadd('auto.collect.users', json.dumps(cookies))
+
+                # collect(cookies)
             # 自动收取
 
             red_zqb = get_device_stat('1', cookies)
@@ -107,7 +109,7 @@ def get_data(username, auto_collect):
             if not r_session.exists('can_drawcash'):
                 r = get_can_drawcash(cookies=cookies)
                 if r.get('r') == 0:
-                    r_session.setex('can_drawcash', r.get('is_tm'),60)
+                    r_session.setex('can_drawcash', r.get('is_tm'), 60)
 
         if start_time.day == datetime.now().day:
             save_history(username)
@@ -161,17 +163,17 @@ def save_history(username):
                                                  pc_speed=data.get('old_speed_stat') if data.get(
                                                      'old_speed_stat') is not None else [0] * 24))
         this_pdc = data.get('mine_info').get('dev_m').get('pdc') + \
-                             data.get('mine_info').get('dev_pc').get('pdc')
+                   data.get('mine_info').get('dev_pc').get('pdc')
 
         today_data['pdc'] += this_pdc
-        today_data.get('pdc_detail').append(dict(mid=data.get('privilege').get('mid'),pdc=this_pdc))
+        today_data.get('pdc_detail').append(dict(mid=data.get('privilege').get('mid'), pdc=this_pdc))
 
         today_data['balance'] += data.get('income').get('r_can_use')
         today_data['income'] += data.get('income').get('r_h_a')
         for device in data.get('device_info'):
             today_data['last_speed'] += int(device.get('CUR_UPLOAD_SPEED') / 1024)
 
-    r_session.set(key, json.dumps(today_data),3600 * 24 * 35)
+    r_session.set(key, json.dumps(today_data), 3600 * 24 * 35)
 
 
 def __relogin(username, password, account_info, account_key):
@@ -204,37 +206,46 @@ def start_rotate():
         if not user_info.get('active'):
             continue
 
-        if datetime.now().strftime('%H:%M') in ['23:58', '23:59', '00:00', '00:01']:
-            if r_session.exists('user:%s:is_querying' % username):
+        auto_collect = user_info.get('auto_collect') if user_info.get('auto_collect') is not None else False
+        is_online = r_session.exists('user:%s:is_online' % username)
+        is_querying_key = 'user:%s:is_querying' % username
+
+        if r_session.exists(is_querying_key):
                 continue
-            every_day_night(user_info, username)
+
+        if datetime.now().strftime('%M') in ['58', '59', '00', '01']:
+            if r_session.exists('auto.collect.users'):
+                r_session.expire('auto.collect.users',3600)
+
+            if is_online:
+                r_session.setex(is_querying_key, '1', 5)
+            else:
+                r_session.setex(is_querying_key, '1', 30)
+
+            Process(target=get_data, args=(username, auto_collect)).start()
             continue
 
-        if not r_session.exists('user:%s:is_online' % username) and not debugger:
+        if not is_online and not debugger:
             continue
 
-        if r_session.exists('user:%s:is_querying' % username) and not debugger:
-            continue
+        r_session.setex(is_querying_key, '1', 5)
 
-        r_session.set('user:%s:is_querying' % username, '1',5)
-
-        Process(target=get_data, args=(username, False)).start()
-        # gevent.spawn(get_data, username, False)
+        Process(target=get_data, args=(username, auto_collect)).start()
 
 
-def every_day_night(user_info, username):
-    auto_collect = user_info.get('auto_collect') if user_info.get('auto_collect') is not None else False
-    r_session.set('user:%s:is_querying' % username, '1')
+def collect_crystal():
 
-    if r_session.exists('user:%s:is_online' % username):
-        r_session.expire('user:%s:is_querying' % username, 5)
-    else:
-        r_session.expire('user:%s:is_querying' % username, 30)
-    Process(target=get_data, args=(username, auto_collect)).start()
+    for info in r_session.smembers('auto.collect.users'):
+        if info is not None:
+            threading.Thread(target=collect, args=(json.loads(info.decode('utf-8')),)).start()
 
 
 if __name__ == '__main__':
+    i=0
     while True:
+        i+=1
+        if i % 10 == 0:
+            Process(target=collect_crystal).start()
         Process(target=start_rotate).start()
         if debugger:
             time.sleep(10000)
