@@ -68,6 +68,7 @@ def generate_pub_inv_code():
 
     for i in range(0, 10 - r_session.scard('public_invitation_codes')):
         r_session.sadd('public_invitation_codes', ''.join(random.sample(_chars, 10)))
+        r_session.sadd('invitation_codes', ''.join(random.sample(_chars, 10)))
 
     return redirect(url_for('admin_invitation'))
 
