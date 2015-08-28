@@ -214,7 +214,7 @@ def start_rotate():
                 continue
 
         if datetime.now().strftime('%M') in ['58', '59', '00', '01']:
-            if r_session.exists('auto.collect.users') and r_session.ttl('auto.collect.users') < 0:
+            if r_session.exists('auto.collect.users') and r_session.ttl('auto.collect.users') < 1:
                 r_session.expire('auto.collect.users', 60*55)
 
             if is_online:
