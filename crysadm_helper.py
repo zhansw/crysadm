@@ -209,10 +209,10 @@ def get_offline_user_data():
 
     p_pool = multiprocessing.Pool(processes=40)
 
-    if datetime.now().strftime('%M') not in ['58', '59', '00', '01']:
+    if datetime.now().strftime('%M') not in ['58', '59', '00', '01'] and False:
         return
 
-    for b_user in r_session.mget(*['user:%s' % name for name in r_session.sdiff('users', *r_session.smembers('global:online.users'))]):
+    for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in r_session.sdiff('users', *r_session.smembers('global:online.users'))]):
         user_info = json.loads(b_user.decode('utf-8'))
 
         username = user_info.get('username')
@@ -276,10 +276,10 @@ def timer(func, seconds):
 
 
 if __name__ == '__main__':
-    threading.Thread(target=timer, args=(collect_crystal, 60)).start()
-    threading.Thread(target=timer, args=(get_online_user_data, 5)).start()
+    #threading.Thread(target=timer, args=(collect_crystal, 60)).start()
+    #threading.Thread(target=timer, args=(get_online_user_data, 5)).start()
     threading.Thread(target=timer, args=(get_offline_user_data, 30)).start()
-    threading.Thread(target=timer, args=(clear_offline_user, 60)).start()# ok
-    threading.Thread(target=timer, args=(select_auto_collect_user, 600)).start()# ok
+    #threading.Thread(target=timer, args=(clear_offline_user, 60)).start()# ok
+    #threading.Thread(target=timer, args=(select_auto_collect_user, 600)).start()# ok
     while True:
         time.sleep(1)
