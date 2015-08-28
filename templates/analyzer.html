@@ -37,7 +37,7 @@
                 </div>
                 <!-- /.panel-heading -->
                 <div class="ibox-content">
-                    <div id="seven-day-chart"></div>
+                    <div id="speed-vs-income"></div>
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -200,8 +200,8 @@
                 series: data.value
             });
         });
-        $.getJSON('/analyzer/seven_days_chart?random='+Math.random(), function (data) {
-            $('#seven-day-chart').highcharts({
+        $.getJSON('/analyzer/speed_vs_income?random='+Math.random(), function (data) {
+            $('#speed-vs-income').highcharts({
 
                 title: {
                     text: '',

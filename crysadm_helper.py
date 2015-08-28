@@ -209,7 +209,7 @@ def get_offline_user_data():
 
     p_pool = multiprocessing.Pool(processes=40)
 
-    if datetime.now().strftime('%M') not in ['58', '59', '00', '01'] and False:
+    if datetime.now().strftime('%M') not in ['58', '59', '00', '01']:
         return
 
     for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in r_session.sdiff('users', *r_session.smembers('global:online.users'))]):

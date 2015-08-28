@@ -118,7 +118,9 @@ def __seven_day_pdc(username):
         else:
             income_value.get('history_pdc').append(history_data.get('pdc'))
 
-
+        for key in income_value:
+            if len(income_value[key]) <= i:
+                income_value[key] = income_value[key]+[0]
 
     series = []
 
@@ -188,24 +190,24 @@ def analyzer_speed_comparison():
     return Response(json.dumps(speed_comparison_data), mimetype='application/json')
 
 
-@app.route('/analyzer/seven_days_chart')
+@app.route('/analyzer/speed_vs_income')
 @requires_auth
-def analyzer_seven_days_chart():
+def analyzer_speed_vs_income():
     user = session.get('user_info')
     username = user.get('username')
     str_today = datetime.now().strftime('%Y-%m-%d')
-    key = 'user_data:%s:%s:seven.day.chart' % (username, str_today)
+    key = 'user_data:%s:%s:%s' % (username, 'speed_vs_income', str_today)
 
-    seven_days_data = dict()
-    b_seven_days_data = r_session.get(key)
-    if b_seven_days_data is None:
-        seven_days_data = __seven_day_pdc(username)
-        r_session.setex(key, json.dumps(seven_days_data), 3600 * 25)
+    data = dict()
+    b_data = r_session.get(key)
+    if b_data is None:
+        data = __seven_day_pdc(username)
+        r_session.setex(key, json.dumps(data), 3600 * 25)
 
     else:
-        seven_days_data = json.loads(b_seven_days_data.decode('utf-8'))
+        data = json.loads(b_data.decode('utf-8'))
 
-    return Response(json.dumps(seven_days_data), mimetype='application/json')
+    return Response(json.dumps(data), mimetype='application/json')
 
 
 @app.route('/analyzer/speed_stat_chart')
