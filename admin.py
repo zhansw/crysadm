@@ -43,13 +43,7 @@ def admin_invitation():
     pub_inv_codes = r_session.smembers('public_invitation_codes')
 
     inv_codes = r_session.smembers('invitation_codes')
-    return render_template('admin_invitation.html', inv_codes=inv_codes,pub_inv_code=pub_inv_codes)
-
-
-@app.route('/invitationsrd123d2')
-def public_invitation():
-
-    return render_template('public_invitation.html', inv_codes=r_session.smembers('public_invitation_codes'))
+    return render_template('admin_invitation.html', inv_codes=inv_codes, public_inv_codes=pub_inv_codes)
 
 
 @app.route('/generate/inv_code', methods=['POST'])
@@ -73,7 +67,6 @@ def generate_pub_inv_code():
     for i in range(0, 10 - r_session.scard('public_invitation_codes')):
         key = ''.join(random.sample(_chars, 10))
         r_session.sadd('public_invitation_codes', key)
-        r_session.sadd('invitation_codes', key)
 
     return redirect(url_for('admin_invitation'))
 

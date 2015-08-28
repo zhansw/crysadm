@@ -48,6 +48,17 @@ def login():
     return render_template('login.html', err_msg=err_msg)
 
 
+@app.route('/invitations')
+def public_invitation():
+    inv_codes = r_session.smembers('public_invitation_codes')
+    if len(inv_codes) == 0:
+        session['error_message'] = '邀请码已被领取完.'
+        return redirect(url_for('login'))
+
+    return render_template('public_invitation.html', inv_codes=inv_codes)
+
+
+
 @app.route('/user/logout')
 @requires_auth
 def logout():
@@ -164,7 +175,8 @@ def register():
     invitation_code = ''
     if request.values.get('inv_code') is not None and len(request.values.get('inv_code')) > 0 :
         invitation_code = request.values.get('inv_code')
-        if not r_session.sismember('invitation_codes', invitation_code):
+        if not r_session.sismember('invitation_codes', invitation_code) and \
+                not r_session.sismember('public_invitation_codes', invitation_code):
             session['error_message'] = '无效的邀请码。'
 
     return render_template('register.html', err_msg=err_msg,invitation_code=invitation_code)
@@ -177,7 +189,8 @@ def user_register():
     password = request.values.get('password')
     re_password = request.values.get('re_password')
 
-    if not r_session.sismember('invitation_codes', invitation_code):
+    if not r_session.sismember('invitation_codes', invitation_code) and \
+            not r_session.sismember('public_invitation_codes', invitation_code):
         session['error_message'] = '无效的邀请码。'
         return redirect(url_for('register'))
 
@@ -198,6 +211,8 @@ def user_register():
         return redirect(url_for('register'))
 
     r_session.srem('invitation_codes', invitation_code)
+    r_session.srem('public_invitation_codes', invitation_code)
+
     user = dict(username=username, password=hash_password(password), id=str(uuid.uuid1()),
                 active=True, is_admin=False, max_account_no=2,
                 created_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
