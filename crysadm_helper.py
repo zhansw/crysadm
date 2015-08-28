@@ -4,6 +4,7 @@ import time
 from login import login
 from datetime import datetime, timedelta
 from multiprocessing import Process
+import multiprocessing
 import threading
 
 conf = None
@@ -24,7 +25,7 @@ debugger_username = 'powergx'
 from api import *
 
 
-def get_data(username, auto_collect):
+def get_data(username):
     start_time = datetime.now()
     try:
         for user_id in r_session.smembers('accounts:%s' % username):
@@ -63,12 +64,6 @@ def get_data(username, auto_collect):
             if mine_info.get('r') != 0:
                 print(user_id, mine_info, 'error')
                 continue
-            # 自动收取
-            if auto_collect:
-                r_session.sadd('auto.collect.users', json.dumps(cookies))
-
-                # collect(cookies)
-            # 自动收取
 
             red_zqb = get_device_stat('1', cookies)
             # red_old = get_device_stat('0', cookies)
@@ -191,12 +186,33 @@ def __relogin(username, password, account_info, account_key):
     return True, account_info
 
 
-def start_rotate():
+def get_online_user_data():
     if r_session.exists('api_error_info'):
         return
 
-    for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in r_session.smembers('users')]):
+    o_pool = multiprocessing.Pool(processes=40)
 
+    for b_username in r_session.smembers('global:online.users'):
+        username = b_username.decode('utf-8')
+
+        if username != debugger_username and debugger:
+            continue
+
+        o_pool.apply_async(get_data, (username,))
+    o_pool.close()
+    o_pool.join()
+
+
+def get_offline_user_data():
+    if r_session.exists('api_error_info'):
+        return
+
+    p_pool = multiprocessing.Pool(processes=40)
+
+    if datetime.now().strftime('%M') not in ['58', '59', '00', '01']:
+        return
+
+    for b_user in r_session.mget(*['user:%s' % name for name in r_session.sdiff('users', *r_session.smembers('global:online.users'))]):
         user_info = json.loads(b_user.decode('utf-8'))
 
         username = user_info.get('username')
@@ -206,47 +222,64 @@ def start_rotate():
         if not user_info.get('active'):
             continue
 
-        auto_collect = user_info.get('auto_collect') if user_info.get('auto_collect') is not None else False
-        is_online = r_session.exists('user:%s:is_online' % username)
-        is_querying_key = 'user:%s:is_querying' % username
+        p_pool.apply_async(get_data, (username,))
+    p_pool.close()
+    p_pool.join()
 
-        if r_session.exists(is_querying_key):
+
+def clear_offline_user():
+    for b_username in r_session.smembers('global:online.users'):
+        username = b_username.decode('utf-8')
+        if not r_session.exists('user:%s:is_online' % username):
+            r_session.srem('global:online.users', username)
+
+
+def select_auto_collect_user():
+    auto_collect_accounts = []
+    for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in r_session.smembers('users')]):
+        user_info = json.loads(b_user.decode('utf-8'))
+        if not user_info.get('active'):
+            continue
+        auto_collect = user_info.get('auto_collect') if user_info.get('auto_collect') is not None else False
+        if not auto_collect:
+            continue
+        username = user_info.get('username')
+
+        account_keys = ['account:%s:%s' % (username, user_id.decode('utf-8'))
+                        for user_id in r_session.smembers('accounts:%s' % username)]
+        if len(account_keys) == 0:
+            continue
+        for b_account in r_session.mget(*account_keys):
+            account_info = json.loads(b_account.decode('utf-8'))
+            if not account_info.get('active'):
                 continue
 
-        if datetime.now().strftime('%M') in ['58', '59', '00', '01']:
-            if r_session.exists('auto.collect.users') and r_session.ttl('auto.collect.users') < 1:
-                r_session.expire('auto.collect.users', 60*55)
+            session_id = account_info.get('session_id')
+            user_id = account_info.get('user_id')
 
-            if is_online:
-                r_session.setex(is_querying_key, '1', 5)
-            else:
-                r_session.setex(is_querying_key, '1', 30)
+            auto_collect_accounts.append(json.dumps(dict(sessionid=session_id, userid=str(user_id))))
 
-            Process(target=get_data, args=(username, auto_collect)).start()
-            continue
-
-        if not is_online and not debugger:
-            continue
-
-        r_session.setex(is_querying_key, '1', 5)
-
-        Process(target=get_data, args=(username, auto_collect)).start()
+    r_session.delete('global:auto.collect.cookies')
+    r_session.sadd('global:auto.collect.cookies', *auto_collect_accounts)
 
 
 def collect_crystal():
-
-    for info in r_session.smembers('auto.collect.users'):
+    for info in r_session.smembers('global:auto.collect.cookies'):
         if info is not None:
             threading.Thread(target=collect, args=(json.loads(info.decode('utf-8')),)).start()
 
 
-if __name__ == '__main__':
-    i=0
+def timer(func, seconds):
     while True:
-        i+=1
-        if i % 10 == 0:
-            Process(target=collect_crystal).start()
-        Process(target=start_rotate).start()
-        if debugger:
-            time.sleep(10000)
-        time.sleep(5)
+        Process(target=func).start()
+        time.sleep(seconds)
+
+
+if __name__ == '__main__':
+    threading.Thread(target=timer, args=(collect_crystal, 60)).start()
+    threading.Thread(target=timer, args=(get_online_user_data, 5)).start()
+    threading.Thread(target=timer, args=(get_offline_user_data, 30)).start()
+    threading.Thread(target=timer, args=(clear_offline_user, 60)).start()# ok
+    threading.Thread(target=timer, args=(select_auto_collect_user, 600)).start()# ok
+    while True:
+        time.sleep(1)

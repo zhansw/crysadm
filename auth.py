@@ -34,5 +34,5 @@ def __handshake():
     user = session.get('user_info')
     username = user.get('username') if user.get('username') is not None else ''
     key = 'user:%s:is_online' % username
-
     r_session.setex(key, '1', 120)
+    r_session.sadd('global:online.users', username)
