@@ -43,6 +43,11 @@ def admin_invitation():
     return render_template('admin_invitation.html', inv_codes=r_session.smembers('invitation_codes'))
 
 
+@app.route('/invitations')
+def public_invitation():
+    return render_template('public_invitation.html', inv_codes=r_session.smembers('public_invitation_codes'))
+
+
 @app.route('/generate/inv_code', methods=['POST'])
 @requires_admin
 def generate_inv_code():
@@ -51,6 +56,18 @@ def generate_inv_code():
 
     for i in range(0, 20 - r_session.scard('invitation_codes')):
         r_session.sadd('invitation_codes', ''.join(random.sample(_chars, 10)))
+
+    return redirect(url_for('admin_invitation'))
+
+
+@app.route('/generate/pub_inv_code', methods=['POST'])
+@requires_admin
+def generate_pub_inv_code():
+    _chars = "0123456789ABCDEF"
+    r_session.smembers('public_invitation_codes')
+
+    for i in range(0, 10 - r_session.scard('public_invitation_codes')):
+        r_session.sadd('public_invitation_codes', ''.join(random.sample(_chars, 10)))
 
     return redirect(url_for('admin_invitation'))
 
