@@ -190,24 +190,18 @@ def get_online_user_data():
     if r_session.exists('api_error_info'):
         return
 
-    o_pool = multiprocessing.Pool(processes=40)
-
     for b_username in r_session.smembers('global:online.users'):
         username = b_username.decode('utf-8')
 
         if username != debugger_username and debugger:
             continue
 
-        o_pool.apply_async(get_data, (username,))
-    o_pool.close()
-    o_pool.join()
+        Process(target=get_data, args=(username,)).start()
 
 
 def get_offline_user_data():
     if r_session.exists('api_error_info'):
         return
-
-    p_pool = multiprocessing.Pool(processes=40)
 
     if datetime.now().strftime('%M') not in ['58', '59', '00', '01']:
         return
@@ -222,9 +216,7 @@ def get_offline_user_data():
         if not user_info.get('active'):
             continue
 
-        p_pool.apply_async(get_data, (username,))
-    p_pool.close()
-    p_pool.join()
+        Process(target=get_data, args=(username,)).start()
 
 
 def clear_offline_user():

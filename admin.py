@@ -106,7 +106,7 @@ def admin_change_password(username):
 
     if len(n_password) < 8:
         session['error_message'] = '密码必须8位以上.'
-        return redirect(url_for(endpoint='admin_user', username=username))
+        return redirect(url_for(endpoint='admin_user_management', username=username))
 
     user_key = '%s:%s' % ('user', username)
     user_info = json.loads(r_session.get(user_key).decode('utf-8'))
@@ -114,7 +114,7 @@ def admin_change_password(username):
     user_info['password'] = hash_password(n_password)
     r_session.set(user_key, json.dumps(user_info))
 
-    return redirect(url_for(endpoint='admin_user', username=username))
+    return redirect(url_for(endpoint='admin_user_management', username=username))
 
 
 @app.route('/admin/change_property/<field>/<value>/<username>', methods=['POST'])
@@ -132,7 +132,7 @@ def admin_change_property(field, value, username):
 
     r_session.set(user_key, json.dumps(user_info))
 
-    return redirect(url_for(endpoint='admin_user', username=username))
+    return redirect(url_for(endpoint='admin_user_management', username=username))
 
 
 @app.route('/admin/change_user_info/<username>', methods=['POST'])
@@ -144,11 +144,11 @@ def admin_change_user_info(username):
 
     if re.match(r, max_account_no) is None:
         session['error_message'] = '迅雷账号限制必须为整数.'
-        return redirect(url_for(endpoint='admin_user', username=username))
+        return redirect(url_for(endpoint='admin_user_management', username=username))
 
     if not 0 < int(max_account_no) < 21:
         session['error_message'] = '迅雷账号限制必须为 1~20.'
-        return redirect(url_for(endpoint='admin_user', username=username))
+        return redirect(url_for(endpoint='admin_user_management', username=username))
 
     user_key = '%s:%s' % ('user', username)
     user_info = json.loads(r_session.get(user_key).decode('utf-8'))
@@ -157,7 +157,7 @@ def admin_change_user_info(username):
 
     r_session.set(user_key, json.dumps(user_info))
 
-    return redirect(url_for(endpoint='admin_user', username=username))
+    return redirect(url_for(endpoint='admin_user_management', username=username))
 
 
 @app.route('/admin/del_user/<username>', methods=['GET'])
