@@ -4,7 +4,7 @@ import time
 from login import login
 from datetime import datetime, timedelta
 from multiprocessing import Process
-import multiprocessing
+from multiprocessing.dummy import Pool as ThreadPool
 import threading
 
 conf = None
@@ -203,7 +203,7 @@ def get_offline_user_data():
     if r_session.exists('api_error_info'):
         return
 
-    if datetime.now().strftime('%M') not in ['58', '59', '00', '01']:
+    if datetime.now().strftime('%M') not in ['58', '59']:
         return
 
     for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in r_session.sdiff('users', *r_session.smembers('global:online.users'))]):
@@ -256,10 +256,11 @@ def select_auto_collect_user():
 
 
 def collect_crystal():
-    for info in r_session.smembers('global:auto.collect.cookies'):
-        if info is not None:
-            threading.Thread(target=collect, args=(json.loads(info.decode('utf-8')),)).start()
+    pool = ThreadPool(processes=10)
 
+    pool.map(collect,(json.loads(c.decode('utf-8'))for c in r_session.smembers('global:auto.collect.cookies')))
+    pool.close()
+    pool.join()
 
 def timer(func, seconds):
     while True:
