@@ -169,7 +169,24 @@ def save_history(username):
         for device in data.get('device_info'):
             today_data['last_speed'] += int(device.get('CUR_UPLOAD_SPEED') / 1024)
 
-    r_session.set(key, json.dumps(today_data), 3600 * 24 * 35)
+    r_session.setex(key, json.dumps(today_data), 3600 * 24 * 35)
+    save_income_history(username, today_data.get('pdc_detail'))
+
+
+def save_income_history(username, pdc_detail):
+    key = 'user_data:%s:%s' % (username, 'income.history')
+    b_income_history = r_session.get(key)
+    income_history = dict()
+
+    if b_income_history is not None:
+        income_history = json.loads(b_income_history.decode('utf-8'))
+
+    if datetime.now().strftime('%M') not in ['55', '56', '57', '58', '59']:
+        return
+
+    income_history[datetime.now().strftime('%Y-%m-%d %H')] = pdc_detail
+
+    r_session.setex(key, json.dumps(income_history), 3600 * 72)
 
 
 def __relogin(username, password, account_info, account_key):
@@ -202,7 +219,7 @@ def get_offline_user_data():
     if r_session.exists('api_error_info'):
         return
 
-    if datetime.now().strftime('%M') not in ['55', '56', '57', '58', '59']:
+    if datetime.now().strftime('%M') not in ['55', '56', '57', '58', '59'] and False:
         return
 
     offline_users = []
