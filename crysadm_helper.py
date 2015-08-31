@@ -201,7 +201,7 @@ def get_offline_user_data():
     if r_session.exists('api_error_info'):
         return
 
-    if datetime.now().strftime('%M') not in ['58', '59'] and not True:
+    if datetime.now().strftime('%M') not in ['58', '59']:
         return
 
     offline_users = []
