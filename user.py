@@ -51,9 +51,6 @@ def login():
 @app.route('/invitations')
 def public_invitation():
     inv_codes = r_session.smembers('public_invitation_codes')
-    if len(inv_codes) == 0:
-        session['error_message'] = '邀请码已被领取完.'
-        return redirect(url_for('login'))
 
     return render_template('public_invitation.html', inv_codes=inv_codes)
 
