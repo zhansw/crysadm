@@ -190,13 +190,11 @@ def get_online_user_data():
     if r_session.exists('api_error_info'):
         return
 
-    for b_username in r_session.smembers('global:online.users'):
-        username = b_username.decode('utf-8')
+    pool = ThreadPool(processes=10)
 
-        if username != debugger_username and debugger:
-            continue
-
-        Process(target=get_data, args=(username,)).start()
+    pool.map(get_data,(u.decode('utf-8')for u in r_session.smembers('global:online.users')))
+    pool.close()
+    pool.join()
 
 
 def get_offline_user_data():
