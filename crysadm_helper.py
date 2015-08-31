@@ -183,8 +183,10 @@ def save_income_history(username, pdc_detail):
 
     if datetime.now().strftime('%M') not in ['55', '56', '57', '58', '59']:
         return
+    if income_history.get(datetime.now().strftime('%Y-%m-%d')) is None:
+        income_history[datetime.now().strftime('%Y-%m-%d')] = dict()
 
-    income_history[datetime.now().strftime('%Y-%m-%d %H')] = pdc_detail
+    income_history[datetime.now().strftime('%Y-%m-%d')][datetime.now().strftime('%H')] = pdc_detail
 
     r_session.setex(key, json.dumps(income_history), 3600 * 72)
 
@@ -219,7 +221,7 @@ def get_offline_user_data():
     if r_session.exists('api_error_info'):
         return
 
-    if datetime.now().strftime('%M') not in ['55', '56', '57', '58', '59'] and False:
+    if datetime.now().strftime('%M') not in ['55', '56', '57', '58', '59']:
         return
 
     offline_users = []
