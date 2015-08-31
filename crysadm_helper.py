@@ -109,7 +109,7 @@ def get_data(username):
         if start_time.day == datetime.now().day:
             save_history(username)
 
-        r_session.setex('user:%s:cron_queued' % username, '1', 1800)
+        r_session.setex('user:%s:cron_queued' % username, '1', 60)
         print(username.encode('utf-8'), 'succ', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     except Exception as ex:
         print(username.encode('utf-8'), 'failed', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ex)
