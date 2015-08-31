@@ -107,7 +107,7 @@ def get_data(username):
                     r_session.setex('can_drawcash', r.get('is_tm'), 60)
 
         if start_time.day == datetime.now().day:
-            save_history(username.encode('utf-8'))
+            save_history(username)
 
         r_session.setex('user:%s:cron_queued' % username, '1', 1800)
         print(username.encode('utf-8'), 'succ', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
