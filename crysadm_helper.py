@@ -107,10 +107,10 @@ def get_data(username):
                     r_session.setex('can_drawcash', r.get('is_tm'), 60)
 
         if start_time.day == datetime.now().day:
-            save_history(username)
-        print(username, 'succ')
+            save_history(username.encode('utf-8'))
+        print(username.encode('utf-8'), 'succ', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     except Exception as ex:
-        print(username, 'failed')
+        print(username.encode('utf-8'), 'failed', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         print(ex)
 
 
