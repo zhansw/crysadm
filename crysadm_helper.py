@@ -201,9 +201,10 @@ def get_offline_user_data():
     if r_session.exists('api_error_info'):
         return
 
-    if datetime.now().strftime('%M') not in ['58', '59']:
+    if datetime.now().strftime('%M') not in ['58', '59'] and not True:
         return
 
+    offline_users = []
     for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in r_session.sdiff('users', *r_session.smembers('global:online.users'))]):
         user_info = json.loads(b_user.decode('utf-8'))
 
@@ -213,8 +214,13 @@ def get_offline_user_data():
 
         if not user_info.get('active'):
             continue
+        offline_users.append(username)
 
-        Process(target=get_data, args=(username,)).start()
+    pool = ThreadPool(processes=16)
+
+    pool.map(get_data,offline_users)
+    pool.close()
+    pool.join()
 
 
 def clear_offline_user():
