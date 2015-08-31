@@ -108,10 +108,11 @@ def get_data(username):
 
         if start_time.day == datetime.now().day:
             save_history(username.encode('utf-8'))
+
+        r_session.setex('user:%s:cron_queued' % username, '1', 1800)
         print(username.encode('utf-8'), 'succ', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     except Exception as ex:
-        print(username.encode('utf-8'), 'failed', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        print(ex)
+        print(username.encode('utf-8'), 'failed', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ex)
 
 
 def __merge_device_data(red_zqb, blue_device_info):
@@ -192,7 +193,7 @@ def get_online_user_data():
 
     pool = ThreadPool(processes=10)
 
-    pool.map(get_data,(u.decode('utf-8')for u in r_session.smembers('global:online.users')))
+    pool.map(get_data, (u.decode('utf-8') for u in r_session.smembers('global:online.users')))
     pool.close()
     pool.join()
 
@@ -201,11 +202,12 @@ def get_offline_user_data():
     if r_session.exists('api_error_info'):
         return
 
-    if datetime.now().strftime('%M') not in ['58', '59']:
+    if datetime.now().strftime('%M') not in ['55', '56', '57', '58', '59']:
         return
 
     offline_users = []
-    for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in r_session.sdiff('users', *r_session.smembers('global:online.users'))]):
+    for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in
+                                   r_session.sdiff('users', *r_session.smembers('global:online.users'))]):
         user_info = json.loads(b_user.decode('utf-8'))
 
         username = user_info.get('username')
@@ -214,11 +216,15 @@ def get_offline_user_data():
 
         if not user_info.get('active'):
             continue
+
+        every_hour_key = 'user:%s:cron_queued' % username
+        if r_session.exists(every_hour_key):
+            continue
         offline_users.append(username)
 
     pool = ThreadPool(processes=16)
 
-    pool.map(get_data,offline_users)
+    pool.map(get_data, offline_users)
     pool.close()
     pool.join()
 
@@ -262,9 +268,10 @@ def select_auto_collect_user():
 def collect_crystal():
     pool = ThreadPool(processes=10)
 
-    pool.map(collect,(json.loads(c.decode('utf-8'))for c in r_session.smembers('global:auto.collect.cookies')))
+    pool.map(collect, (json.loads(c.decode('utf-8')) for c in r_session.smembers('global:auto.collect.cookies')))
     pool.close()
     pool.join()
+
 
 def timer(func, seconds):
     while True:
@@ -276,7 +283,7 @@ if __name__ == '__main__':
     threading.Thread(target=timer, args=(collect_crystal, 60)).start()
     threading.Thread(target=timer, args=(get_online_user_data, 5)).start()
     threading.Thread(target=timer, args=(get_offline_user_data, 30)).start()
-    threading.Thread(target=timer, args=(clear_offline_user, 60)).start()# ok
-    threading.Thread(target=timer, args=(select_auto_collect_user, 600)).start()# ok
+    threading.Thread(target=timer, args=(clear_offline_user, 60)).start()  # ok
+    threading.Thread(target=timer, args=(select_auto_collect_user, 600)).start()  # ok
     while True:
         time.sleep(1)
