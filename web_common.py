@@ -174,6 +174,22 @@ def dashboard_today_income_share():
     return Response(json.dumps(dict(data=pie_data)), mimetype='application/json')
 
 
+@app.route('/dashboard/income_history')
+@requires_auth
+def dashboard_income_history():
+    user = session.get('user_info')
+    username = user.get('username')
+
+    key = 'user_data:%s:%s' % (username, 'income.history')
+
+    b_income_history = r_session.get(key)
+    if b_income_history is None:
+        return Response(json.dumps(dict(data=[])), mimetype='application/json')
+
+
+    return Response(json.dumps(dict(data=json.loads(b_income_history.decode('utf-8')))), mimetype='application/json')
+
+
 @app.route('/')
 def index():
     return redirect(url_for('login'))

@@ -224,7 +224,7 @@ def collect(cookies):
 
 
 def get_device_info(user_id):
-    url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s' % user_id
+    url = 'http://r.crysadm.com/query_device?USERID=%s' % user_id
     try:
         s = requests.Session()
         s.mount('http://', HTTPAdapter(max_retries=5))
