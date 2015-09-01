@@ -174,9 +174,9 @@ def dashboard_today_income_share():
     return Response(json.dumps(dict(data=pie_data)), mimetype='application/json')
 
 
-@app.route('/dashboard/income_history')
+@app.route('/dashboard/DoD_income')
 @requires_auth
-def dashboard_income_history():
+def dashboard_DoD_income():
     user = session.get('user_info')
     username = user.get('username')
 
@@ -186,8 +186,33 @@ def dashboard_income_history():
     if b_income_history is None:
         return Response(json.dumps(dict(data=[])), mimetype='application/json')
 
+    income_history = json.loads(b_income_history.decode('utf-8'))
 
-    return Response(json.dumps(dict(data=json.loads(b_income_history.decode('utf-8')))), mimetype='application/json')
+    today_series = dict(name='今日', data=[])
+    yesterday_series = dict(name='昨日', data=[])
+
+    today_data = income_history.get(datetime.now().strftime('%Y-%m-%d'))
+    yesterday_data = income_history.get((datetime.now()+timedelta(days=-1)).strftime('%Y-%m-%d'))
+
+    for i in range(0, 24):
+        hour = '%02d' % i
+
+        if yesterday_data is not None and yesterday_data.get(hour) is not None:
+            yesterday_series['data'].append(sum(row['pdc'] for row in yesterday_data.get(hour)))
+        else:
+            yesterday_series['data'].append(0)
+
+        if i >= datetime.now().hour:
+            continue
+
+        if today_data is not None and today_data.get(hour) is not None:
+            today_series['data'].append(sum(row['pdc'] for row in today_data.get(hour)))
+        else:
+            today_series['data'].append(0)
+
+
+
+    return Response(json.dumps(dict(series=[yesterday_series, today_series])), mimetype='application/json')
 
 
 @app.route('/')

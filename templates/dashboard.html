@@ -78,7 +78,52 @@
             </div>
         </div>
     </div>
+    <div class="row">
+                    <div class="col-lg-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <h5>同比产量</h5>
 
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                <div class="col-lg-9">
+                                    <div id="DoD-income" style="height: 200px;min-width: 300px;"></div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <ul class="stat-list">
+                                        <li>
+                                            <h2 class="no-margins">2,346</h2>
+                                            <small>今日产量</small>
+                                            <div class="stat-percent">48% </div>
+                                            <div class="progress progress-mini">
+                                                <div style="width: 48%;" class="progress-bar"></div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <h2 class="no-margins ">4,422</h2>
+                                            <small>昨日同比产量</small>
+                                            <div class="stat-percent">60% </div>
+                                            <div class="progress progress-mini">
+                                                <div style="width: 60%;" class="progress-bar"></div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <h2 class="no-margins ">9,180</h2>
+                                            <small>今日预计产量</small>
+                                            <div class="stat-percent">22% </div>
+                                            <div class="progress progress-mini">
+                                                <div style="width: 22%;" class="progress-bar"></div>
+                                            </div>
+                                        </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
 
     <!-- /.row -->
     <div class="row">
@@ -397,6 +442,35 @@
             });
         }
         var load_static_chart = function() {
+            $.getJSON('/dashboard/DoD_income?random='+Math.random(), function (data) {
+                $('#DoD-income').highcharts({
+                    title: {
+                        text: '',
+                        x: -20 //center
+                    },
+                    xAxis: {
+                        categories: ["01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "24:00"]
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: '产量'
+                        }
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    tooltip: {
+
+                    },
+                    legend: {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle'
+                    },
+                    series: data.series
+                });
+            });
 
         }
         $('#real_time_speed').highcharts({
