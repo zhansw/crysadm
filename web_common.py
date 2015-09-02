@@ -173,6 +173,21 @@ def dashboard_today_income_share():
 
     return Response(json.dumps(dict(data=pie_data)), mimetype='application/json')
 
+"""
+@app.route('/fixdata')
+@requires_auth
+def dashboard_fixdata():
+    for b_u in r_session.smembers('users'):
+        username = b_u.decode('utf-8')
+
+        key = 'user_data:%s:%s' % (username, 'income.history')
+        b_income_history = r_session.get(key)
+        if b_income_history is None:
+            continue
+        income_history = json.loads(b_income_history.decode('utf-8'))
+        income_history.get('2015-09-02')['17'] = None
+        r_session.setex(key,json.dumps(income_history),3600*72)
+"""
 
 @app.route('/dashboard/DoD_income')
 @requires_auth
@@ -238,6 +253,7 @@ def dashboard_DoD_income():
                                     data=dict(last_day_income=yesterday_last_value, dod_income_value=dod_income_value,
                                               expected_income=expected_income)
                                     )), mimetype='application/json')
+
 
 
 @app.route('/')
