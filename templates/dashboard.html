@@ -87,34 +87,23 @@
                             </div>
                             <div class="ibox-content">
                                 <div class="row">
-                                <div class="col-lg-9">
+                                <div class="col-md-10">
                                     <div id="DoD-income" style="height: 200px;min-width: 300px;"></div>
                                 </div>
-                                <div class="col-lg-3">
+                                <div class="col-md-2" style="margin-top:15px;">
                                     <ul class="stat-list">
                                         <li>
-                                            <h2 class="no-margins">2,346</h2>
-                                            <small>今日产量</small>
-                                            <div class="stat-percent">48% </div>
-                                            <div class="progress progress-mini">
-                                                <div style="width: 48%;" class="progress-bar"></div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <h2 class="no-margins ">4,422</h2>
+                                            <h2 class="no-margins " id="dod_income">-</h2>
                                             <small>昨日同比产量</small>
-                                            <div class="stat-percent">60% </div>
-                                            <div class="progress progress-mini">
-                                                <div style="width: 60%;" class="progress-bar"></div>
-                                            </div>
+
                                         </li>
                                         <li>
-                                            <h2 class="no-margins ">9,180</h2>
+                                            <h2 class="no-margins" id="last_day_income">-</h2>
+                                            <small>昨日总产量</small>
+                                        </li>
+                                        <li>
+                                            <h2 class="no-margins " id="expected_income">-</h2>
                                             <small>今日预计产量</small>
-                                            <div class="stat-percent">22% </div>
-                                            <div class="progress progress-mini">
-                                                <div style="width: 22%;" class="progress-bar"></div>
-                                            </div>
                                         </li>
                                         </ul>
                                     </div>
@@ -300,7 +289,6 @@
                     },
                     series: r_data.series
                 });
-
             });
             $.getJSON('/dashboard/speed_share?random='+Math.random(),function(r_data) {
 
@@ -444,6 +432,10 @@
         var load_static_chart = function() {
             $.getJSON('/dashboard/DoD_income?random='+Math.random(), function (data) {
                 $('#DoD-income').highcharts({
+                    chart:{
+                        type: 'column',
+                        zoomType: 'x'
+                    },
                     title: {
                         text: '',
                         x: -20 //center
@@ -461,15 +453,30 @@
                         enabled: false
                     },
                     tooltip: {
-
+                        shared: true,
+                        crosshairs: true
+                    },
+                    plotOptions: {
+                        column: {
+                            grouping: false,
+                            shadow: false,
+                            borderWidth: 0,
+                            animation: false
+                        }
                     },
                     legend: {
                         layout: 'vertical',
-                        align: 'right',
-                        verticalAlign: 'middle'
+                        align: 'left',
+                        verticalAlign: 'top',
+                        x: 150,
+                        floating: true
                     },
                     series: data.series
                 });
+                $('#last_day_income').html(data.data.last_day_income);
+                $('#dod_income').html(data.data.dod_income_value);
+                $('#expected_income').html(data.data.expected_income);
+
             });
 
         }

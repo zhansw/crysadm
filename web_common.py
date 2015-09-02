@@ -188,31 +188,55 @@ def dashboard_DoD_income():
 
     income_history = json.loads(b_income_history.decode('utf-8'))
 
-    today_series = dict(name='今日', data=[])
-    yesterday_series = dict(name='昨日', data=[])
+    today_series = dict(name='今日', data=[], pointPadding=0.2, pointPlacement=0, color='#676A6C')
+    yesterday_series = dict(name='昨日', data=[], pointPadding=-0.1, pointPlacement=0, color='#1AB394')
 
-    today_data = income_history.get(datetime.now().strftime('%Y-%m-%d'))
-    yesterday_data = income_history.get((datetime.now()+timedelta(days=-1)).strftime('%Y-%m-%d'))
+    now = datetime.now()
+    today_data = income_history.get(now.strftime('%Y-%m-%d'))
+    yesterday_data = income_history.get((now + timedelta(days=-1)).strftime('%Y-%m-%d'))
+
+    yesterday_last_value = 0
+    today_data_last_value = 0
 
     for i in range(0, 24):
         hour = '%02d' % i
+        yesterday_value = 0
+        today_data_value = 0
+        yesterday_next_value = 0
+        if yesterday_data is not None:
+            next_data = yesterday_data.get('%02d' % (i + 1))
+            if yesterday_data.get('%02d' % (i + 1)) is not None:
+                yesterday_next_value = sum(row['pdc'] for row in next_data)
+            if yesterday_data.get(hour) is not None:
+                yesterday_value = sum(row['pdc'] for row in yesterday_data.get(hour))
+            else:
+                if yesterday_next_value != 0:
+                    yesterday_value = int((yesterday_next_value - yesterday_last_value) / 2) + \
+                                      yesterday_last_value
+                else:
+                    yesterday_value = yesterday_last_value
 
-        if yesterday_data is not None and yesterday_data.get(hour) is not None:
-            yesterday_series['data'].append(sum(row['pdc'] for row in yesterday_data.get(hour)))
-        else:
-            yesterday_series['data'].append(0)
+        yesterday_series['data'].append(yesterday_value - yesterday_last_value)
+        yesterday_last_value = yesterday_value
 
-        if i >= datetime.now().hour:
+        if i >= now.hour:
             continue
 
         if today_data is not None and today_data.get(hour) is not None:
-            today_series['data'].append(sum(row['pdc'] for row in today_data.get(hour)))
-        else:
-            today_series['data'].append(0)
+            today_data_value = sum(row['pdc'] for row in today_data.get(hour))
 
+        today_series['data'].append(today_data_value - today_data_last_value)
+        today_data_last_value = today_data_value
 
+    now_income_value = sum(today_series['data'][0:now.hour])
+    dod_income_value = sum(yesterday_series['data'][0:now.hour]) + \
+                       int((yesterday_series['data'][now.hour]) / 60 * now.minute)
 
-    return Response(json.dumps(dict(series=[yesterday_series, today_series])), mimetype='application/json')
+    expected_income = int((yesterday_last_value / dod_income_value) * now_income_value)
+    return Response(json.dumps(dict(series=[yesterday_series, today_series],
+                                    data=dict(last_day_income=yesterday_last_value, dod_income_value=dod_income_value,
+                                              expected_income=expected_income)
+                                    )), mimetype='application/json')
 
 
 @app.route('/')
