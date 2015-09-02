@@ -184,6 +184,7 @@ def save_income_history(username, pdc_detail):
 
     if now.minute < 50:
         return
+
     if income_history.get(now.strftime('%Y-%m-%d')) is None:
         income_history[now.strftime('%Y-%m-%d')] = dict()
 

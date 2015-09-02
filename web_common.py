@@ -212,7 +212,7 @@ def dashboard_DoD_income():
 
     yesterday_last_value = 0
     today_data_last_value = 0
-
+    print(income_history)
     for i in range(0, 24):
         hour = '%02d' % i
         yesterday_value = 0
@@ -234,7 +234,7 @@ def dashboard_DoD_income():
         yesterday_series['data'].append(yesterday_value - yesterday_last_value)
         yesterday_last_value = yesterday_value
 
-        if i >= now.hour-1:
+        if i >= now.hour:
             continue
 
         if today_data is not None and today_data.get(hour) is not None:
