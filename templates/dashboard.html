@@ -1,4 +1,20 @@
 {% extends "base.html" %}
+{% block css_block %}
+    <style>
+        @media (max-width: 992px) {
+            #expected_info>ul{
+                margin-top:0px;
+                margin-bottom:20px;
+                margin-left:10%;
+            }
+            #expected_info>ul >li{
+                display: inline-block;
+                width:30%;
+
+            }
+        }
+    </style>
+{% endblock %}
 {% block content %}
 
     <div class="row">
@@ -90,8 +106,8 @@
                                 <div class="col-md-10">
                                     <div id="DoD-income" style="height: 200px;min-width: 300px;"></div>
                                 </div>
-                                <div class="col-md-2" style="margin-top:15px;">
-                                    <ul class="stat-list">
+                                <div class="col-md-2" id="expected_info">
+                                    <ul class="stat-list" style="margin-top:15px;">
                                         <li>
                                             <h2 class="no-margins " id="dod_income">-</h2>
                                             <small>昨日同比产量</small>
