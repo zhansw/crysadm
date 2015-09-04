@@ -79,6 +79,42 @@ def collect_all(user_id):
     return redirect(url_for('excavators'))
 
 
+@app.route('/collect/all', methods=['POST'])
+@requires_auth
+def collect_all_crystal():
+    user = session.get('user_info')
+    username = user.get('username')
+
+    error_message = ''
+    success_message = ''
+    for b_user_id in r_session.smembers('accounts:%s' % username):
+
+        account_key = 'account:%s:%s' % (username, b_user_id.decode("utf-8"))
+        account_info = json.loads(r_session.get(account_key).decode("utf-8"))
+
+        session_id = account_info.get('session_id')
+        user_id = account_info.get('user_id')
+
+        cookies = dict(sessionid=session_id, userid=str(user_id))
+        r = collect(cookies)
+        if r.get('r') != 0:
+            error_message += 'Id:%s : %s<br />' % (user_id, r.get('rd'))
+        else:
+            success_message += 'Id:%s : 收取水晶成功.<br />' % user_id
+            account_data_key = account_key + ':data'
+            account_data_value = json.loads(r_session.get(account_data_key).decode("utf-8"))
+            account_data_value.get('mine_info')['td_not_in_a'] = 0
+            r_session.set(account_data_key, json.dumps(account_data_value))
+
+    if len(success_message) > 0:
+        session['info_message'] = success_message
+
+    if len(error_message) > 0:
+        session['error_message'] = error_message
+
+    return redirect(url_for('excavators'))
+
+
 @app.route('/drawcash/<user_id>', methods=['POST'])
 @requires_auth
 def drawcash(user_id):
