@@ -251,6 +251,8 @@ def get_offline_user_data():
 
 
 def clear_offline_user():
+    if datetime.now().hour != 23 or datetime.now().minute < 55:
+        return
     for b_username in r_session.smembers('global:online.users'):
         username = b_username.decode('utf-8')
         if not r_session.exists('user:%s:is_online' % username):
