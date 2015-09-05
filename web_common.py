@@ -246,7 +246,9 @@ def dashboard_DoD_income():
     now_income_value = sum(today_series['data'][0:now.hour])
     dod_income_value = sum(yesterday_series['data'][0:now.hour])
 
-    expected_income = int((yesterday_last_value / dod_income_value) * now_income_value)
+    expected_income = '-'
+    if dod_income_value > 0:
+        expected_income = str(int((yesterday_last_value / dod_income_value) * now_income_value))
 
     dod_income_value += int((yesterday_series['data'][now.hour]) / 60 * now.minute)
     return Response(json.dumps(dict(series=[yesterday_series, today_series],
