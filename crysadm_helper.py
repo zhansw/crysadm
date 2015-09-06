@@ -251,8 +251,6 @@ def get_offline_user_data():
 
 
 def clear_offline_user():
-    if datetime.now().hour == 23 and datetime.now().minute > 50:
-        return
     for b_username in r_session.smembers('global:online.users'):
         username = b_username.decode('utf-8')
         if not r_session.exists('user:%s:is_online' % username):
@@ -289,6 +287,8 @@ def select_auto_collect_user():
 
 
 def collect_crystal():
+    if not (datetime.now().hour == 23 and datetime.now().minute > 50):
+        return
     pool = ThreadPool(processes=10)
 
     pool.map(collect, (json.loads(c.decode('utf-8')) for c in r_session.smembers('global:auto.collect.cookies')))
