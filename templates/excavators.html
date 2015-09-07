@@ -127,6 +127,8 @@
                                                 {{ get_device_type(321) |e }}
                                             </td>
                                             <td>{{ (dev.s/8)|int |default('') }}</td>
+                                        <td>-</td>
+                                        <td>-</td>
                                             <td{% if dev.upgrade %} style="min-width: 110px;" {% endif %}>
                                                 {% if dev.st == 1 %}
                                                     <span class="label label-info">
@@ -143,6 +145,7 @@
                                                                 </span>
                                                 {% endif %}
                                             </td>
+                                        <td>-</td>
                                             <td>
                                                     <form style="float:right;" role="form" action="/reboot_device" method="post">
                                                         <input type="hidden" name="url" value="{{ dev.url }}" />
