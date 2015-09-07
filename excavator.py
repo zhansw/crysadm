@@ -37,7 +37,7 @@ def excavators():
 
             account_info.get('data')['device_info'] = \
                 sorted(account_info.get('data').get('device_info'), key=
-                lambda k: k.get('red_info').get('url')
+                lambda k: k.get('url')
                 if k.get('red_info') is not None else 'z')
 
             for dev in account_info.get('data').get('device_info'):

@@ -100,14 +100,11 @@ def dashboard_speed_share():
         device_speed = []
 
         for device_info in account_info.get('device_info'):
-            if device_info.get('ON_OFF_STATE') != 1:
+            if device_info.get('st') != 1:
                 continue
-            speed = int(device_info.get('CUR_UPLOAD_SPEED') / 1024)
+            speed = int(device_info.get('s') / 8)
             total_speed += speed
-            if device_info.get('red_info') is None:
-                device_speed.append(dict(name=device_info.get('HOST_NAME').replace('XL_MINER_', '矿机 '), value=speed))
-            else:
-                device_speed.append(dict(name=device_info.get('red_info').get('hn'), value=speed))
+            device_speed.append(dict(name=device_info.get('hn'), value=speed))
 
         drilldown_data.append(dict(name='矿主ID:' + mid, value=total_speed, drilldown_data=device_speed))
 
@@ -128,27 +125,20 @@ def dashboard_speed_detail():
         account_info = json.loads(b_acct.decode("utf-8"))
 
         for device_info in account_info.get('device_info'):
-            if device_info.get('ON_OFF_STATE') != 1:
+            if device_info.get('st') != 1:
                 continue
-            upload_speed = int(device_info.get('CUR_UPLOAD_SPEED') / 1024)
-            deploy_speed = int(device_info.get('CUR_DEPLOY_SPEED') / 1024)
-            if device_info.get('red_info') is None:
-                device_speed.append(dict(name=device_info.get('HOST_NAME'), upload_speed=upload_speed,
-                                         deploy_speed=deploy_speed))
-            else:
-                device_speed.append(dict(name=device_info.get('red_info').get('hn'), upload_speed=upload_speed,
-                                         deploy_speed=deploy_speed))
+            upload_speed = int(device_info.get('s') / 8)
+
+            device_speed.append(dict(name=device_info.get('hn'), upload_speed=upload_speed))
 
     device_speed = sorted(device_speed, key=lambda k: k.get('name'))
     categories = []
     upload_series = dict(name='上传速度', data=[], pointPadding=0.3, pointPlacement=-0.2)
-    deploy_series = dict(name='下载速度', data=[], pointPadding=0.4, pointPlacement=-0.2)
     for d_s in device_speed:
         categories.append(d_s.get('name'))
         upload_series.get('data').append(d_s.get('upload_speed'))
-        deploy_series.get('data').append(d_s.get('deploy_speed'))
 
-    return Response(json.dumps(dict(categories=categories, series=[upload_series, deploy_series])),
+    return Response(json.dumps(dict(categories=categories, series=[upload_series])),
                     mimetype='application/json')
 
 

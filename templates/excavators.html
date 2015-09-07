@@ -114,58 +114,40 @@
                                 {% if row.data is defined  %}
                                     {% for dev in row.data.device_info%}
                                         <tr{% if loop.first %} style="background-color: #F9F9F9;"{% endif %}>
-                                            <td >{% if dev.red_info is defined %}{{ dev.red_info.url }}{% endif %}</td>
+                                            <td >{{ dev.url }}</td>
                                             <td >
                                                 {% if loop.first %}
                                                     {{ row.data.privilege.mid |e }}
                                                 {% endif %}
                                             </td>
-                                            <td{% if row.data.double_device and dev.ON_OFF_STATE == 1 and dev.red_info is not defined or dev.PRODUCT_ID != 321%}
-                                                readonly="readonly"
-                                            {% endif %}>
-                                                {%- if dev.red_info is defined -%}
-                                                    {{ dev.red_info.hn|default(dev.HOST_NAME) }}
-                                                {%- else -%}
-                                                    {{ dev.HOST_NAME[-4:] | e }}
-                                                {%- endif -%}
+                                            <td readonly="readonly">
+                                                    {{ dev.hn}}
                                             </td>
                                             <td class="hidden-xs">
-                                                {{ get_device_type(dev.PRODUCT_ID) |e }}
-                                                {% if dev.PRODUCT_ID == 321 and row.data.double_device and dev.ON_OFF_STATE == 1%}
-                                                    {% if dev.red_info is defined %}
-                                                        (主)
-                                                    {% else %}
-                                                        (分)
-                                                    {% endif %}
-                                                {% endif %}
+                                                {{ get_device_type(321) |e }}
                                             </td>
-                                            <td>{{ (dev.CUR_UPLOAD_SPEED/1024)|int |default('') }}/{{ (dev.MAX_UPLOAD_SPEED/1024)|int }}</td>
-                                            <td>{{ (dev.CUR_DEPLOY_SPEED/1024)|int }}</td>
-                                            <td>{{ (dev.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
-                                            <td{% if dev.red_info is defined and dev.red_info.upgrade %} style="min-width: 110px;" {% endif %}>
-                                                {% if dev.ON_OFF_STATE == 1 %}
+                                            <td>{{ (dev.s/8)|int |default('') }}</td>
+                                            <td{% if dev.upgrade %} style="min-width: 110px;" {% endif %}>
+                                                {% if dev.st == 1 %}
                                                     <span class="label label-info">
                                                                 正常
                                                                 </span>
-                                                {% elif dev.ON_OFF_STATE == 2 %}
+                                                {% elif dev.st == 2 %}
                                                     <span class="label label-warning">
                                                                 断网
                                                                 </span>
                                                 {% endif %}
-                                                {% if dev.red_info is defined and dev.red_info.upgrade %}
+                                                {% if dev.upgrade %}
                                                     <span class="label label-danger">
                                                                 有升级
                                                                 </span>
                                                 {% endif %}
                                             </td>
-                                            <td class="hidden-xs">{{ int2ip(dev.EXTERNAL_IP) | e }}</td>
                                             <td>
-                                                {% if dev.red_info is defined %}
                                                     <form style="float:right;" role="form" action="/reboot_device" method="post">
-                                                        <input type="hidden" name="url" value="{{ dev.red_info.url }}" />
+                                                        <input type="hidden" name="url" value="{{ dev.url }}" />
                                                         <button type="submit" style="float: right;margin: 0px;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
                                                     </form>
-                                                {% endif %}
                                             </td>
                                         </tr>
 

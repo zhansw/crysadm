@@ -66,10 +66,9 @@ def get_data(username):
                 continue
 
             red_zqb = get_device_stat('1', cookies)
-            # red_old = get_device_stat('0', cookies)
-            blue_device_info = get_device_info(user_id)
+            red_pc = get_device_stat('0', cookies)
 
-            if is_api_error(red_zqb) or is_api_error(blue_device_info):
+            if is_api_error(red_zqb) or is_api_error(red_pc):
                 print(user_id, 'red_zqb', 'error')
                 return
 
@@ -92,7 +91,7 @@ def get_data(username):
 
             account_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             account_data['mine_info'] = mine_info
-            account_data['device_info'] = __merge_device_data(red_zqb, blue_device_info)
+            account_data['device_info'] = red_zqb.get('info') + red_pc.get('info')
             account_data['income'] = get_income_info(cookies)
 
             if is_api_error(account_data.get('income')):
@@ -113,16 +112,6 @@ def get_data(username):
         print(username.encode('utf-8'), 'succ', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     except Exception as ex:
         print(username.encode('utf-8'), 'failed', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ex)
-
-
-def __merge_device_data(red_zqb, blue_device_info):
-    for blue_info in blue_device_info.get('DEVICE_INFO'):
-        for red_info in red_zqb.get('info'):
-            if red_info.get('dv_id') == blue_info.get('DCDNID'):
-                blue_info['red_info'] = red_info
-                break
-
-    return blue_device_info.get('DEVICE_INFO')
 
 
 def save_history(username):
@@ -167,7 +156,7 @@ def save_history(username):
         today_data['balance'] += data.get('income').get('r_can_use')
         today_data['income'] += data.get('income').get('r_h_a')
         for device in data.get('device_info'):
-            today_data['last_speed'] += int(device.get('CUR_UPLOAD_SPEED') / 1024)
+            today_data['last_speed'] += int(device.get('s') / 8)
 
     r_session.setex(key, json.dumps(today_data), 3600 * 24 * 35)
     save_income_history(username, today_data.get('pdc_detail'))
@@ -310,3 +299,20 @@ if __name__ == '__main__':
     threading.Thread(target=timer, args=(select_auto_collect_user, 600)).start()  # ok
     while True:
         time.sleep(1)
+
+"""
+POST http://kjapi.peiluyou.com:5171/ubus_cd?account_id=508629445&session_id=E22E73D518415D44419625BD58740E2D&action=get_device HTTP/1.1
+Host: kjapi.peiluyou.com:5171
+Referer: http://kj.xunlei.com/setting.html?user_id=508629445&session_id=E22E73D518415D44419625BD58740E2D&device_id=aNQNJ--q0448
+Connection: keep-alive
+Content-Type: application/x-www-form-urlencoded
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: zh-cn
+Accept-Encoding: gzip, deflate
+Origin: http://kj.xunlei.com
+Content-Length: 251
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 8_4_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12H321
+
+data=%7B%22jsonrpc%22%3A%222.0%22%2C%22id%22%3A1%2C%22method%22%3A%22call%22%2C%22params%22%3A%5B%22E22E73D518415D44419625BD58740E2D%22%2C%22server%22%2C%22get_device%22%2C%7B%22device_id%22%3A%22aNQNJ--q0448%22%7D%5D%7D&action=onResponse1441618287447
+"""
