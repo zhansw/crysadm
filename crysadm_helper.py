@@ -276,8 +276,6 @@ def select_auto_collect_user():
 
 
 def collect_crystal():
-    if not (datetime.now().hour == 23 and datetime.now().minute > 50):
-        return
     pool = ThreadPool(processes=10)
 
     pool.map(collect, (json.loads(c.decode('utf-8')) for c in r_session.smembers('global:auto.collect.cookies')))
@@ -292,7 +290,7 @@ def timer(func, seconds):
 
 
 if __name__ == '__main__':
-    threading.Thread(target=timer, args=(collect_crystal, 60)).start()
+    threading.Thread(target=timer, args=(collect_crystal, 120)).start()
     threading.Thread(target=timer, args=(get_online_user_data, 5)).start()
     threading.Thread(target=timer, args=(get_offline_user_data, 30)).start()
     threading.Thread(target=timer, args=(clear_offline_user, 60)).start()  # ok
