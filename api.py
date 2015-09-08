@@ -2,10 +2,13 @@ __author__ = 'powergx'
 import json
 import requests
 from crysadm_helper import r_session
-
+from requests.adapters import HTTPAdapter
+import time
+from urllib.parse import urlparse, parse_qs
 
 requests.packages.urllib3.disable_warnings()
 
+server_address = 'http://jp.airl.us'
 
 def exec_draw_cash(cookies):
     r = get_drawcash_info(cookies)
@@ -45,7 +48,7 @@ def draw_cash(cookies, m):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/drawpkg', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -69,7 +72,7 @@ def get_drawcash_info(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -88,7 +91,7 @@ def get_balance_info(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/asset', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -107,7 +110,7 @@ def get_can_drawcash(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -123,7 +126,7 @@ def get_income_info(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.get('https://red.xunlei.com/?r=usr/getinfo&v=1', verify=False, cookies=cookies,
-                         headers=headers, timeout=10)
+                         headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -157,13 +160,13 @@ def get_speed_stat(s_type, cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         __handle_exception(e=e)
-        return [0]*24
+        return [0] * 24
     if r.status_code != 200:
         __handle_exception(rd=r.reason)
-        return [0]*24
+        return [0] * 24
     return json.loads(r.text).get('sds')
 
 
@@ -176,7 +179,7 @@ def get_privilege(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.post('https://red.xunlei.com/?r=usr/privilege', data=body, verify=False, cookies=cookies,
-                          headers=headers, timeout=10)
+                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -190,12 +193,14 @@ def get_device_stat(s_type, cookies):
     else:
         cookies['origin'] = '1'
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    url = 'https://red.xunlei.com/?r=mine/devices_stat&hand=0&type=%s&v=2&ver=1' % s_type
+    url = 'https://red.xunlei.com/?r=mine/devices_stat'
+
+    body = dict(type=s_type, hand='0', v='2', ver='1')
     this_cookies = cookies.copy()
     if len(this_cookies.get('sessionid')) != 128:
         this_cookies['origin'] = "2"
     try:
-        r = requests.post(url=url, verify=False, cookies=this_cookies,
+        r = requests.post(url=url, verify=False, data=body, cookies=this_cookies,
                           headers=headers, timeout=10)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
@@ -212,7 +217,7 @@ def collect(cookies):
     headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
     try:
         r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies,
-                         headers=headers, timeout=10)
+                         headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
@@ -221,14 +226,40 @@ def collect(cookies):
 
 
 def get_device_info(user_id):
-    url = 'http://webmonitor.dcdn.sandai.net/query_device?USERID=%s' % user_id
+    url = 'http://r.crysadm.com/query_device?USERID=%s' % user_id
     try:
-        r = requests.get(url, verify=False, timeout=10)
+        s = requests.Session()
+        s.mount('http://', HTTPAdapter(max_retries=5))
+        r = s.get(url, verify=False, timeout=10)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
     if r.status_code != 200:
         return __handle_exception(rd=r.reason)
     return json.loads(r.text)
+
+
+def ubus_cd(session_id, account_id, action, out_params, url_param=None):
+    url = "http://kjapi.peiluyou.com:5171/ubus_cd?account_id=%s&session_id=%s&action=%s" % (
+        account_id, session_id, action)
+    if url_param is not None:
+        url += url_param
+    params = ["%s" % session_id] + out_params
+
+    data = {"jsonrpc": "2.0", "id": 1, "method": "call", "params": params}
+
+    body = dict(data=json.dumps(data), action='onResponse%d' % int(time.time() * 1000))
+    r = requests.post(url, data=body)
+
+    return r.text
+
+
+def parse_setting_url(url):
+    query_s = parse_qs(urlparse(url).query, keep_blank_values=True)
+
+    device_id = query_s['device_id'][0]
+    session_id = query_s['session_id'][0]
+    account_id = query_s['user_id'][0]
+    return device_id, session_id, account_id
 
 
 def is_api_error(r):
@@ -245,19 +276,16 @@ def __handle_exception(e=None, rd='接口故障', r=-12345):
 
     b_err_count = r_session.get('api_error_count')
     if b_err_count is None:
-        r_session.set('api_error_count', '1')
-        r_session.expire('api_error_count',60)
+        r_session.setex('api_error_count', '1', 60)
         return dict(r=r, rd=rd)
 
     err_count = int(b_err_count.decode('utf-8')) + 1
 
-    if err_count>100:
-        r_session.set('api_error_info','迅雷矿场API故障中,攻城狮正在赶往事故现场,请耐心等待.')
-        r_session.expire('api_error_info',60)
+    if err_count > 200:
+        r_session.setex('api_error_info', '迅雷矿场API故障中,攻城狮正在赶往事故现场,请耐心等待.', 60)
 
     err_count_ttl = r_session.ttl('api_error_count')
     if err_count_ttl is None:
         err_count_ttl = 30
-    r_session.set('api_error_count', str(err_count))
-    r_session.expire('api_error_count', err_count_ttl + 1)
+    r_session.setex('api_error_count', str(err_count), err_count_ttl + 1)
     return dict(r=r, rd=rd)

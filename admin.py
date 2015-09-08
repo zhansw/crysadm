@@ -4,24 +4,46 @@ from crysadm import app, r_session
 from auth import requires_admin, requires_auth
 import json
 from util import hash_password
-import uuid
+from datetime import datetime
 import re
 import random
+from message import send_msg
 
 
-@app.route('/admin')
+@app.route('/admin/user')
 @requires_admin
-def admin():
+def admin_user():
+    recent_login_users = []
     users = list()
 
-    for username in sorted(r_session.smembers('users')):
-        b_user = r_session.get('user:%s' % username.decode('utf-8'))
+    for b_user in r_session.mget(*['user:%s' % name.decode('utf-8') for name in sorted(r_session.smembers('users'))]):
         if b_user is None:
             continue
-        users.append(json.loads(b_user.decode('utf-8')))
+        user = json.loads(b_user.decode('utf-8'))
+        if user.get('login_as_time') is not None:
+            if (datetime.now() - datetime.strptime(user.get('login_as_time'), '%Y-%m-%d %H:%M:%S')).days < 3:
+                recent_login_users.append(user)
+        users.append(user)
+
+    return render_template('admin_user.html',
+                           recent_login_users=sorted(recent_login_users, key=lambda k: k['login_as_time'],
+                                                     reverse=True),
+                           users=users)
 
 
-    return render_template('admin.html', users=users,inv_codes=r_session.smembers('invitation_codes'))
+@app.route('/admin/message')
+@requires_admin
+def admin_message():
+    return render_template('admin_message.html')
+
+
+@app.route('/admin/invitation')
+@requires_admin
+def admin_invitation():
+    pub_inv_codes = r_session.smembers('public_invitation_codes')
+
+    inv_codes = r_session.smembers('invitation_codes')
+    return render_template('admin_invitation.html', inv_codes=inv_codes, public_inv_codes=pub_inv_codes)
 
 
 @app.route('/generate/inv_code', methods=['POST'])
@@ -31,9 +53,22 @@ def generate_inv_code():
     r_session.smembers('invitation_codes')
 
     for i in range(0, 20 - r_session.scard('invitation_codes')):
-        r_session.sadd('invitation_codes',''.join(random.sample(_chars, 10)))
+        r_session.sadd('invitation_codes', ''.join(random.sample(_chars, 10)))
 
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin_invitation'))
+
+
+@app.route('/generate/pub_inv_code', methods=['POST'])
+@requires_admin
+def generate_pub_inv_code():
+    _chars = "0123456789ABCDEF"
+    r_session.smembers('public_invitation_codes')
+
+    for i in range(0, 10 - r_session.scard('public_invitation_codes')):
+        key = ''.join(random.sample(_chars, 10))
+        r_session.sadd('public_invitation_codes', key)
+
+    return redirect(url_for('admin_invitation'))
 
 
 @app.route('/admin/login_as/<username>', methods=['POST'])
@@ -42,7 +77,9 @@ def generate_login_as(username):
     user_info = r_session.get('%s:%s' % ('user', username))
 
     user = json.loads(user_info.decode('utf-8'))
+    user['login_as_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+    r_session.set('%s:%s' % ('user', username), json.dumps(user))
     session['admin_user_info'] = session.get('user_info')
     session['user_info'] = user
 
@@ -51,7 +88,7 @@ def generate_login_as(username):
 
 @app.route('/admin_user/<username>')
 @requires_admin
-def admin_user(username):
+def admin_user_management(username):
     err_msg = None
     if session.get('error_message') is not None:
         err_msg = session.get('error_message')
@@ -67,11 +104,9 @@ def admin_user(username):
 def admin_change_password(username):
     n_password = request.values.get('new_password')
 
-    r = r"(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{6,15})$"
-
-    if re.match(r, n_password) is None:
-        session['error_message'] = '密码太弱了(6~15位数字加字母).'
-        return redirect(url_for(endpoint='admin_user', username=username))
+    if len(n_password) < 8:
+        session['error_message'] = '密码必须8位以上.'
+        return redirect(url_for(endpoint='admin_user_management', username=username))
 
     user_key = '%s:%s' % ('user', username)
     user_info = json.loads(r_session.get(user_key).decode('utf-8'))
@@ -79,7 +114,7 @@ def admin_change_password(username):
     user_info['password'] = hash_password(n_password)
     r_session.set(user_key, json.dumps(user_info))
 
-    return redirect(url_for(endpoint='admin_user', username=username))
+    return redirect(url_for(endpoint='admin_user_management', username=username))
 
 
 @app.route('/admin/change_property/<field>/<value>/<username>', methods=['POST'])
@@ -95,10 +130,9 @@ def admin_change_property(field, value, username):
     elif field == 'auto_collect':
         user_info['auto_collect'] = True if value == '1' else False
 
-
     r_session.set(user_key, json.dumps(user_info))
 
-    return redirect(url_for(endpoint='admin_user', username=username))
+    return redirect(url_for(endpoint='admin_user_management', username=username))
 
 
 @app.route('/admin/change_user_info/<username>', methods=['POST'])
@@ -110,11 +144,11 @@ def admin_change_user_info(username):
 
     if re.match(r, max_account_no) is None:
         session['error_message'] = '迅雷账号限制必须为整数.'
-        return redirect(url_for(endpoint='admin_user', username=username))
+        return redirect(url_for(endpoint='admin_user_management', username=username))
 
     if not 0 < int(max_account_no) < 21:
         session['error_message'] = '迅雷账号限制必须为 1~20.'
-        return redirect(url_for(endpoint='admin_user', username=username))
+        return redirect(url_for(endpoint='admin_user_management', username=username))
 
     user_key = '%s:%s' % ('user', username)
     user_info = json.loads(r_session.get(user_key).decode('utf-8'))
@@ -123,7 +157,7 @@ def admin_change_user_info(username):
 
     r_session.set(user_key, json.dumps(user_info))
 
-    return redirect(url_for(endpoint='admin_user', username=username))
+    return redirect(url_for(endpoint='admin_user_management', username=username))
 
 
 @app.route('/admin/del_user/<username>', methods=['GET'])
@@ -145,4 +179,80 @@ def admin_del_user(username):
     for key in r_session.keys('user_data:%s:*' % username):
         r_session.delete(key.decode('utf-8'))
 
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin_user'))
+
+
+@app.route('/none_user')
+@requires_admin
+def none_user():
+    none_xlAcct = list()
+    none_active_xlAcct = list()
+    for b_user in r_session.smembers('users'):
+        username = b_user.decode('utf-8')
+
+        if r_session.smembers('accounts:' + username) is None or len(r_session.smembers('accounts:' + username)) == 0:
+            none_xlAcct.append(username)
+        has_active_account = False
+        for b_xl_account in r_session.smembers('accounts:' + username):
+            xl_account = b_xl_account.decode('utf-8')
+            account = json.loads(r_session.get('account:%s:%s' % (username, xl_account)).decode('utf-8'))
+            if account.get('active'):
+                has_active_account = True
+                break
+        if not has_active_account:
+            none_active_xlAcct.append(username)
+
+    return json.dumps(dict(none_xlAcct=none_xlAcct, none_active_xlAcct=none_active_xlAcct))
+
+
+@app.route('/del_none_user')
+@requires_admin
+def del_none_user():
+    none_active_xlAcct = list()
+    for b_user in r_session.smembers('users'):
+        username = b_user.decode('utf-8')
+
+        if r_session.smembers('accounts:' + username) is None or len(r_session.smembers('accounts:' + username)) == 0:
+            admin_del_user(username)
+        has_active_account = False
+        for b_xl_account in r_session.smembers('accounts:' + username):
+            xl_account = b_xl_account.decode('utf-8')
+            account = json.loads(r_session.get('account:%s:%s' % (username, xl_account)).decode('utf-8'))
+            if account.get('active'):
+                has_active_account = True
+                break
+        if not has_active_account:
+            none_active_xlAcct.append(username)
+
+    return json.dumps(dict(none_active_xlAcct=none_active_xlAcct))
+
+
+@app.route('/admin/message/send', methods=['POST'])
+@requires_admin
+def admin_message_send():
+    to = request.values.get('to')
+    subject = request.values.get('subject')
+    summary = request.values.get('summary')
+    content = request.values.get('content')
+
+    if subject == '':
+        session['error_message'] = '标题为必填。'
+        return redirect(url_for('admin_message'))
+
+    if to == '':
+        session['error_message'] = '收件方必填。'
+        return redirect(url_for('admin_message'))
+
+    if summary == '':
+        session['error_message'] = '简介必填'
+        return redirect(url_for('admin_message'))
+
+    send_content = '{:<30}'.format(summary) + content
+    if to == 'ALL':
+        for b_username in r_session.smembers('users'):
+            send_msg(b_username.decode('utf-8'), subject, send_content, 3600 * 24 * 7)
+
+    else:
+        send_msg(to, subject, send_content, 3600 * 24)
+
+    return redirect(url_for(endpoint='admin_message'))

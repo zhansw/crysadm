@@ -6,7 +6,7 @@
             <div class="col-lg-12">
                 <div class="alert alert-danger alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    {{ err_msg }}
+                    {{ err_msg|safe }}
                 </div>
             </div>
         {% endif %}
@@ -14,7 +14,7 @@
             <div class="col-lg-12">
                 <div class="alert alert-info alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    {{ info_msg }}
+                    {{ info_msg|safe }}
                 </div>
             </div>
         {% endif %}
@@ -22,6 +22,11 @@
             <div class="ibox float-e-margins">
                 <div class="ibox-title" style="height:42px;">
                     今日统计
+                    <div class="ibox-tools">
+                        <form role="form" action="/collect/all" method="post">
+                            <button type="submit" style="margin: 0px;" onclick="javascript:return confirm('确认要收取所有水晶?')" class="btn btn-info btn-xs">收取所有水晶</button>
+                        </form>
+                    </div>
                 </div>
                 <div class="ibox-content">
                     <div class="table-responsive">
@@ -37,19 +42,20 @@
                                 <th class="col-md-1 hidden-xs">未收取</th>
                                 <th class="col-md-1">余额</th>
                                 <th class="col-md-1">总收入</th>
-                                <th class="col-md-2">更新时间</th>
-                                <th class="col-md-1" style="text-align: right;padding-right: 30px;">操作</th>
+                                <th class="col-md-2 col-xs-1">更新时间</th>
+                                <th class="col-md-1" style="text-align:right;{% if show_drawcash%} min-width:100px;{% endif %}">操作</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for row in accounts %}
                                 {% if row.data is defined and row.data.mine_info.r == 0 %}
-                                    <tr>
-                                        <td>{{ row.data.privilege.mid |e }}</td>
+
+                                    <tr class="tooltip-demo">
+                                        <td data-original-title="{% if row.session_id|length == 128 %}Advanced{% else %}Standard{% endif %}" data-toggle="tooltip" data-placement="top" >{{ row.data.privilege.mid |e }}</td>
                                         <td>{{ row.data.mine_info.dev_m.pdc |default('0') }}</td>
                                         <td class="hidden-xs">{{ row.data.mine_info.dev_pc.pdc |e }}</td>
                                         <td class="hidden-xs">{{ row.data.mine_info.td_cm_pdc |e }}</td>
-                                        <td class="hidden-xs">{{ row.data.mine_info.td_box_pdc |e }}/{{ row.data.mine_info.td_box_pdc |e }}</td>
+                                        <td class="hidden-xs">{{ row.data.mine_info.td_box_pdc |e }}</td>
                                         <td class="hidden-xs">{{ row.data.mine_info.td_not_in_a |e }}</td>
                                         <td>{{ convert_to_yuan(row.data.income.r_can_use | default(0)) |e }}</td>
                                         <td>{{ convert_to_yuan(row.data.income.r_h_a | default(0))| e }}</td>
@@ -58,11 +64,11 @@
                                         <td>
                                             {% if show_drawcash %}
                                                 <form role="form" style="margin-left: 10px;float:right;" action="/drawcash/{{ row.user_id|e }}" method="post">
-                                                    <button type="submit" onclick="javascript:return confirm('确认要提现?')" class="btn btn-info btn-xs">提现</button>
+                                                    <button type="submit" style="margin: 0px;" onclick="javascript:return confirm('确认要提现?')" class="btn btn-info btn-xs">提现</button>
                                                 </form>
                                             {% endif %}
                                             <form role="form" style="float:right;" action="/collect/{{ row.user_id|e }}" method="post">
-                                                <button type="submit" onclick="javascript:return confirm('确认要收取水晶?')" class="btn btn-info btn-xs">收取</button>
+                                                <button type="submit" style="margin: 0px;" onclick="javascript:return confirm('确认要收取水晶?')" class="btn btn-info btn-xs">收取</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -84,79 +90,136 @@
                 </div>
                 <!-- /.panel-heading -->
                 <div class="ibox-content">
-                    {% for row in accounts %}
-                        {% if row.data is defined  %}
-                            <div class="table-responsive">
-                                <h5 style="text-align: right">矿主ID : {{ row.data.privilege.mid |e }}</h5>
-                                <table class="table table-hover">
-                                    <thead>
-                                    <tr>
 
-                                        <th class="col-md-2 hidden-xs" style="min-width: 120px;">矿机名</th>
-                                        <th class="col-md-1" style="min-width: 60px;">类型</th>
-                                        <th class="col-md-2" style="min-width: 120px;">上传/最快 KB/s</th>
-                                        <th class="col-md-1" style="min-width: 80px;">下载 KB/s</th>
-                                        <th class="col-md-1 hidden-xs" style="min-width: 70px;">缓存 GB</th>
-                                        <th class="col-md-1" style="min-width: 120px;">状态</th>
-                                        <th class="col-md-1 hidden-xs">IP</th>
-                                        <th class="col-md-1" style="text-align: right;">操作</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
+                    <div class="table-responsive">
+                        <table class="table" name="miner_list">
+                            <thead>
+                            <tr>
+                                <th >#</th>
+                                <th class="col-md-1" style="min-width: 70px;">矿主ID</th>
+                                <th class="col-md-1" style="min-width: 120px;">矿机名</th>
+                                <th class="col-md-1 hidden-xs" style="min-width: 80px;">类型</th>
+                                <th class="col-md-1" style="min-width: 80px;">
+                                    <i class="fa fa-arrow-circle-up"></i> (KB/s)</th>
+                                <th class="col-md-1" style="min-width: 80px;"><i class="fa fa-arrow-circle-down"></i>
+                                    (KB/s)</th>
+                                <th class="col-md-1" style="min-width: 70px;"><i class="fa fa-hdd-o"></i> (GB)</th>
+                                <th class="col-md-1" >状态</th>
+                                <th class="col-md-1 hidden-xs">IP</th>
+                                <th class="col-md-1" style="text-align: right;">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for row in accounts %}
+                                {% if row.data is defined  %}
+                                    {% for dev in row.data.device_info%}
 
-                                        {% for dev in row.data.device_info %}
-                                                <tr>
-                                                    {% if dev.red_info is defined %}
-                                                    <td class="hidden-xs">{{ dev.red_info.hn|default(dev.HOST_NAME) }}</td>
-                                                    {% else %}
-                                                    <td class="hidden-xs">{{ dev.HOST_NAME |e }}</td>
-                                                    {% endif %}
-                                                    <td>{{ get_device_type(dev.PRODUCT_ID) |e }}</td>
-                                                    <td>{{ (dev.CUR_UPLOAD_SPEED/1024)|int |default('') }}/{{ (dev.MAX_UPLOAD_SPEED/1024)|int }}</td>
-                                                    <td>{{ (dev.CUR_DEPLOY_SPEED/1024)|int }}</td>
-                                                    <td class="hidden-xs">{{ (dev.CACHE_USED_SIZE/1024/1024/1024)|int }}/{{ (dev.CACHE_UPPER_LIMIT/1024/1024/1024)|int }}</td>
-                                                    <td>
-
-                                                        {% if dev.ON_OFF_STATE == 1 %}
-                                                            <span type="button" class="btn btn-info disabled btn-xs">
-                                                                工作
+                                        {% if dev.detail_info is defined %}
+                                            {% for detail in dev.detail_info.dcdn_clients %}
+                                                <tr{% if loop.first %} style="background-color: #F9F9F9;"{% endif %}>
+                                                    <td >{{ dev.url }}</td>
+                                                    <td >
+                                                        {% if loop.first %}
+                                                            {{ row.data.privilege.mid |e }}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td readonly="readonly">
+                                                        {{ dev.hn}}
+                                                    </td>
+                                                    <td class="hidden-xs">
+                                                        {{ get_device_type(dev.nm) |e }}
+                                                    </td>
+                                                    <td>{{ (detail.upload_speed|int/1024)|int }}/{{ (detail.upload_speed_max|int/1024)|int }}</td>
+                                                    <td>{{ (detail.download_speed|int/1024)|int }}/{{ (detail.download_speed_max|int/1024)|int }}</td>
+                                                    <td>{{ (detail.space_used|int/1024/1024/1024)|int }}/{{ (detail.space_quota|int/1024/1024/1024)|int }}</td>
+                                                    <td{% if dev.upgrade %} style="min-width: 110px;" {% endif %}>
+                                                        {% if detail.status == 'running' %}
+                                                            <span class="label label-info">
+                                                                正常
                                                                 </span>
-                                                        {% elif dev.ON_OFF_STATE == 2 %}
-                                                            <span type="button" class="btn btn-warning disabled btn-xs">
+                                                        {% else %}
+                                                            <span class="label label-warning">
                                                                 断网
                                                                 </span>
                                                         {% endif %}
-                                                        {% if dev.red_info is defined and dev.red_info.upgrade %}
-                                                            <span type="button" class="btn btn-danger disabled btn-xs">
+                                                        {% if dev.upgrade %}
+                                                            <span class="label label-danger">
                                                                 有升级
                                                                 </span>
                                                         {% endif %}
                                                     </td>
-                                                    <td class="hidden-xs">{{ int2ip(dev.EXTERNAL_IP) | e }}</td>
+                                                    <td class="hidden-xs">{{ dev.ip | e }}</td>
                                                     <td>
-                                                        {% if dev.red_info is defined %}
-                                                        <form style="float:right;" role="form" action="/reboot_device/{{ row.session_id |e }}" method="post">
-                                                            <input type="hidden" name="url" value="{{ dev.red_info.url }}" />
-                                                            <button type="submit" style="float: right;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
-                                                        </form>
+                                                        {% if dev.nm == 'HW' %}
+                                                            <form style="float:right;" role="form" action="/reboot_device" method="post">
+                                                                <input type="hidden" name="url" value="{{ dev.url }}" />
+                                                                <button type="submit" style="float: right;margin: 0px;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
+                                                            </form>
                                                         {% endif %}
                                                     </td>
                                                 </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr{% if loop.first %} style="background-color: #F9F9F9;"{% endif %}>
+                                                <td >{{ dev.url }}</td>
+                                                <td >
+                                                    {% if loop.first %}
+                                                        {{ row.data.privilege.mid |e }}
+                                                    {% endif %}
+                                                </td>
+                                                <td readonly="readonly">
+                                                    {{ dev.hn}}
+                                                </td>
+                                                <td class="hidden-xs">
+                                                    {{ get_device_type(dev.nm) |e }}
+                                                </td>
+                                                <td>{{ (dev.s/8)|int |default('') }}</td>
+                                                <td>-</td>
+                                                <td>-</td>
+                                                <td{% if dev.upgrade %} style="min-width: 110px;" {% endif %}>
+                                                    {% if dev.st == 1 %}
+                                                        <span class="label label-info">
+                                                                正常
+                                                                </span>
+                                                    {% elif dev.st == 2 %}
+                                                        <span class="label label-warning">
+                                                                断网
+                                                                </span>
+                                                    {% endif %}
+                                                    {% if dev.upgrade %}
+                                                        <span class="label label-danger">
+                                                                有升级
+                                                                </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="hidden-xs">{{ dev.ip | e }}</td>
+                                                <td>
+                                                    {% if dev.nm == 'HW' %}
+                                                        <form style="float:right;" role="form" action="/reboot_device" method="post">
+                                                            <input type="hidden" name="url" value="{{ dev.url }}" />
+                                                            <button type="submit" style="float: right;margin: 0px;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
+                                                        </form>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                {% endif %}
+                                <!-- /.row -->
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
 
 
 
 
-                            <!-- /.table-responsive -->
+                    <!-- /.table-responsive -->
 
 
-                        {% endif %}
-                        <!-- /.row -->
-                    {% endfor %}
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -165,6 +228,48 @@
 
     </div>
 {% endblock %}
+{% block js_logic %}
+    <script src="../static/js/plugins/jquery-tabledit/jquery.tabledit.js"></script>
+    <script>
+        // Example #3
+        $('table[name="miner_list"]').Tabledit({
+            url: '/set_device_name',
+            eventType: 'dblclick',
+            editButton: false,
+            deleteButton: false,
+            hideIdentifier: true,
+            columns: {
+                identifier: [0, 'url'],
+                editable: [[2, 'name']]
+            },
+            onDraw: function() {
+                console.log('onDraw()');
+            },
+            onSuccess: function(data, textStatus, jqXHR) {
+                console.log('onSuccess(data, textStatus, jqXHR)');
+                console.log(data);
+                console.log(textStatus);
+                console.log(jqXHR);
+            },
+            onFail: function(jqXHR, textStatus, errorThrown) {
+                console.log('onFail(jqXHR, textStatus, errorThrown)');
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            },
+            onAlways: function() {
+                console.log('onAlways()');
+            },
+            onAjax: function(action, serialize) {
+                console.log('onAjax(action, serialize)');
+                console.log(action);
+                console.log(serialize);
+            }
+        });
+
+    </script>
+{% endblock %}
+
 
 {% block navibar %}
     <div class="col-lg-10">
