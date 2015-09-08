@@ -147,10 +147,12 @@
                                             </td>
                                             <td class="hidden-xs">{{ dev.ip | e }}</td>
                                             <td>
+                                                {% if dev.nm == 'HW' %}
                                                     <form style="float:right;" role="form" action="/reboot_device" method="post">
                                                         <input type="hidden" name="url" value="{{ dev.url }}" />
                                                         <button type="submit" style="float: right;margin: 0px;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
                                                     </form>
+                                                {% endif %}
                                             </td>
                                         </tr>
 

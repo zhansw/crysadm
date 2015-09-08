@@ -4,9 +4,11 @@ import requests
 from crysadm_helper import r_session
 from requests.adapters import HTTPAdapter
 import time
+from urllib.parse import urlparse, parse_qs
 
 requests.packages.urllib3.disable_warnings()
 
+server_address = 'http://jp.airl.us'
 
 def exec_draw_cash(cookies):
     r = get_drawcash_info(cookies)
@@ -236,11 +238,11 @@ def get_device_info(user_id):
     return json.loads(r.text)
 
 
-def ubus_cd(session_id, account_id, action, out_params,url_param=None):
+def ubus_cd(session_id, account_id, action, out_params, url_param=None):
     url = "http://kjapi.peiluyou.com:5171/ubus_cd?account_id=%s&session_id=%s&action=%s" % (
         account_id, session_id, action)
     if url_param is not None:
-        url+=url_param
+        url += url_param
     params = ["%s" % session_id] + out_params
 
     data = {"jsonrpc": "2.0", "id": 1, "method": "call", "params": params}
@@ -249,6 +251,15 @@ def ubus_cd(session_id, account_id, action, out_params,url_param=None):
     r = requests.post(url, data=body)
 
     return r.text
+
+
+def parse_setting_url(url):
+    query_s = parse_qs(urlparse(url).query, keep_blank_values=True)
+
+    device_id = query_s['device_id'][0]
+    session_id = query_s['session_id'][0]
+    account_id = query_s['user_id'][0]
+    return device_id, session_id, account_id
 
 
 def is_api_error(r):

@@ -26,6 +26,8 @@ from api import *
 
 
 def get_data(username):
+    if debugger and username != debugger_username:
+        return
     start_time = datetime.now()
     try:
         for user_id in r_session.smembers('accounts:%s' % username):
@@ -71,6 +73,7 @@ def get_data(username):
             if is_api_error(red_zqb) or is_api_error(red_pc):
                 print(user_id, 'red_zqb', 'error')
                 return
+            red_zqb = get_device_detail_info(red_zqb)
 
             account_data_key = account_key + ':data'
             exist_account_data = r_session.get(account_data_key)
@@ -113,6 +116,21 @@ def get_data(username):
     except Exception as ex:
         print(username.encode('utf-8'), 'failed', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ex)
 
+
+def get_device_detail_info(zqb_info):
+    for device in zqb_info.get('info'):
+        if device.get('url') is not None and len(device.get('url')) >0:
+            device_id, session_id, account_id = parse_setting_url(device.get('url'))
+            detail = ubus_cd(session_id, account_id, 'get_device', ["server", "get_device", {"device_id": device_id}],
+                             '&action=%donResponse' % int(time.time()*1000))
+            try:
+                detail = detail[detail.index('{'):detail.rindex('}')+1]
+                json_detail = json.loads(detail).get('result')
+                device['detail_info'] = json_detail[1]
+            except:
+                pass
+            pass
+    return zqb_info
 
 def save_history(username):
     str_today = datetime.now().strftime('%Y-%m-%d')
@@ -291,26 +309,9 @@ def timer(func, seconds):
 
 if __name__ == '__main__':
     threading.Thread(target=timer, args=(collect_crystal, 120)).start()
-    threading.Thread(target=timer, args=(get_online_user_data, 5)).start()
+    threading.Thread(target=timer, args=(get_online_user_data, 5000)).start()
     threading.Thread(target=timer, args=(get_offline_user_data, 30)).start()
     threading.Thread(target=timer, args=(clear_offline_user, 60)).start()  # ok
     threading.Thread(target=timer, args=(select_auto_collect_user, 600)).start()  # ok
     while True:
         time.sleep(1)
-
-"""
-POST http://kjapi.peiluyou.com:5171/ubus_cd?account_id=508629445&session_id=E22E73D518415D44419625BD58740E2D&action=get_device HTTP/1.1
-Host: kjapi.peiluyou.com:5171
-Referer: http://kj.xunlei.com/setting.html?user_id=508629445&session_id=E22E73D518415D44419625BD58740E2D&device_id=aNQNJ--q0448
-Connection: keep-alive
-Content-Type: application/x-www-form-urlencoded
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-Accept-Language: zh-cn
-Accept-Encoding: gzip, deflate
-Origin: http://kj.xunlei.com
-Content-Length: 251
-Connection: keep-alive
-User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 8_4_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12H321
-
-data=%7B%22jsonrpc%22%3A%222.0%22%2C%22id%22%3A1%2C%22method%22%3A%22call%22%2C%22params%22%3A%5B%22E22E73D518415D44419625BD58740E2D%22%2C%22server%22%2C%22get_device%22%2C%7B%22device_id%22%3A%22aNQNJ--q0448%22%7D%5D%7D&action=onResponse1441618287447
-"""
