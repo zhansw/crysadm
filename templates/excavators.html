@@ -124,7 +124,7 @@
                                                     {{ dev.hn}}
                                             </td>
                                             <td class="hidden-xs">
-                                                {{ get_device_type(321) |e }}
+                                                {{ get_device_type(dev.nm) |e }}
                                             </td>
                                             <td>{{ (dev.s/8)|int |default('') }}</td>
                                         <td>-</td>
@@ -145,7 +145,7 @@
                                                                 </span>
                                                 {% endif %}
                                             </td>
-                                        <td>-</td>
+                                            <td class="hidden-xs">{{ dev.ip | e }}</td>
                                             <td>
                                                     <form style="float:right;" role="form" action="/reboot_device" method="post">
                                                         <input type="hidden" name="url" value="{{ dev.url }}" />

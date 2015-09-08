@@ -281,11 +281,11 @@ def add_function():
         return str(crystal_values)
 
     def get_device_type(device_code):
-        if device_code == 121:
+        if device_code == 'PC':
             return 'PC'
         elif device_code == 421:
             return '路由'
-        elif device_code == 321:
+        elif device_code == 'HW':
             return '赚钱宝'
 
         return '不知道'
