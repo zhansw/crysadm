@@ -309,7 +309,7 @@ def timer(func, seconds):
 
 if __name__ == '__main__':
     threading.Thread(target=timer, args=(collect_crystal, 120)).start()
-    threading.Thread(target=timer, args=(get_online_user_data, 5000)).start()
+    threading.Thread(target=timer, args=(get_online_user_data, 5)).start()
     threading.Thread(target=timer, args=(get_offline_user_data, 30)).start()
     threading.Thread(target=timer, args=(clear_offline_user, 60)).start()  # ok
     threading.Thread(target=timer, args=(select_auto_collect_user, 600)).start()  # ok

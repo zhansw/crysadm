@@ -113,48 +113,96 @@
                             {% for row in accounts %}
                                 {% if row.data is defined  %}
                                     {% for dev in row.data.device_info%}
-                                        <tr{% if loop.first %} style="background-color: #F9F9F9;"{% endif %}>
-                                            <td >{{ dev.url }}</td>
-                                            <td >
-                                                {% if loop.first %}
-                                                    {{ row.data.privilege.mid |e }}
-                                                {% endif %}
-                                            </td>
-                                            <td readonly="readonly">
-                                                    {{ dev.hn}}
-                                            </td>
-                                            <td class="hidden-xs">
-                                                {{ get_device_type(dev.nm) |e }}
-                                            </td>
-                                            <td>{{ (dev.s/8)|int |default('') }}</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                            <td{% if dev.upgrade %} style="min-width: 110px;" {% endif %}>
-                                                {% if dev.st == 1 %}
-                                                    <span class="label label-info">
+
+                                        {% if dev.detail_info is defined %}
+                                            {% for detail in dev.detail_info.dcdn_clients %}
+                                                <tr{% if loop.first %} style="background-color: #F9F9F9;"{% endif %}>
+                                                    <td >{{ dev.url }}</td>
+                                                    <td >
+                                                        {% if loop.first %}
+                                                            {{ row.data.privilege.mid |e }}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td readonly="readonly">
+                                                        {{ dev.hn}}
+                                                    </td>
+                                                    <td class="hidden-xs">
+                                                        {{ get_device_type(dev.nm) |e }}
+                                                    </td>
+                                                    <td>{{ (detail.upload_speed|int/1024)|int }}/{{ (detail.upload_speed_max|int/1024)|int }}</td>
+                                                    <td>{{ (detail.download_speed|int/1024)|int }}/{{ (detail.download_speed_max|int/1024)|int }}</td>
+                                                    <td>{{ (detail.space_used|int/1024/1024/1024)|int }}/{{ (detail.space_quota|int/1024/1024/1024)|int }}</td>
+                                                    <td{% if dev.upgrade %} style="min-width: 110px;" {% endif %}>
+                                                        {% if detail.status == 'running' %}
+                                                            <span class="label label-info">
                                                                 正常
                                                                 </span>
-                                                {% elif dev.st == 2 %}
-                                                    <span class="label label-warning">
+                                                        {% else %}
+                                                            <span class="label label-warning">
                                                                 断网
                                                                 </span>
-                                                {% endif %}
-                                                {% if dev.upgrade %}
-                                                    <span class="label label-danger">
+                                                        {% endif %}
+                                                        {% if dev.upgrade %}
+                                                            <span class="label label-danger">
                                                                 有升级
                                                                 </span>
-                                                {% endif %}
-                                            </td>
-                                            <td class="hidden-xs">{{ dev.ip | e }}</td>
-                                            <td>
-                                                {% if dev.nm == 'HW' %}
-                                                    <form style="float:right;" role="form" action="/reboot_device" method="post">
-                                                        <input type="hidden" name="url" value="{{ dev.url }}" />
-                                                        <button type="submit" style="float: right;margin: 0px;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
-                                                    </form>
-                                                {% endif %}
-                                            </td>
-                                        </tr>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="hidden-xs">{{ dev.ip | e }}</td>
+                                                    <td>
+                                                        {% if dev.nm == 'HW' %}
+                                                            <form style="float:right;" role="form" action="/reboot_device" method="post">
+                                                                <input type="hidden" name="url" value="{{ dev.url }}" />
+                                                                <button type="submit" style="float: right;margin: 0px;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
+                                                            </form>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr{% if loop.first %} style="background-color: #F9F9F9;"{% endif %}>
+                                                <td >{{ dev.url }}</td>
+                                                <td >
+                                                    {% if loop.first %}
+                                                        {{ row.data.privilege.mid |e }}
+                                                    {% endif %}
+                                                </td>
+                                                <td readonly="readonly">
+                                                    {{ dev.hn}}
+                                                </td>
+                                                <td class="hidden-xs">
+                                                    {{ get_device_type(dev.nm) |e }}
+                                                </td>
+                                                <td>{{ (dev.s/8)|int |default('') }}</td>
+                                                <td>-</td>
+                                                <td>-</td>
+                                                <td{% if dev.upgrade %} style="min-width: 110px;" {% endif %}>
+                                                    {% if dev.st == 1 %}
+                                                        <span class="label label-info">
+                                                                正常
+                                                                </span>
+                                                    {% elif dev.st == 2 %}
+                                                        <span class="label label-warning">
+                                                                断网
+                                                                </span>
+                                                    {% endif %}
+                                                    {% if dev.upgrade %}
+                                                        <span class="label label-danger">
+                                                                有升级
+                                                                </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="hidden-xs">{{ dev.ip | e }}</td>
+                                                <td>
+                                                    {% if dev.nm == 'HW' %}
+                                                        <form style="float:right;" role="form" action="/reboot_device" method="post">
+                                                            <input type="hidden" name="url" value="{{ dev.url }}" />
+                                                            <button type="submit" style="float: right;margin: 0px;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
+                                                        </form>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
 
                                     {% endfor %}
 
@@ -194,29 +242,29 @@
                 identifier: [0, 'url'],
                 editable: [[2, 'name']]
             },
-    onDraw: function() {
-        console.log('onDraw()');
-    },
-    onSuccess: function(data, textStatus, jqXHR) {
-        console.log('onSuccess(data, textStatus, jqXHR)');
-        console.log(data);
-        console.log(textStatus);
-        console.log(jqXHR);
-    },
-    onFail: function(jqXHR, textStatus, errorThrown) {
-        console.log('onFail(jqXHR, textStatus, errorThrown)');
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
-    },
-    onAlways: function() {
-        console.log('onAlways()');
-    },
-    onAjax: function(action, serialize) {
-        console.log('onAjax(action, serialize)');
-        console.log(action);
-        console.log(serialize);
-    }
+            onDraw: function() {
+                console.log('onDraw()');
+            },
+            onSuccess: function(data, textStatus, jqXHR) {
+                console.log('onSuccess(data, textStatus, jqXHR)');
+                console.log(data);
+                console.log(textStatus);
+                console.log(jqXHR);
+            },
+            onFail: function(jqXHR, textStatus, errorThrown) {
+                console.log('onFail(jqXHR, textStatus, errorThrown)');
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            },
+            onAlways: function() {
+                console.log('onAlways()');
+            },
+            onAjax: function(action, serialize) {
+                console.log('onAjax(action, serialize)');
+                console.log(action);
+                console.log(serialize);
+            }
         });
 
     </script>

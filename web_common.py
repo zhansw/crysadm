@@ -216,7 +216,8 @@ def dashboard_DoD_income():
             today_data_value = sum(row['pdc'] for row in today_data.get(hour))
 
         today_series['data'].append(today_data_value - today_data_last_value)
-        today_data_last_value = today_data_value
+        if today_data_value != 0:
+            today_data_last_value = today_data_value
 
     now_income_value = sum(today_series['data'][0:now.hour])
     dod_income_value = sum(yesterday_series['data'][0:now.hour])
