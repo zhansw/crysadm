@@ -113,7 +113,6 @@
                             {% for row in accounts %}
                                 {% if row.data is defined  %}
                                     {% for dev in row.data.device_info%}
-                                        {{ dev }}
                                         {% for detail in dev.dcdn_clients %}
                                             <tr{% if loop.first %} style="background-color: #F9F9F9;"{% endif %}>
                                                 <td >{{ dev.dcdn_id }}{{ dev.account_name }}{{ row.session_id }}</td>
