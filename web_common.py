@@ -271,7 +271,7 @@ def add_function():
             return 'PC'
         elif device_code == 421:
             return '路由'
-        elif device_code == 'HW':
+        elif device_code == 321:
             return '赚钱宝'
 
         return '不知道'
