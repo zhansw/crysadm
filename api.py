@@ -225,19 +225,6 @@ def collect(cookies):
     return json.loads(r.text)
 
 
-def get_device_info(user_id):
-    url = 'http://r.crysadm.com/query_device?USERID=%s' % user_id
-    try:
-        s = requests.Session()
-        s.mount('http://', HTTPAdapter(max_retries=5))
-        r = s.get(url, verify=False, timeout=10)
-    except requests.exceptions.RequestException as e:
-        return __handle_exception(e=e)
-    if r.status_code != 200:
-        return __handle_exception(rd=r.reason)
-    return json.loads(r.text)
-
-
 def ubus_cd(session_id, account_id, action, out_params, url_param=None):
     url = "http://kjapi.peiluyou.com:5171/ubus_cd?account_id=%s&session_id=%s&action=%s" % (
         account_id, session_id, action)
@@ -247,10 +234,15 @@ def ubus_cd(session_id, account_id, action, out_params, url_param=None):
 
     data = {"jsonrpc": "2.0", "id": 1, "method": "call", "params": params}
 
-    body = dict(data=json.dumps(data), action='onResponse%d' % int(time.time() * 1000))
-    r = requests.post(url, data=body)
-
-    return r.text
+    try:
+        body = dict(data=json.dumps(data), action='onResponse%d' % int(time.time() * 1000))
+        s = requests.Session()
+        s.mount('http://', HTTPAdapter(max_retries=5))
+        r = s.post(url, data=body)
+        result = r.text[r.text.index('{'):r.text.rindex('}')+1]
+        return json.loads(result)
+    except requests.exceptions.RequestException as e:
+        return __handle_exception(e=e)
 
 
 def parse_setting_url(url):

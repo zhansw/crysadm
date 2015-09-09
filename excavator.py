@@ -134,13 +134,9 @@ def drawcash(user_id):
 @app.route('/reboot_device', methods=['POST'])
 @requires_auth
 def reboot_device():
-    setting_url = request.values.get('url')
-
-    query_s = parse_qs(urlparse(setting_url).query, keep_blank_values=True)
-
-    device_id = query_s['device_id'][0]
-    session_id = query_s['session_id'][0]
-    account_id = query_s['user_id'][0]
+    device_id = request.values.get('device_id')
+    session_id = request.values.get('session_id')
+    account_id = request.values.get('account_id')
 
     ubus_cd(session_id, account_id, 'reboot', ["mnt", "reboot", {}], '&device_id=%s' % device_id)
 

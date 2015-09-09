@@ -20,7 +20,7 @@ pool = redis.ConnectionPool(host=redis_conf.host, port=redis_conf.port, db=redis
 r_session = redis.Redis(connection_pool=pool)
 
 debugger = False
-debugger_username = 'powergx'
+debugger_username = '15983770748@163.com'
 
 from api import *
 
@@ -67,14 +67,10 @@ def get_data(username):
                 print(user_id, mine_info, 'error')
                 continue
 
-            red_zqb = get_device_stat('1', cookies)
-            red_pc = get_device_stat('0', cookies)
+            device_info = ubus_cd(session_id, user_id, 'get_devices', ["server", "get_devices", {}],
+                              '&action=%donResponse' % int(time.time()*1000))
 
-            if is_api_error(red_zqb) or is_api_error(red_pc):
-                print(user_id, 'red_zqb', 'error')
-                return
-            red_zqb = get_device_detail_info(red_zqb)
-
+            red_zqb = device_info['result'][1]
             account_data_key = account_key + ':data'
             exist_account_data = r_session.get(account_data_key)
             if exist_account_data is None:
@@ -94,7 +90,7 @@ def get_data(username):
 
             account_data['updated_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             account_data['mine_info'] = mine_info
-            account_data['device_info'] = red_zqb.get('info') + red_pc.get('info')
+            account_data['device_info'] = red_zqb.get('devices')
             account_data['income'] = get_income_info(cookies)
 
             if is_api_error(account_data.get('income')):
@@ -116,21 +112,6 @@ def get_data(username):
     except Exception as ex:
         print(username.encode('utf-8'), 'failed', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ex)
 
-
-def get_device_detail_info(zqb_info):
-    for device in zqb_info.get('info'):
-        if device.get('url') is not None and len(device.get('url')) >0:
-            device_id, session_id, account_id = parse_setting_url(device.get('url'))
-            detail = ubus_cd(session_id, account_id, 'get_device', ["server", "get_device", {"device_id": device_id}],
-                             '&action=%donResponse' % int(time.time()*1000))
-            try:
-                detail = detail[detail.index('{'):detail.rindex('}')+1]
-                json_detail = json.loads(detail).get('result')
-                device['detail_info'] = json_detail[1]
-            except:
-                pass
-            pass
-    return zqb_info
 
 def save_history(username):
     str_today = datetime.now().strftime('%Y-%m-%d')
@@ -174,7 +155,7 @@ def save_history(username):
         today_data['balance'] += data.get('income').get('r_can_use')
         today_data['income'] += data.get('income').get('r_h_a')
         for device in data.get('device_info'):
-            today_data['last_speed'] += int(device.get('s') / 8)
+            today_data['last_speed'] += int(int(device.get('dcdn_upload_speed')) / 1024)
 
     r_session.setex(key, json.dumps(today_data), 3600 * 24 * 35)
     save_income_history(username, today_data.get('pdc_detail'))
@@ -308,7 +289,7 @@ def timer(func, seconds):
 
 
 if __name__ == '__main__':
-    threading.Thread(target=timer, args=(collect_crystal, 120)).start()
+    threading.Thread(target=timer, args=(collect_crystal, 3600)).start()
     threading.Thread(target=timer, args=(get_online_user_data, 5)).start()
     threading.Thread(target=timer, args=(get_offline_user_data, 30)).start()
     threading.Thread(target=timer, args=(clear_offline_user, 60)).start()  # ok

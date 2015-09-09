@@ -100,11 +100,11 @@ def dashboard_speed_share():
         device_speed = []
 
         for device_info in account_info.get('device_info'):
-            if device_info.get('st') != 1:
+            if device_info.get('status') != 'online':
                 continue
-            speed = int(device_info.get('s') / 8)
+            speed = int(int(device_info.get('dcdn_upload_speed')) / 1024)
             total_speed += speed
-            device_speed.append(dict(name=device_info.get('hn'), value=speed))
+            device_speed.append(dict(name=device_info.get('device_name'), value=speed))
 
         drilldown_data.append(dict(name='矿主ID:' + mid, value=total_speed, drilldown_data=device_speed))
 
@@ -125,20 +125,24 @@ def dashboard_speed_detail():
         account_info = json.loads(b_acct.decode("utf-8"))
 
         for device_info in account_info.get('device_info'):
-            if device_info.get('st') != 1:
+            if device_info.get('status') != 'online':
                 continue
-            upload_speed = int(device_info.get('s') / 8)
+            upload_speed = int(int(device_info.get('dcdn_upload_speed')) / 1024)
+            deploy_speed = int(device_info.get('dcdn_download_speed') / 1024)
 
-            device_speed.append(dict(name=device_info.get('hn'), upload_speed=upload_speed))
+            device_speed.append(dict(name=device_info.get('device_name'), upload_speed=upload_speed,
+                                     deploy_speed=deploy_speed))
 
     device_speed = sorted(device_speed, key=lambda k: k.get('name'))
     categories = []
     upload_series = dict(name='上传速度', data=[], pointPadding=0.3, pointPlacement=-0.2)
+    deploy_series = dict(name='下载速度', data=[], pointPadding=0.4, pointPlacement=-0.2)
     for d_s in device_speed:
         categories.append(d_s.get('name'))
         upload_series.get('data').append(d_s.get('upload_speed'))
+        deploy_series.get('data').append(d_s.get('deploy_speed'))
 
-    return Response(json.dumps(dict(categories=categories, series=[upload_series])),
+    return Response(json.dumps(dict(categories=categories, series=[upload_series, deploy_series])),
                     mimetype='application/json')
 
 
@@ -187,7 +191,6 @@ def dashboard_DoD_income():
 
     yesterday_last_value = 0
     today_data_last_value = 0
-    print(income_history)
     for i in range(0, 24):
         hour = '%02d' % i
         yesterday_value = 0
@@ -215,9 +218,12 @@ def dashboard_DoD_income():
         if today_data is not None and today_data.get(hour) is not None:
             today_data_value = sum(row['pdc'] for row in today_data.get(hour))
 
-        today_series['data'].append(today_data_value - today_data_last_value)
         if today_data_value != 0:
+            today_series['data'].append(today_data_value - today_data_last_value)
+
             today_data_last_value = today_data_value
+        else:
+            today_series['data'].append(0)
 
     now_income_value = sum(today_series['data'][0:now.hour])
     dod_income_value = sum(yesterday_series['data'][0:now.hour])
@@ -271,7 +277,7 @@ def add_function():
             return 'PC'
         elif device_code == 421:
             return '路由'
-        elif device_code == 'HW':
+        elif device_code == 321:
             return '赚钱宝'
 
         return '不知道'
