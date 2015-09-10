@@ -274,10 +274,16 @@ def select_auto_collect_user():
     r_session.sadd('global:auto.collect.cookies', *auto_collect_accounts)
 
 
+def check_collect(cookies):
+    mine_info = get_mine_info(cookies)
+    if mine_info.get('r') == 0 and mine_info.get('td_not_in_a') > 0:
+        collect(cookies)
+
+
 def collect_crystal():
     pool = ThreadPool(processes=10)
 
-    pool.map(collect, (json.loads(c.decode('utf-8')) for c in r_session.smembers('global:auto.collect.cookies')))
+    pool.map(check_collect, (json.loads(c.decode('utf-8')) for c in r_session.smembers('global:auto.collect.cookies')))
     pool.close()
     pool.join()
 
@@ -289,7 +295,7 @@ def timer(func, seconds):
 
 
 if __name__ == '__main__':
-    threading.Thread(target=timer, args=(collect_crystal, 3600)).start()
+    threading.Thread(target=timer, args=(collect_crystal, 30)).start()
     threading.Thread(target=timer, args=(get_online_user_data, 5)).start()
     threading.Thread(target=timer, args=(get_offline_user_data, 30)).start()
     threading.Thread(target=timer, args=(clear_offline_user, 60)).start()  # ok
