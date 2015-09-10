@@ -113,7 +113,7 @@
                             {% for row in accounts %}
                                 {% if row.data is defined  %}
                                     {% for dev in row.data.device_info%}
-                                        {% for detail in dev.dcdn_clients %}
+                                        {% if dev.dcdn_clients|length == 0 %}
                                             <tr{% if loop.first %} style="background-color: #F9F9F9;"{% endif %}>
                                                 <td >{{ dev.dcdn_id }}{{ dev.account_name }}{{ row.session_id }}</td>
                                                 <td >
@@ -127,13 +127,13 @@
                                                 <td class="hidden-xs">
                                                     {{ get_device_type(dev.product_id) |e }}
                                                 </td>
-                                                <td>{{ (detail.upload_speed|int/1024)|int }}/{{ (detail.upload_speed_max|int/1024)|int }}</td>
-                                                <td>{{ (detail.download_speed|int/1024)|int }}/{{ (detail.download_speed_max|int/1024)|int }}</td>
-                                                <td>{{ (detail.space_used|int/1024/1024/1024)|int }}/{{ (detail.space_quota|int/1024/1024/1024)|int }}</td>
+                                                <td>-</td>
+                                                <td>-</td>
+                                                <td>-</td>
                                                 <td{% if dev.upgrade %} style="min-width: 110px;" {% endif %}>
-                                                    {% if detail.status == 'running' %}
+                                                    {% if dev.status == 'online' %}
                                                         <span class="label label-info">
-                                                                正常
+                                                                在线
                                                                 </span>
                                                     {% else %}
                                                         <span class="label label-warning">
@@ -148,15 +148,58 @@
                                                 </td>
                                                 <td class="hidden-xs">{{ dev.ip | e }}</td>
                                                 <td>
-                                                    <form style="float:right;" role="form" action="/reboot_device" method="post">
-                                                        <input type="hidden" name="device_id" value="{{ dev.device_id }}" />
-                                                        <input type="hidden" name="account_id" value="{{ dev.account_name }}" />
-                                                        <input type="hidden" name="session_id" value="{{ row.session_id }}" />
-                                                        <button type="submit" style="float: right;margin: 0px;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
-                                                    </form>
+
                                                 </td>
                                             </tr>
-                                        {% endfor %}
+                                        {% else %}
+                                            {% for detail in dev.dcdn_clients %}
+                                                <tr{% if loop.first %} style="background-color: #F9F9F9;"{% endif %}>
+                                                    <td >{{ dev.dcdn_id }}{{ dev.account_name }}{{ row.session_id }}</td>
+                                                    <td >
+                                                        {% if loop.first %}
+                                                            {{ row.data.privilege.mid |e }}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td readonly="readonly">
+                                                        {{ dev.device_name}}
+                                                    </td>
+                                                    <td class="hidden-xs">
+                                                        {{ get_device_type(dev.product_id) |e }}
+                                                    </td>
+                                                    <td>{{ (detail.upload_speed|int/1024)|int }}/{{ (detail.upload_speed_max|int/1024)|int }}</td>
+                                                    <td>{{ (detail.download_speed|int/1024)|int }}/{{ (detail.download_speed_max|int/1024)|int }}</td>
+                                                    <td>{{ (detail.space_used|int/1024/1024/1024)|int }}/{{ (detail.space_quota|int/1024/1024/1024)|int }}</td>
+                                                    <td{% if dev.upgrade %} style="min-width: 110px;" {% endif %}>
+                                                        {% if detail.status == 'running' %}
+                                                            <span class="label label-info">
+                                                                正常
+                                                                </span>
+                                                        {% else %}
+                                                            <span class="label label-warning">
+                                                                断网
+                                                                </span>
+                                                        {% endif %}
+                                                        {% if dev.upgrade %}
+                                                            <span class="label label-danger">
+                                                                有升级
+                                                                </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="hidden-xs">{{ dev.ip | e }}</td>
+                                                    <td>
+                                                        {% if loop.first %}
+
+                                                        <form style="float:right;" role="form" action="/reboot_device" method="post">
+                                                            <input type="hidden" name="device_id" value="{{ dev.device_id }}" />
+                                                            <input type="hidden" name="account_id" value="{{ dev.account_name }}" />
+                                                            <input type="hidden" name="session_id" value="{{ row.session_id }}" />
+                                                            <button type="submit" style="float: right;margin: 0px;" onclick="javascript:return confirm('确认要重启矿机?')" class="btn btn-info btn-xs">重启</button>
+                                                        </form>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
                                     {% endfor %}
 
                                 {% endif %}

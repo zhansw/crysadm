@@ -8,7 +8,8 @@ from urllib.parse import urlparse, parse_qs
 
 requests.packages.urllib3.disable_warnings()
 
-server_address = 'http://jp.airl.us'
+server_address = 'http://2-api-red.xunlei.com'
+agent_header = {'user-agent': "RedCrystal/2.0.0 (iPhone; iOS 8.4; Scale/2.00)"}
 
 def exec_draw_cash(cookies):
     r = get_drawcash_info(cookies)
@@ -45,9 +46,9 @@ def draw_cash(cookies, m):
         cookies['origin'] = '2'
 
     body = dict(hand='0', m=str(m), v='3', ver='1')
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    headers = agent_header
     try:
-        r = requests.post('https://red.xunlei.com/?r=usr/drawpkg', data=body, verify=False, cookies=cookies,
+        r = requests.post(server_address + '/?r=usr/drawpkg', data=body, verify=False, cookies=cookies,
                           headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
@@ -69,9 +70,9 @@ def get_drawcash_info(cookies):
         cookies['origin'] = '2'
 
     body = dict(hand='0', v='1', ver='1')
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    headers = agent_header
     try:
-        r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
+        r = requests.post(server_address + '/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
                           headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
@@ -88,9 +89,9 @@ def get_balance_info(cookies):
         cookies['origin'] = '2'
 
     body = dict(hand='0', v='2', ver='1')
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    headers = agent_header
     try:
-        r = requests.post('https://red.xunlei.com/?r=usr/asset', data=body, verify=False, cookies=cookies,
+        r = requests.post(server_address + '/?r=usr/asset', data=body, verify=False, cookies=cookies,
                           headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
@@ -107,9 +108,9 @@ def get_can_drawcash(cookies):
         cookies['origin'] = '2'
 
     body = dict(hand='0', v='1', ver='1')
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    headers = agent_header
     try:
-        r = requests.post('https://red.xunlei.com/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
+        r = requests.post(server_address + '/?r=usr/drawcashInfo', data=body, verify=False, cookies=cookies,
                           headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
@@ -123,9 +124,9 @@ def get_income_info(cookies):
         cookies['origin'] = '4'
     else:
         cookies['origin'] = '1'
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    headers = agent_header
     try:
-        r = requests.get('https://red.xunlei.com/?r=usr/getinfo&v=1', verify=False, cookies=cookies,
+        r = requests.get(server_address + '/?r=usr/getinfo&v=1', verify=False, cookies=cookies,
                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
@@ -140,9 +141,9 @@ def get_mine_info(cookies):
     else:
         cookies['origin'] = '1'
     body = dict(hand='0', v='2', ver='1')
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    headers = agent_header
     try:
-        r = requests.post('https://red.xunlei.com/?r=mine/info', data=body, verify=False, cookies=cookies,
+        r = requests.post(server_address + '/?r=mine/info', data=body, verify=False, cookies=cookies,
                           headers=headers, timeout=10)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
@@ -157,9 +158,9 @@ def get_speed_stat(s_type, cookies):
     else:
         cookies['origin'] = '1'
     body = dict(type=s_type, hand='0', v='0', ver='1')
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    headers = agent_header
     try:
-        r = requests.post('https://red.xunlei.com/?r=mine/speed_stat', data=body, verify=False, cookies=cookies,
+        r = requests.post(server_address + '/?r=mine/speed_stat', data=body, verify=False, cookies=cookies,
                           headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         __handle_exception(e=e)
@@ -176,9 +177,9 @@ def get_privilege(cookies):
     else:
         cookies['origin'] = '1'
     body = dict(hand='0', v='0', ver='1')
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    headers = agent_header
     try:
-        r = requests.post('https://red.xunlei.com/?r=usr/privilege', data=body, verify=False, cookies=cookies,
+        r = requests.post(server_address + '/?r=usr/privilege', data=body, verify=False, cookies=cookies,
                           headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
@@ -192,8 +193,8 @@ def get_device_stat(s_type, cookies):
         cookies['origin'] = '4'
     else:
         cookies['origin'] = '1'
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
-    url = 'https://red.xunlei.com/?r=mine/devices_stat'
+    headers = agent_header
+    url = server_address + '/?r=mine/devices_stat'
 
     body = dict(type=s_type, hand='0', v='2', ver='1')
     this_cookies = cookies.copy()
@@ -214,9 +215,9 @@ def collect(cookies):
         cookies['origin'] = '4'
     else:
         cookies['origin'] = '1'
-    headers = {'user-agent': "RedCrystal/1.5.0 (iPhone; iOS 8.4; Scale/2.00)"}
+    headers = agent_header
     try:
-        r = requests.get('https://red.xunlei.com/index.php?r=mine/collect', verify=False, cookies=cookies,
+        r = requests.get(server_address + '/index.php?r=mine/collect', verify=False, cookies=cookies,
                          headers=headers, timeout=60)
     except requests.exceptions.RequestException as e:
         return __handle_exception(e=e)
