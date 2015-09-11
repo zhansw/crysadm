@@ -7,6 +7,8 @@ COPY . /usr/src/app
 
 RUN pip install -r requirements.txt
 
+COPY docker-entrypoint.sh /usr/local/bin/
+
 EXPOSE 80
 
 ENTRYPOINT ["docker-entrypoint.sh"]
