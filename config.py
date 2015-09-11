@@ -5,7 +5,7 @@ import os
 class RedisConfig():
     def __init__(self, host, port, db, password=None):
         self.host = os.getenv('REDIS_PORT_6379_TCP_ADDR')
-        self.port = os.getenv('REDIS_PORT_6379_TCP_PORT')
+        self.port = int(os.getenv('REDIS_PORT_6379_TCP_PORT'))
         self.db = db
         self.password = os.getenv('REDIS_PASSWORD')
 
