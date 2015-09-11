@@ -9,4 +9,5 @@ RUN pip install -r requirements.txt
 
 EXPOSE 80
 
+CMD [ "python","crysadm_helper.py"]
 CMD [ "python","crysadm.py"]
