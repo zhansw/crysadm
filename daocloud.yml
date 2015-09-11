@@ -1,0 +1,10 @@
+image: daocloud/ci-python:3.3
+
+services:
+  - redis
+  
+env:
+  - REDIS_PASSWORD=""
+  
+script:
+  - pip install -r requirements.txt
